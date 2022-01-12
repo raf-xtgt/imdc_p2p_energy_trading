@@ -10,10 +10,6 @@
   .spacer {
     flex: 1 1 auto;
   }
-  .button-spacer {
-      flex: 1 1 auto;
-  }
-  
 
   .example-button-row button,
 .example-button-row a {
