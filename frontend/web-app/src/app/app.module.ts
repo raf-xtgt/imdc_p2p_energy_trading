@@ -12,12 +12,14 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatButtonModule} from '@angular/material/button'; 
 // external components
 import { ToolbarComponent } from './toolbar/toolbar.component';
+import { HomepageComponent } from './homepage/homepage.component';
 
  
 @NgModule({
   declarations: [
     AppComponent,
-    ToolbarComponent
+    ToolbarComponent,
+    HomepageComponent
   ],
   imports: [
     BrowserModule,

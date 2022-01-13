@@ -9,7 +9,7 @@ class Block():
     self.data = data
     self.prev_block_hash = previous_block_hash
     # a valid hash will be calculated for every new block
-    self.calculate_valid_hash()
+    self.hash = self.calculate_valid_hash()
 
   def is_hash_valid(self, hash):
         return (hash.startswith('0' * 3))
@@ -23,7 +23,7 @@ class Block():
           hash = sha256(temp.encode()).hexdigest()
           nonce += 1
 
-      self.hash = hash
+      return hash
 
   def to_string(self):
     return "{0}\t{1}\t{2}".format(self.data, self.timestamp, self.prev_block_hash)

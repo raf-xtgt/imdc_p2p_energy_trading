@@ -1,50 +1,51 @@
-  <mat-sidenav-container class="example-container">
-    <mat-sidenav
-      #sidenav
-      mode="over"
-      [(opened)]="opened"
-      (opened)="events.push('open!')"
-      (closed)="events.push('close!')"
-    >
-      Sidenav content
-    </mat-sidenav>
-  
-    <mat-sidenav-content>
-    
-      <mat-toolbar color="primary">
-        
-        <span>P2P Optimal Matchmaking</span>
-        <span class="spacer"></span>
-        <div fxShow="true" fxHide.lt-md="true">
-          
-          <div>
-            <!-- <a mat-button routerLink="mainpage">Home</a> -->
-            <a mat-button>Blockchain</a>
-            <a mat-button>Market</a>
-            <a mat-button>About</a>
-            <a mat-button>Support</a>
-          
-            <button mat-button>Login</button>
-            <button mat-raised-button color="accent">Register</button>
-           
-          
-          </div>
+<mat-sidenav-container class="example-container">
+  <mat-sidenav #sidenav mode="over" [(opened)]="opened" (opened)="events.push('open!')"
+    (closed)="events.push('close!')">
+    Sidenav content
+  </mat-sidenav>
 
-          
+  <mat-sidenav-content>
+
+    <mat-toolbar color="primary">
+
+      <span>P2P Optimal Matchmaking</span>
+      <span class="spacer"></span>
+      <div fxShow="true" fxHide.lt-md="true">
+
+        <div>
+          <!-- <a mat-button routerLink="mainpage">Home</a> -->
+          <a mat-button>Blockchain</a>
+          <a mat-button>Market</a>
+          <a mat-button>About</a>
+          <a mat-button>Support</a>
+
+          <button mat-button>Login</button>
+          <button mat-raised-button color="accent">Register</button>
+
+
         </div>
-        
 
-        <div fxShow = "true" fxHide.gt-sm="true">
-          <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
-            <mat-icon>menu</mat-icon>
-          </button>
-        </div>
-      
-      </mat-toolbar>
 
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-  
+      </div>
+
+
+      <div fxShow="true" fxHide.gt-sm="true">
+        <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+          <mat-icon>menu</mat-icon>
+        </button>
+      </div>
+
+    </mat-toolbar>
+
+    <!--The main app.component.html takes in the router-outlet
+        The router-outlet defines the paths to different routers
+        The content of the component that the router redirects to 
+        is shown using ng-content -->
+    <ng-content></ng-content>
+
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
 
 
 
@@ -131,4 +132,3 @@
     </div>
       
   </div> -->
-
