@@ -11,16 +11,24 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatSidenavModule} from '@angular/material/sidenav'; 
 import {MatButtonModule} from '@angular/material/button'; 
 import {MatGridListModule} from '@angular/material/grid-list';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatFormFieldModule} from '@angular/material/form-field';
+
+
 // external components
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { HomepageComponent } from './homepage/homepage.component';
+import { MarketpageComponent } from './marketpage/marketpage.component';
+import { LoginComponent } from './login/login.component';
 
  
 @NgModule({
   declarations: [
     AppComponent,
     ToolbarComponent,
-    HomepageComponent
+    HomepageComponent,
+    MarketpageComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -32,7 +40,9 @@ import { HomepageComponent } from './homepage/homepage.component';
     MatIconModule,
     MatSidenavModule,
     MatButtonModule,
-    MatGridListModule
+    MatGridListModule,
+    MatTabsModule,
+    MatFormFieldModule
   ],
   providers: [],
   bootstrap: [AppComponent]
