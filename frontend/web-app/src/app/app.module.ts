@@ -10,6 +10,7 @@ import {MatToolbarModule} from '@angular/material/toolbar'
 import {MatIconModule} from '@angular/material/icon'; 
 import {MatSidenavModule} from '@angular/material/sidenav'; 
 import {MatButtonModule} from '@angular/material/button'; 
+import {MatGridListModule} from '@angular/material/grid-list';
 // external components
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { HomepageComponent } from './homepage/homepage.component';
@@ -30,7 +31,8 @@ import { HomepageComponent } from './homepage/homepage.component';
     MatToolbarModule,
     MatIconModule,
     MatSidenavModule,
-    MatButtonModule
+    MatButtonModule,
+    MatGridListModule
   ],
   providers: [],
   bootstrap: [AppComponent]

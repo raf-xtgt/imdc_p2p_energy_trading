@@ -1,12 +1,12 @@
 <mat-sidenav-container class="example-container">
   <mat-sidenav #sidenav mode="over" [(opened)]="opened" (opened)="events.push('open!')"
-    (closed)="events.push('close!')">
+    (closed)="events.push('close!')" style="width:40%">
     Sidenav content
   </mat-sidenav>
 
   <mat-sidenav-content>
 
-    <mat-toolbar color="primary">
+    <mat-toolbar color="primary" style="background-color: #1F3363;">
 
       <span>P2P Optimal Matchmaking</span>
       <span class="spacer"></span>
@@ -30,7 +30,9 @@
 
 
       <div fxShow="true" fxHide.gt-sm="true">
-        <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+        <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
+        (click)="sidenav.toggle()"
+        >
           <mat-icon>menu</mat-icon>
         </button>
       </div>
