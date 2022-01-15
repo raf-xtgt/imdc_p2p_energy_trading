@@ -15,9 +15,8 @@
   })
  export class ConfigService {
 
-  private configUrl = 'http://localhost:8080/';
-  private registerUrl = this.configUrl +'Register';
-
+  private _configUrl:string = 'http://localhost:8080/';
+  private _registerUrl:string = this._configUrl +'Register';
 
 
   //inject the HttpClient service as a dependency 
@@ -27,6 +26,6 @@
    addUser(data:User): Observable<any>{
     const body = JSON.stringify(data)
     console.log(body)
-    return this.http.post(this.registerUrl, body);
+    return this.http.post(this._registerUrl, body);
    }
  }

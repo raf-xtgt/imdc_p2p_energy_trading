@@ -15,7 +15,7 @@ import { ConfigService } from '../config.service';
 })
 export class SignupComponent implements OnInit {
 
-  constructor(private config:ConfigService) { }
+  constructor(private _config:ConfigService) { }
 
   ngOnInit(): void {
   }
@@ -32,7 +32,7 @@ export class SignupComponent implements OnInit {
     console.log(this.model.fullname)
     console.log(this.model.email)
     let newUser = new User(this.model.fullname, this.model.email)
-    this.config.addUser(newUser)
+    this._config.addUser(newUser)
   }
 
 }
