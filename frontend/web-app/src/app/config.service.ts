@@ -1,0 +1,32 @@
+ import { Injectable } from '@angular/core';
+ import { HttpClient } from '@angular/common/http';
+ // The HttpClient service makes use of observables for all transactions. You must import the RxJS observable and operator symbols that appear in the example snippets.
+ import { Observable, throwError } from 'rxjs';
+ import { catchError, retry } from 'rxjs/operators';
+ import { User } from './classes';
+
+ /** This file will allow the frontend to communicate with the backend
+ * using Angular's HTTP Client
+ */
+
+
+  @Injectable({
+    providedIn: 'root'
+  })
+ export class ConfigService {
+
+  private configUrl = 'http://localhost:8080/';
+  private registerUrl = this.configUrl +'Register';
+
+
+
+  //inject the HttpClient service as a dependency 
+   constructor(private http: HttpClient) { }
+
+   // add a user to the database
+   addUser(data:User): Observable<any>{
+    const body = JSON.stringify(data)
+    console.log(body)
+    return this.http.post(this.registerUrl, body);
+   }
+ }

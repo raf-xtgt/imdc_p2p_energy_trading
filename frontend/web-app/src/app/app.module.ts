@@ -13,13 +13,15 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatFormFieldModule} from '@angular/material/form-field';
-
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms'; 
 
 // external components
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { HomepageComponent } from './homepage/homepage.component';
 import { MarketpageComponent } from './marketpage/marketpage.component';
 import { LoginComponent } from './login/login.component';
+import { SignupComponent } from './signup/signup.component';
 
  
 @NgModule({
@@ -28,7 +30,8 @@ import { LoginComponent } from './login/login.component';
     ToolbarComponent,
     HomepageComponent,
     MarketpageComponent,
-    LoginComponent
+    LoginComponent,
+    SignupComponent
   ],
   imports: [
     BrowserModule,
@@ -42,7 +45,9 @@ import { LoginComponent } from './login/login.component';
     MatButtonModule,
     MatGridListModule,
     MatTabsModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    HttpClientModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
