@@ -7,7 +7,8 @@
           <input type="text" class="form-control" id="name"
                  required
                  [(ngModel)]="model.fullname" name="name"
-                 #name="ngModel">
+                 #name="ngModel"
+                 autocomplete="off">
           <div [hidden]="name.valid || name.pristine"
                class="alert alert-danger">
             Name is required
@@ -20,7 +21,7 @@
             <input type="text" class="form-control" id="email"
                    required
                    [(ngModel)]="model.email" name="email"
-                   #name="ngModel">
+                   #name="ngModel" autocomplete="off">
             <div [hidden]="email.valid || email.pristine"
                  class="alert alert-danger">
               Email is required

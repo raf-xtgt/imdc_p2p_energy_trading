@@ -15,7 +15,6 @@ import (
 	// To connect to mongodb
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 // globally define the db parameters so that other methods can access the db
@@ -30,8 +29,15 @@ type User struct {
 	Email    string `bson:"email"`
 }
 
+type MongoDatabases struct {
+	Blockchain *mongo.Database
+	Users      *mongo.Database
+	Market     *mongo.Database
+}
+
 // instance of MongoParam
 var mongoparameters MongoParam
+var MongoDBs MongoDatabases
 
 func main() {
 	fmt.Println("Starting server")
@@ -42,19 +48,13 @@ func main() {
 	fmt.Println(dbCluster)
 
 	// Establish connection to mongodb cluster
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://" + dbUserName + ":" + dbPass + "@imdc-p2p-energy.y0a68.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	err = client.Connect(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer client.Disconnect(ctx)
+	dbUrl := "mongodb+srv://" + dbUserName + ":" + dbPass + "@imdc-p2p-energy.y0a68.mongodb.net/" + dbCluster + "?retryWrites=true&w=majority"
 
-	// ping the cluster
-	err = client.Ping(ctx, readpref.Primary())
+	clientOptions := options.Client().
+		ApplyURI(dbUrl)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,6 +64,7 @@ func main() {
 	mongoparameters.ctx = ctx
 	mongoparameters.cancel = cancel
 	mongoparameters.client = client
+	connectToDb("all")
 	log.Fatal(listen())
 	// // handle to the database cluster
 	// database := client.Database("IMDC-p2p-energy")
@@ -76,6 +77,22 @@ func main() {
 	// })
 	// fmt.Println("Id of the user", writeUser.InsertedID)
 
+}
+
+func connectToDb(Choice string) *mongo.Database {
+
+	BlockchainDatabase := mongoparameters.client.Database("IMDC-p2p-energy")
+	UserDatabase := mongoparameters.client.Database("users")
+
+	var Database *mongo.Database
+	if Choice == "Blockchain" {
+		Database = BlockchainDatabase
+	} else if Choice == "Users" {
+		Database = UserDatabase
+	}
+	MongoDBs.Blockchain = BlockchainDatabase
+	MongoDBs.Users = UserDatabase
+	return Database
 }
 
 func getEnvVar(key string) string {
@@ -95,9 +112,8 @@ func addNewUser(w http.ResponseWriter, r *http.Request) {
 
 	// get the data from json body
 	decoder := json.NewDecoder(r.Body)
-	fmt.Println(r.Body)
 	if err := decoder.Decode(&NewUser); err != nil {
-		fmt.Println("Got error lol")
+		fmt.Println("Error")
 		fmt.Println(err)
 		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
 		return
@@ -105,25 +121,27 @@ func addNewUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	fmt.Println("This is the data from frontend", NewUser)
 
-	// // handle to the database cluster
-	database := mongoparameters.client.Database("IMDC-p2p-energy")
-	// // handle to the collection inside the cluster
-	usersCollection := database.Collection("users")
-	// // write data to the users collection
-	writeUser, err := usersCollection.InsertOne(mongoparameters.ctx, NewUser)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Id of user2", writeUser.InsertedID)
-	respondWithJSON(w, r, http.StatusCreated, NewUser)
+	// // // handle to the database cluster
+	// database := mongoparameters.client.Database("IMDC-p2p-energy")
+	// // // handle to the collection inside the cluster
+	// usersCollection := database.Collection("users")
+	// // // write data to the users collection
+	// writeUser, err := usersCollection.InsertOne(mongoparameters.ctx, NewUser)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Println("Id of user2", writeUser.InsertedID)
+	// respondWithJSON(w, r, http.StatusCreated, NewUser)
+	// return
 }
 
 func listen() error {
 	//http.HandleFunc("/")
 	// when a request is made on/register, then run addNewUser function
-	http.HandleFunc("/register", addNewUser)
 
-	log.Fatal(http.ListenAndServe(":"+getEnvVar("PORT"), nil))
+	http.HandleFunc("/", addNewUser)
+	log.Fatal(http.ListenAndServe(":8080", nil))
+
 	return nil
 }
 
