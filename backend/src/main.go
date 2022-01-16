@@ -17,27 +17,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// globally define the db parameters so that other methods can access the db
-type MongoParam struct {
-	ctx    context.Context
-	cancel context.CancelFunc
-	client *mongo.Client
-}
+// MonogParam instance to make the context, client and cancel to be available gloablly
+var mongoparams MongoParam
 
-type User struct {
-	FullName string `bson:"name"`
-	Email    string `bson:"email"`
-}
-
-type MongoDatabases struct {
-	Blockchain *mongo.Database
-	Users      *mongo.Database
-	Market     *mongo.Database
-}
-
-// instance of MongoParam
-var mongoparameters MongoParam
-var MongoDBs MongoDatabases
+// MonogDatabase instance to make the cluster and collections to be available gloablly
+var db MongoDatabase
 
 func main() {
 	fmt.Println("Starting server")
@@ -61,10 +45,10 @@ func main() {
 	fmt.Println("Connected to backend server")
 
 	// set the db parameters to the global variables
-	mongoparameters.ctx = ctx
-	mongoparameters.cancel = cancel
-	mongoparameters.client = client
-	connectToDb("all")
+	mongoparams.ctx = ctx
+	mongoparams.cancel = cancel
+	mongoparams.client = client
+	connectToDb()
 	log.Fatal(listen())
 	// // handle to the database cluster
 	// database := client.Database("IMDC-p2p-energy")
@@ -79,20 +63,13 @@ func main() {
 
 }
 
-func connectToDb(Choice string) *mongo.Database {
+func connectToDb() MongoDatabase {
 
-	BlockchainDatabase := mongoparameters.client.Database("IMDC-p2p-energy")
-	UserDatabase := mongoparameters.client.Database("users")
-
-	var Database *mongo.Database
-	if Choice == "Blockchain" {
-		Database = BlockchainDatabase
-	} else if Choice == "Users" {
-		Database = UserDatabase
-	}
-	MongoDBs.Blockchain = BlockchainDatabase
-	MongoDBs.Users = UserDatabase
-	return Database
+	// use the db params to access the cluster
+	db.Cluster = mongoparams.client.Database("IMDC-p2p-energy")
+	// refer to the users collection
+	db.Users = db.Cluster.Collection("users")
+	return db
 }
 
 func getEnvVar(key string) string {
@@ -113,33 +90,33 @@ func addNewUser(w http.ResponseWriter, r *http.Request) {
 	// get the data from json body
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&NewUser); err != nil {
-		fmt.Println("Error")
-		fmt.Println(err)
+		fmt.Println("Failed adding a new user", err)
 		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
 		return
 	}
 	defer r.Body.Close()
 	fmt.Println("This is the data from frontend", NewUser)
 
-	// // // handle to the database cluster
-	// database := mongoparameters.client.Database("IMDC-p2p-energy")
-	// // // handle to the collection inside the cluster
-	// usersCollection := database.Collection("users")
-	// // // write data to the users collection
-	// writeUser, err := usersCollection.InsertOne(mongoparameters.ctx, NewUser)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Println("Id of user2", writeUser.InsertedID)
-	// respondWithJSON(w, r, http.StatusCreated, NewUser)
-	// return
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	// // write data to the users collection
+	writeUser, err := db.Users.InsertOne(mongoparams.ctx, NewUser)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("New user added", writeUser.InsertedID)
+	//respondWithJSON(w, r, http.StatusCreated, NewUser)
+	return
 }
 
 func listen() error {
 	//http.HandleFunc("/")
 	// when a request is made on/register, then run addNewUser function
 
-	http.HandleFunc("/", addNewUser)
+	http.HandleFunc("/Register", addNewUser)
+	http.HandleFunc("/GetUser", getUser)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 
 	return nil
@@ -154,4 +131,9 @@ func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload i
 	}
 	w.WriteHeader(code)
 	w.Write(response)
+}
+
+func getUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 }

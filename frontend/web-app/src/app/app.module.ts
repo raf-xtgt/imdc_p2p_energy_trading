@@ -15,6 +15,8 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms'; 
+import {MatCardModule} from '@angular/material/card';
+
 
 // external components
 import { ToolbarComponent } from './toolbar/toolbar.component';
@@ -47,7 +49,8 @@ import { SignupComponent } from './signup/signup.component';
     MatTabsModule,
     MatFormFieldModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]
