@@ -82,35 +82,6 @@ func getEnvVar(key string) string {
 	return os.Getenv(key)
 }
 
-func addNewUser(w http.ResponseWriter, r *http.Request) {
-	var NewUser User
-	w.Header().Add("Access-Control-Allow-Origin", "*")
-	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
-
-	// get the data from json body
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&NewUser); err != nil {
-		fmt.Println("Failed adding a new user", err)
-		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
-		return
-	}
-	defer r.Body.Close()
-	fmt.Println("This is the data from frontend", NewUser)
-
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
-
-	// // write data to the users collection
-	writeUser, err := db.Users.InsertOne(mongoparams.ctx, NewUser)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("New user added", writeUser.InsertedID)
-	//respondWithJSON(w, r, http.StatusCreated, NewUser)
-	return
-}
-
 func listen() error {
 	//http.HandleFunc("/")
 	// when a request is made on/register, then run addNewUser function

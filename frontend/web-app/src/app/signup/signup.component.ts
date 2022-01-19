@@ -22,7 +22,7 @@ export class SignupComponent implements OnInit {
   
 
   //select = ['He is fat', 'Mikasa']
-  model = new User("", "", "","",0)
+  model = new User("", "","",0)
   submitted = false;
 
   /** Method to check whether the username and email is unique or not.
@@ -38,7 +38,7 @@ export class SignupComponent implements OnInit {
     this.submitted = true;
     //console.log(this.model.fullname)
     //console.log(this.model.email)
-    let newUser = new User(this.model.fullname, this.model.username, this.model.email, this.model.address, this.model.smartMeterNo)
+    let newUser = new User(this.model.username, this.model.email, this.model.address, this.model.smartMeterNo)
     this._config.addNewUser(newUser).subscribe(data => {
       console.log(data)
     })
