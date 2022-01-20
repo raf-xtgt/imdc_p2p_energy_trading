@@ -11,16 +11,34 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatSidenavModule} from '@angular/material/sidenav'; 
 import {MatButtonModule} from '@angular/material/button'; 
 import {MatGridListModule} from '@angular/material/grid-list';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms'; 
+import {MatCardModule} from '@angular/material/card';
+import {MatDialogModule} from '@angular/material/dialog';
+
+
 // external components
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { HomepageComponent } from './homepage/homepage.component';
+import { MarketpageComponent } from './marketpage/marketpage.component';
+import { LoginComponent } from './login/login.component';
+import { SignupComponent } from './signup/signup.component';
+import { SuccessDialogComponent } from './success-dialog/success-dialog.component';
+import { FailDialogComponent } from './fail-dialog/fail-dialog.component';
 
  
 @NgModule({
   declarations: [
     AppComponent,
     ToolbarComponent,
-    HomepageComponent
+    HomepageComponent,
+    MarketpageComponent,
+    LoginComponent,
+    SignupComponent,
+    SuccessDialogComponent,
+    FailDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -32,7 +50,13 @@ import { HomepageComponent } from './homepage/homepage.component';
     MatIconModule,
     MatSidenavModule,
     MatButtonModule,
-    MatGridListModule
+    MatGridListModule,
+    MatTabsModule,
+    MatFormFieldModule,
+    HttpClientModule,
+    FormsModule,
+    MatCardModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]

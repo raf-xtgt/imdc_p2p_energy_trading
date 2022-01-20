@@ -1,0 +1,98 @@
+<div class="container" style="margin: auto; align-content: center; justify-content: center;">
+  <mat-card style="width: 50%;">
+    <mat-card-content>
+      <div style="width: 100%;"> 
+        <h1>Register Form</h1>
+        <form (ngSubmit)="addUser()" #registerForm="ngForm">
+          <!-- <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name"
+                   required
+                   [(ngModel)]="model.fullname" name="name"
+                   #name="ngModel"
+                   autocomplete="off">
+            <div [hidden]="name.valid || name.pristine"
+                 class="alert alert-danger">
+              Name is required
+            </div>
+          </div> -->
+  
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" id="username"
+                   required
+                   [(ngModel)]="model.username" name="username"
+                   #username="ngModel"
+                   autocomplete="off">
+            <div [hidden]="username.valid || username.pristine"
+                 class="alert alert-danger">
+              Username is required
+            </div>
+          </div>
+  
+  
+          <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" class="form-control" id="email"
+                     required
+                     [(ngModel)]="model.email" name="email"
+                     #email="ngModel" autocomplete="off">
+              <div [hidden]="email.valid || email.pristine"
+                   class="alert alert-danger">
+                Email is required
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" class="form-control" id="password"
+                     required
+                     [(ngModel)]="model.password" name="password"
+                     #password="ngModel" autocomplete="off">
+              <div [hidden]="password.valid || password.pristine"
+                   class="alert alert-danger">
+               Password is required
+              </div>
+            </div>
+  
+            <div class="form-group">
+              <label for="address">Address</label>
+              <input type="text" class="form-control" id="address"
+                     required
+                     [(ngModel)]="model.address" name="address"
+                     #address="ngModel"
+                     autocomplete="off">
+              <div [hidden]="address.valid || address.pristine"
+                   class="alert alert-danger">
+                Address is required
+              </div>
+            </div>
+  
+            <div class="form-group">
+              <label for="smartMeterNo">Smart Meter Number</label>
+              <input type="number" class="form-control" id="smartMeterNo"
+                     required
+                     [(ngModel)]="model.smartMeterNo" name="smartMeterNo"
+                     #smartMeterNo="ngModel"
+                     autocomplete="off">
+              <div [hidden]="smartMeterNo.valid || smartMeterNo.pristine"
+                   class="alert alert-danger">
+                Smart Meter Number is required
+              </div>
+            </div>
+  
+          <button type="submit" class="btn btn-success" [disabled]="!registerForm.form.valid" >Sign Up</button>
+         
+    
+    
+        </form>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+
+    
+
+  </div>
+
+  
