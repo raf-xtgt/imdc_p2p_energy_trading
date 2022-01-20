@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -93,16 +92,16 @@ func listen() error {
 	return nil
 }
 
-func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload interface{}) {
-	response, err := json.MarshalIndent(payload, "", "  ")
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("HTTP 500: Internal Server Error"))
-		return
-	}
-	w.WriteHeader(code)
-	w.Write(response)
-}
+// func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload interface{}) {
+// 	response, err := json.MarshalIndent(payload, "", "  ")
+// 	if err != nil {
+// 		w.WriteHeader(http.StatusInternalServerError)
+// 		w.Write([]byte("HTTP 500: Internal Server Error"))
+// 		return
+// 	}
+// 	w.WriteHeader(code)
+// 	w.Write(response)
+// }
 
 func getUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Origin", "*")

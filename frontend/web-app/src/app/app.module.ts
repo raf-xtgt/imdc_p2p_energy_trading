@@ -16,6 +16,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms'; 
 import {MatCardModule} from '@angular/material/card';
+import {MatDialogModule} from '@angular/material/dialog';
 
 
 // external components
@@ -24,6 +25,8 @@ import { HomepageComponent } from './homepage/homepage.component';
 import { MarketpageComponent } from './marketpage/marketpage.component';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
+import { SuccessDialogComponent } from './success-dialog/success-dialog.component';
+import { FailDialogComponent } from './fail-dialog/fail-dialog.component';
 
  
 @NgModule({
@@ -33,7 +36,9 @@ import { SignupComponent } from './signup/signup.component';
     HomepageComponent,
     MarketpageComponent,
     LoginComponent,
-    SignupComponent
+    SignupComponent,
+    SuccessDialogComponent,
+    FailDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -50,7 +55,8 @@ import { SignupComponent } from './signup/signup.component';
     MatFormFieldModule,
     HttpClientModule,
     FormsModule,
-    MatCardModule
+    MatCardModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]

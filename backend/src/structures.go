@@ -14,9 +14,9 @@ type MongoParam struct {
 }
 
 type User struct {
-	FullName     string `bson:"name"`
 	UserName     string `bson:"username"`
 	Email        string `bson:"email"`
+	Password     string `bson:"password"`
 	Address      string `bson:"address"`
 	SmartMeterNo int    `bson:"smartMeterNo"`
 }
@@ -24,4 +24,11 @@ type User struct {
 type MongoDatabase struct {
 	Cluster *mongo.Database   //cluster
 	Users   *mongo.Collection //collection
+}
+
+// Structure that will be sent as authentication response to frontend
+type AuthResponse struct {
+	Email string
+	Res   bool
+	User  User
 }
