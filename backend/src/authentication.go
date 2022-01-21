@@ -38,10 +38,7 @@ func addNewUser(w http.ResponseWriter, r *http.Request) {
 	if checkUsernameAndPass(newUser.UserName, newUser.Email) {
 		// hash user password
 		userPass := newUser.Password
-		hash := sha256.New()
-		hash.Write([]byte(userPass))
-		passHash := hash.Sum(nil)
-		newUser.Password = hex.EncodeToString(passHash)
+		newUser.Password = hashPassword(userPass)
 
 		//write user info to the users collection
 		writeUser, err := db.Users.InsertOne(mongoparams.ctx, newUser)
@@ -69,7 +66,7 @@ func checkUsernameAndPass(username string, email string) (result bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// find username
+	// find username and password
 	cursor, err := db.Users.Find(ctx, bson.M{"username": username, "email": email})
 	if err != nil {
 		log.Fatal(err)
@@ -89,17 +86,60 @@ func checkUsernameAndPass(username string, email string) (result bool) {
 	}
 	fmt.Println(Profiles)
 	return result
-
-	// defer cursor.Close(ctx)
-	// for cursor.Next(ctx) {
-	// 	var episode bson.M
-	// 	if err = cursor.Decode(&episode); err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	fmt.Println("Data:", episode)
-	// }
 }
 
+/** Function to handle user login **/
+func authenticateUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Authenticating User")
+	var newUser User
+	//var response AuthResponse
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
+
+	// get the data from json body
+	decoder := json.NewDecoder(r.Body)
+	// place the user data inside newUser
+	if err := decoder.Decode(&newUser); err != nil {
+		fmt.Println("Failed adding a new user", err)
+		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+		return
+	}
+	defer r.Body.Close()
+	//fmt.Println("This is the data from frontend", NewUser)
+	// to prevent backend to timeout
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	// hash the password entered by user
+	userPass := newUser.Password
+	hashedPass := hashPassword(userPass) // if passwords match, then the hash should be the same
+
+	cursor, err := db.Users.Find(mongoparams.ctx, bson.M{"username": newUser.UserName, "password": hashedPass})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var Profiles []User
+	if err = cursor.All(mongoparams.ctx, &Profiles); err != nil {
+		log.Fatal(err)
+
+	}
+	if len(Profiles) == 1 {
+		fmt.Println("Username and password match an account in the db")
+	} else {
+		fmt.Println("Username and password do not match")
+	}
+
+	// response.Res = false
+
+	// response.User = newUser
+	// response.Email = newUser.Email
+	// respondWithJSON(w, r, http.StatusCreated, response)
+	// //respondWithJSON(w, r, http.StatusCreated, NewUser)
+	return
+}
+
+/** To return data as a json to the frontend */
 func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload interface{}) {
 	response, err := json.MarshalIndent(payload, "", "  ")
 	if err != nil {
@@ -109,4 +149,12 @@ func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload i
 	}
 	w.WriteHeader(code)
 	w.Write(response)
+}
+
+func hashPassword(userPass string) string {
+	hash := sha256.New()
+	hash.Write([]byte(userPass))
+	passHash := hash.Sum(nil)
+	hashOutput := hex.EncodeToString(passHash)
+	return hashOutput
 }

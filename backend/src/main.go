@@ -84,9 +84,9 @@ func getEnvVar(key string) string {
 func listen() error {
 	//http.HandleFunc("/")
 	// when a request is made on/register, then run addNewUser function
-
 	http.HandleFunc("/Register", addNewUser)
 	http.HandleFunc("/GetUser", getUser)
+	http.HandleFunc("/Login", authenticateUser)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 
 	return nil
