@@ -5,7 +5,7 @@ import {MatDialog} from '@angular/material/dialog';
  
 
 // import the user class
-import {User} from '../classes';
+import {User, Token} from '../classes';
 
 // import the custom http service module
 import { ConfigService } from '../config.service';
@@ -34,10 +34,18 @@ export class LoginComponent {
     this._config.authUser(user).subscribe(data => {
       console.log("Login response from backend", data)
       if (data!= null){
+        this.verifyUserJWT(data.Token)
         console.log("User successfully logged in")
       }else{
         console.log("Credentials do not match")
       }
+    })
+  }
+
+  
+  verifyUserJWT(token :string){
+    this._config.verifyToken(token).subscribe(data => {
+      console.log("Verified Token", data)
     })
   }
 

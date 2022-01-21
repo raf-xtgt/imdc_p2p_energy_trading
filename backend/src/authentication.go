@@ -22,6 +22,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+var secretkey string = ""
+
 func addNewUser(w http.ResponseWriter, r *http.Request) {
 	var newUser User
 	var response SignUpResponse
@@ -109,6 +111,8 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	// place the user data inside newUser
 	if err := decoder.Decode(&newUser); err != nil {
 		fmt.Println("Failed adding a new user", err)
+		// w.Header().Set("Content-Type", "application/json")
+		// json.NewEncoder(w).Encode(err)
 		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
 		return
 	}
@@ -130,29 +134,30 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	var Profiles []User
 	if err = cursor.All(mongoparams.ctx, &Profiles); err != nil {
 		log.Fatal(err)
-
 	}
 
 	// there should be only 1 profile with the given username and email
 	if len(Profiles) == 1 {
 		fmt.Println("Username and password match an account in the db")
 		fmt.Println("Matched profile info", Profiles)
-		validToken, err := generateJWT(Profiles[0].Email, "user")
+		validToken, err := generateJWT(Profiles[0], "user")
 		if err != nil {
 
 			fmt.Println(err, "Failed to generate token")
-			//w.Header().Set("Content-Type", "application/json")
-			//json.NewEncoder(w).Encode(err)
+			// w.Header().Set("Content-Type", "application/json")
+			// json.NewEncoder(w).Encode(err)
 			respondWithJSON(w, r, http.StatusBadRequest, r.Body)
 			return
 		}
 		// create the jwt token
 		var token Token
-		token.Email = Profiles[0].Email
-		token.Role = "user"
+		//token.Email = Profiles[0].Email
+		//token.Role = "user"
 		token.TokenString = validToken
 		response.Token = token
-		respondWithJSON(w, r, http.StatusCreated, response)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(token)
+		//respondWithJSON(w, r, http.StatusCreated, response)
 	} else {
 		fmt.Println("Username and password do not match")
 	}
@@ -164,15 +169,18 @@ The GenerateJWT() function takes email and role as input.
 Creates a token by HS256 signing method and adds authorized email, role,
 and expiration time into claims. Claims are pieces of information added into tokens.
 */
-func generateJWT(email, role string) (string, error) {
-	secretkey := generateSecretKey()
+func generateJWT(user User, role string) (string, error) {
+	//secretkey := generateSecretKey()
+	// secret key is the hash of the user's password
+	secretkey = user.Password
 	var mySigningKey = []byte(secretkey)
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
 	claims["authorized"] = true
-	claims["email"] = email
+	//claims["email"] = email
 	claims["role"] = role
+	claims["userInfo"] = user
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
 	tokenString, err := token.SignedString(mySigningKey)
@@ -184,7 +192,7 @@ func generateJWT(email, role string) (string, error) {
 	return tokenString, nil
 }
 
-// Generate the secret key for jwt authorization
+// Generate the secret key for jwt authorization, the key is an array of bytes
 func generateSecretKey() []byte {
 	// generate key pairs
 	secretkey, err := rsa.GenerateKey(rand.Reader, 2048)
@@ -213,6 +221,60 @@ func generateSecretKey() []byte {
 	return privateKeyBytes
 }
 
+// function to check the integrity of the jwt that is sent from server
+func isAuthorized(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
+
+	var userToken Token
+	fmt.Println(r.Header)
+	if r.Header["Token"] == nil {
+		fmt.Println("No Token Found")
+		return
+	}
+
+	// get the data from json body
+	decoder := json.NewDecoder(r.Body)
+	// place the user data inside newUser
+	if err := decoder.Decode(&userToken); err != nil {
+		fmt.Println("Failed decoding token", err)
+		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+		return
+	}
+	defer r.Body.Close()
+	var mySigningKey = []byte(secretkey)
+
+	token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("There was an error in parsing")
+		}
+		return mySigningKey, nil
+	})
+
+	if err != nil {
+		fmt.Println("Your Token has been expired")
+		json.NewEncoder(w).Encode(err)
+		return
+	}
+
+	// check token validity
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		if claims["role"] == "admin" {
+
+			r.Header.Set("Role", "admin")
+			return
+
+		} else if claims["role"] == "user" {
+			fmt.Println("User has been verified")
+			r.Header.Set("Role", "user")
+			respondWithJSON(w, r, http.StatusCreated, userToken)
+			return
+		}
+	}
+	return
+}
+
 /** To return data as a json to the frontend */
 func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload interface{}) {
 	response, err := json.MarshalIndent(payload, "", "  ")
@@ -233,3 +295,15 @@ func hashPassword(userPass string) string {
 	hashOutput := hex.EncodeToString(passHash)
 	return hashOutput
 }
+
+/*
+- In order to verify the jwt we need the secret key.
+	- We need to store the secret key in a place where it can be retrieved at any time
+	- privateKeyBytes == is what we need.
+	- instead use the hash as the secret key lol
+- Once we verify the jwt, we collect data from the claims part.
+- The claims part will have the doc.id of the user in mongo db.
+- We use the doc.id to get the required user data.
+-
+
+*/

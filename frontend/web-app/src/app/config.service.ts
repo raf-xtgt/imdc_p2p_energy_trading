@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 // The HttpClient service makes use of observables for all transactions. You must import the RxJS observable and operator symbols that appear in the example snippets.
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
-import { User } from './classes';
+import { User, Token } from './classes';
 
 /** This file will allow the frontend to communicate with the backend
 * using Angular's HTTP Client
@@ -18,6 +18,7 @@ export class ConfigService {
   private _configUrl: string = "http://localhost:8080/";
   private _registerUrl: string = this._configUrl + "Register";
   private _loginUrl: string = this._configUrl + "Login"
+  private _verifyToken: string = this._configUrl+"VerifyToken"
 
 
   //inject the HttpClient service as a dependency 
@@ -37,5 +38,12 @@ export class ConfigService {
     const body = JSON.stringify(data)
 
     return this.http.post<User>(this._loginUrl, body)
+  }
+
+  // verify the jwt from backend
+  verifyToken (data: string){
+    const body = JSON.stringify(data)
+    return this.http.post<Token>(this._verifyToken, body)
+
   }
 }

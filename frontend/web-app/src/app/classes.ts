@@ -3,3 +3,6 @@ export class User{
 }
 
 
+export class Token{
+    constructor (public token:string){}
+}

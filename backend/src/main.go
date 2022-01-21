@@ -49,17 +49,6 @@ func main() {
 	mongoparams.client = client
 	connectToDb()
 	log.Fatal(listen())
-	// // handle to the database cluster
-	// database := client.Database("IMDC-p2p-energy")
-	// // handle to the collection inside the cluster
-	// usersCollection := database.Collection("users")
-	// // write data to the users collection
-	// writeUser, err := usersCollection.InsertOne(ctx, bson.D{
-	// 	{"title", "rafaquat"},
-	// 	{"arrays", bson.A{"This", "is", "an", "array"}},
-	// })
-	// fmt.Println("Id of the user", writeUser.InsertedID)
-
 }
 
 func connectToDb() MongoDatabase {
@@ -87,21 +76,11 @@ func listen() error {
 	http.HandleFunc("/Register", addNewUser)
 	http.HandleFunc("/GetUser", getUser)
 	http.HandleFunc("/Login", authenticateUser)
+	http.HandleFunc("/VerifyToken", isAuthorized)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 
 	return nil
 }
-
-// func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload interface{}) {
-// 	response, err := json.MarshalIndent(payload, "", "  ")
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusInternalServerError)
-// 		w.Write([]byte("HTTP 500: Internal Server Error"))
-// 		return
-// 	}
-// 	w.WriteHeader(code)
-// 	w.Write(response)
-// }
 
 func getUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Origin", "*")
