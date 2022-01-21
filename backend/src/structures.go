@@ -26,9 +26,21 @@ type MongoDatabase struct {
 	Users   *mongo.Collection //collection
 }
 
-// Structure that will be sent as authentication response to frontend
-type AuthResponse struct {
+// Structure that will be sent as sign up response to frontend
+type SignUpResponse struct {
 	Email string
 	Res   bool
 	User  User
+}
+
+// JWT structure upon login
+type Token struct {
+	Role        string `json:"role"`
+	Email       string `json:"email"`
+	TokenString string `json:"token"`
+}
+
+// Structure to be sent as login response to frontend
+type LoginResponse struct {
+	Token Token
 }

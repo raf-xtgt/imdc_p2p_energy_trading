@@ -33,7 +33,7 @@ export class LoginComponent {
     let user = new User (this.model.username, "", this.model.password, "", 0)
     this._config.authUser(user).subscribe(data => {
       console.log("Login response from backend", data)
-      if (data.Res){
+      if (data!= null){
         console.log("User successfully logged in")
       }else{
         console.log("Credentials do not match")

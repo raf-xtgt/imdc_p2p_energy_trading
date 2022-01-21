@@ -4,19 +4,27 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
+	"encoding/pem"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"crypto/sha256" //crypto library to hash the data
+	"crypto/x509"
 
+	// to create the secret(private) key for jwt token
+	"crypto/rand"
+	"crypto/rsa"
+	"os"
+
+	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 func addNewUser(w http.ResponseWriter, r *http.Request) {
 	var newUser User
-	var response AuthResponse
+	var response SignUpResponse
 	w.Header().Add("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 
@@ -84,7 +92,7 @@ func checkUsernameAndPass(username string, email string) (result bool) {
 		fmt.Println("Username and email already being used")
 		result = false
 	}
-	fmt.Println(Profiles)
+	//fmt.Println(Profiles)
 	return result
 }
 
@@ -92,7 +100,7 @@ func checkUsernameAndPass(username string, email string) (result bool) {
 func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Authenticating User")
 	var newUser User
-	//var response AuthResponse
+	var response LoginResponse
 	w.Header().Add("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 
@@ -124,19 +132,85 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 
 	}
+
+	// there should be only 1 profile with the given username and email
 	if len(Profiles) == 1 {
 		fmt.Println("Username and password match an account in the db")
+		fmt.Println("Matched profile info", Profiles)
+		validToken, err := generateJWT(Profiles[0].Email, "user")
+		if err != nil {
+
+			fmt.Println(err, "Failed to generate token")
+			//w.Header().Set("Content-Type", "application/json")
+			//json.NewEncoder(w).Encode(err)
+			respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+			return
+		}
+		// create the jwt token
+		var token Token
+		token.Email = Profiles[0].Email
+		token.Role = "user"
+		token.TokenString = validToken
+		response.Token = token
+		respondWithJSON(w, r, http.StatusCreated, response)
 	} else {
 		fmt.Println("Username and password do not match")
 	}
-
-	// response.Res = false
-
-	// response.User = newUser
-	// response.Email = newUser.Email
-	// respondWithJSON(w, r, http.StatusCreated, response)
-	// //respondWithJSON(w, r, http.StatusCreated, NewUser)
 	return
+}
+
+/*
+The GenerateJWT() function takes email and role as input.
+Creates a token by HS256 signing method and adds authorized email, role,
+and expiration time into claims. Claims are pieces of information added into tokens.
+*/
+func generateJWT(email, role string) (string, error) {
+	secretkey := generateSecretKey()
+	var mySigningKey = []byte(secretkey)
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+
+	claims["authorized"] = true
+	claims["email"] = email
+	claims["role"] = role
+	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
+
+	tokenString, err := token.SignedString(mySigningKey)
+
+	if err != nil {
+		fmt.Errorf("Something Went Wrong: %s", err.Error())
+		return "", err
+	}
+	return tokenString, nil
+}
+
+// Generate the secret key for jwt authorization
+func generateSecretKey() []byte {
+	// generate key pairs
+	secretkey, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		fmt.Printf("Cannot generate RSA key\n")
+		os.Exit(1)
+	}
+	//fmt.Println("The secret key is", secretkey)
+
+	// dump private key to file (store it in the os)
+	var privateKeyBytes []byte = x509.MarshalPKCS1PrivateKey(secretkey)
+	privateKeyBlock := &pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: privateKeyBytes,
+	}
+	privatePem, err := os.Create("private.pem")
+	if err != nil {
+		fmt.Printf("error when create private.pem: %s \n", err)
+		os.Exit(1)
+	}
+	err = pem.Encode(privatePem, privateKeyBlock)
+	if err != nil {
+		fmt.Printf("error when encode private pem: %s \n", err)
+		os.Exit(1)
+	}
+	return privateKeyBytes
 }
 
 /** To return data as a json to the frontend */
@@ -151,6 +225,7 @@ func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload i
 	w.Write(response)
 }
 
+// function to hash the password using sha256
 func hashPassword(userPass string) string {
 	hash := sha256.New()
 	hash.Write([]byte(userPass))
