@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 
 import {MatDialog} from '@angular/material/dialog';
- 
+import { Router } from '@angular/router';
 
 // import the user class
 import {User, Token} from '../classes';
@@ -17,7 +17,7 @@ import { ConfigService } from '../config.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  constructor(private _config:ConfigService, public dialog: MatDialog) { }
+  constructor(private _config:ConfigService, public dialog: MatDialog,  private router: Router) { }
 
   
 
@@ -26,6 +26,22 @@ export class LoginComponent {
   // this property is used in the frontend
   model = new User("", "","","",0)
   submitted = false;
+  TOKEN_KEY = 'token';
+
+
+  // login(){
+  //   // only assign the username and password to the model user
+  //   let user = new User (this.model.username, "", this.model.password, "", 0)
+  //   this._config.authUser(user).subscribe(data => {
+  //     console.log("Login response from backend", data)
+  //     if (data!= null){
+  //       this.verifyUserJWT(data.Token)
+  //       console.log("User successfully logged in")
+  //     }else{
+  //       console.log("Credentials do not match")
+  //     }
+  //   })
+  // }
 
 
   login(){
@@ -33,21 +49,12 @@ export class LoginComponent {
     let user = new User (this.model.username, "", this.model.password, "", 0)
     this._config.authUser(user).subscribe(data => {
       console.log("Login response from backend", data)
-      if (data!= null){
-        this.verifyUserJWT(data.Token)
-        console.log("User successfully logged in")
-      }else{
-        console.log("Credentials do not match")
-      }
+      localStorage.setItem(this.TOKEN_KEY, data.token);
+      console.log("Check local storage")
+      this.router.navigateByUrl('/profile');
     })
   }
-
   
-  verifyUserJWT(token :string){
-    this._config.verifyToken(token).subscribe(data => {
-      console.log("Verified Token", data)
-    })
-  }
 
 
 

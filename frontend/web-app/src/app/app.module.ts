@@ -27,6 +27,7 @@ import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { SuccessDialogComponent } from './success-dialog/success-dialog.component';
 import { FailDialogComponent } from './fail-dialog/fail-dialog.component';
+import { ProfileComponent } from './profile/profile.component';
 
  
 @NgModule({
@@ -38,7 +39,8 @@ import { FailDialogComponent } from './fail-dialog/fail-dialog.component';
     LoginComponent,
     SignupComponent,
     SuccessDialogComponent,
-    FailDialogComponent
+    FailDialogComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,

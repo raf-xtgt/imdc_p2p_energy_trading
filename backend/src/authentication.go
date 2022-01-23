@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -23,6 +24,7 @@ import (
 )
 
 var secretkey string = ""
+var SECRET string = "42isTheAnswer"
 
 func addNewUser(w http.ResponseWriter, r *http.Request) {
 	var newUser User
@@ -102,9 +104,9 @@ func checkUsernameAndPass(username string, email string) (result bool) {
 func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Authenticating User")
 	var newUser User
-	var response LoginResponse
-	w.Header().Add("Access-Control-Allow-Origin", "*")
-	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
+	//var response LoginResponse
+	//w.Header().Add("Access-Control-Allow-Origin", "*")
+	//w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 
 	// get the data from json body
 	decoder := json.NewDecoder(r.Body)
@@ -140,23 +142,56 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	if len(Profiles) == 1 {
 		fmt.Println("Username and password match an account in the db")
 		fmt.Println("Matched profile info", Profiles)
-		validToken, err := generateJWT(Profiles[0], "user")
-		if err != nil {
 
-			fmt.Println(err, "Failed to generate token")
-			// w.Header().Set("Content-Type", "application/json")
-			// json.NewEncoder(w).Encode(err)
-			respondWithJSON(w, r, http.StatusBadRequest, r.Body)
-			return
+		// creating the JWT
+		claims := JWTData{
+			StandardClaims: jwt.StandardClaims{
+				ExpiresAt: time.Now().Add(time.Hour).Unix(),
+			},
+
+			CustomClaims: map[string]string{
+				"userid": "u1",
+			},
 		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+		tokenString, err := token.SignedString([]byte(SECRET))
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "Login failed!", http.StatusUnauthorized)
+		}
+
+		json, err := json.Marshal(struct {
+			Token string `json:"token"`
+		}{
+			tokenString,
+		})
+
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "Login failed!", http.StatusUnauthorized)
+		}
+
+		w.Write(json)
+		return
+
+		//validToken, err := generateJWT(Profiles[0], "user")
+		// if err != nil {
+
+		// 	fmt.Println(err, "Failed to generate token")
+		// 	// w.Header().Set("Content-Type", "application/json")
+		// 	// json.NewEncoder(w).Encode(err)
+		// 	respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+		// 	return
+		// }
 		// create the jwt token
-		var token Token
+		//var token Token
 		//token.Email = Profiles[0].Email
 		//token.Role = "user"
-		token.TokenString = validToken
-		response.Token = token
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(token)
+		// token.TokenString = validToken
+		// response.Token = token
+		// w.Header().Set("Content-Type", "application/json")
+		// json.NewEncoder(w).Encode(token)
 		//respondWithJSON(w, r, http.StatusCreated, response)
 	} else {
 		fmt.Println("Username and password do not match")
@@ -223,56 +258,67 @@ func generateSecretKey() []byte {
 
 // function to check the integrity of the jwt that is sent from server
 func isAuthorized(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Add("Access-Control-Allow-Origin", "*")
-	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
-
-	var userToken Token
-	fmt.Println(r.Header)
-	if r.Header["Token"] == nil {
-		fmt.Println("No Token Found")
-		return
-	}
-
+	//w.Header().Add("Access-Control-Allow-Origin", "*")
+	//w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
+	var jwtToken string
+	//fmt.Println("Verification request", r)
 	// get the data from json body
 	decoder := json.NewDecoder(r.Body)
 	// place the user data inside newUser
-	if err := decoder.Decode(&userToken); err != nil {
-		fmt.Println("Failed decoding token", err)
+	if err := decoder.Decode(&jwtToken); err != nil {
+		fmt.Println("Failed adding a new user", err)
+		// w.Header().Set("Content-Type", "application/json")
+		// json.NewEncoder(w).Encode(err)
 		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
 		return
 	}
-	defer r.Body.Close()
-	var mySigningKey = []byte(secretkey)
+	fmt.Println("Request body:\n", jwtToken)
 
-	token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("There was an error in parsing")
+	// if len(authArr) != 2 {
+	// 	log.Println("Authentication header is invalid: " + authToken)
+	// 	http.Error(w, "Request failed!", http.StatusUnauthorized)
+	// }
+
+	// jwtToken := authArr[1]
+
+	claims, err := jwt.ParseWithClaims(jwtToken, &JWTData{}, func(token *jwt.Token) (interface{}, error) {
+		if jwt.SigningMethodHS256 != token.Method {
+			return nil, errors.New("Invalid signing algorithm")
 		}
-		return mySigningKey, nil
+		return []byte(SECRET), nil
 	})
 
 	if err != nil {
-		fmt.Println("Your Token has been expired")
-		json.NewEncoder(w).Encode(err)
-		return
+		log.Println(err)
+		http.Error(w, "Request failed!", http.StatusUnauthorized)
 	}
 
-	// check token validity
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		if claims["role"] == "admin" {
+	data := claims.Claims.(*JWTData)
 
-			r.Header.Set("Role", "admin")
-			return
-
-		} else if claims["role"] == "user" {
-			fmt.Println("User has been verified")
-			r.Header.Set("Role", "user")
-			respondWithJSON(w, r, http.StatusCreated, userToken)
-			return
-		}
+	userID := data.CustomClaims["userid"]
+	jsonData, err := getAccountData(userID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Request failed!", http.StatusUnauthorized)
 	}
-	return
+
+	w.Write(jsonData)
+}
+
+type Account struct {
+	Email    string  `json:"email"`
+	Balance  float64 `json:"balance"`
+	Currency string  `json:"currency"`
+}
+
+func getAccountData(userID string) ([]byte, error) {
+	output := Account{"nikola.breznjak@gmail.com", 3.14, "BTC"}
+	json, err := json.Marshal(output)
+	if err != nil {
+		return nil, err
+	}
+
+	return json, nil
 }
 
 /** To return data as a json to the frontend */

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -43,4 +44,11 @@ type Token struct {
 // Structure to be sent as login response to frontend
 type LoginResponse struct {
 	Token Token
+}
+
+type JWTData struct {
+	// Standard claims are the standard jwt claims from the IETF standard
+	// https://tools.ietf.org/html/rfc7519
+	jwt.StandardClaims
+	CustomClaims map[string]string `json:"custom,omitempty"`
 }

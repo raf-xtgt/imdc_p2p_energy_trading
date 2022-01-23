@@ -14,6 +14,9 @@ import (
 	// To connect to mongodb
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	// for
+	"github.com/rs/cors"
 )
 
 // MonogParam instance to make the context, client and cancel to be available gloablly
@@ -23,6 +26,7 @@ var mongoparams MongoParam
 var db MongoDatabase
 
 func main() {
+	//main_2()
 	fmt.Println("Starting server")
 	// get the environment variables to required for database authentication
 	dbCluster := getEnvVar("DB_CLUSTER_ADDR")
@@ -49,6 +53,7 @@ func main() {
 	mongoparams.client = client
 	connectToDb()
 	log.Fatal(listen())
+
 }
 
 func connectToDb() MongoDatabase {
@@ -71,13 +76,15 @@ func getEnvVar(key string) string {
 }
 
 func listen() error {
+	mux := http.NewServeMux()
 	//http.HandleFunc("/")
 	// when a request is made on/register, then run addNewUser function
-	http.HandleFunc("/Register", addNewUser)
-	http.HandleFunc("/GetUser", getUser)
-	http.HandleFunc("/Login", authenticateUser)
-	http.HandleFunc("/VerifyToken", isAuthorized)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	mux.HandleFunc("/Register", addNewUser)
+	mux.HandleFunc("/GetUser", getUser)
+	mux.HandleFunc("/Login", authenticateUser)
+	mux.HandleFunc("/VerifyToken", isAuthorized)
+	handler := cors.Default().Handler(mux)
+	log.Fatal(http.ListenAndServe(":8080", handler))
 
 	return nil
 }

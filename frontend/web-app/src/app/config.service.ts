@@ -19,6 +19,7 @@ export class ConfigService {
   private _registerUrl: string = this._configUrl + "Register";
   private _loginUrl: string = this._configUrl + "Login"
   private _verifyToken: string = this._configUrl+"VerifyToken"
+  TOKEN_KEY = 'token';
 
 
   //inject the HttpClient service as a dependency 
@@ -35,15 +36,19 @@ export class ConfigService {
   // authenticate a user when they want to login
 
   authUser(data: User): Observable<any> {
+    // const headers = {
+    //   headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' })
+    // };
     const body = JSON.stringify(data)
-
     return this.http.post<User>(this._loginUrl, body)
   }
 
   // verify the jwt from backend
-  verifyToken (data: string){
-    const body = JSON.stringify(data)
-    return this.http.post<Token>(this._verifyToken, body)
+  verifyToken (){
+    const body = JSON.stringify(localStorage.getItem('token'))
+    return this.http.post(this._verifyToken, body)
+
+    //return this.http.get(this._verifyToken);
 
   }
 }
