@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {MatToolbarModule} from '@angular/material/toolbar'
+import { JWTService } from '../userAuth.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -8,10 +9,24 @@ import {MatToolbarModule} from '@angular/material/toolbar'
 })
 export class ToolbarComponent implements OnInit {
 
-  constructor() { }
+  constructor(private _jwtServ:JWTService) { }
+  isVerified :boolean = false;
+  username :string = ""
 
   ngOnInit(): void {
+    this._jwtServ.verifyToken().subscribe(data => {
+      console.log("Verified Token", data)
+      let response = JSON.parse(JSON.stringify(data))
+      //console.log(response.Username)
+      this.username = response.Username
+    })
     
+    this.isLoggedIn()
+    
+  }
+
+  isLoggedIn(){
+    return this.isVerified = true
   }
 
   events: string[] = [];

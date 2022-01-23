@@ -1,1 +1,26 @@
-<p>order works!</p>
+<div class="container" style="margin-left:20px; margin-right: 20px; margin-top: 10px; align-content: center; justify-content: center;">
+    <mat-card style=" display: flex;"> 
+        <mat-card-content>
+            <div style="width: 100%;"> 
+                <h1>Buy Energy Form</h1>
+                <h4>Make an order for buying energy by simply providing the energy and fiat amount</h4>
+
+                <form #buyOrderForm="ngForm">
+                    <div class="form-group">
+                        <mat-grid-list cols="5" rowHeight="100px">
+                            <mat-grid-tile [colspan]=2>
+                                User details
+                            </mat-grid-tile>
+                            <mat-grid-tile [colspan]=3>
+                             Buyer Form
+                            </mat-grid-tile>
+                        </mat-grid-list>
+
+                    </div>
+
+                </form>
+            </div>
+        </mat-card-content>
+    </mat-card>    
+
+</div>

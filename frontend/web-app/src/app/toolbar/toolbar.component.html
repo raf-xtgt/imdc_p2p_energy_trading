@@ -1,6 +1,6 @@
 <mat-sidenav-container class="example-container">
-  <mat-sidenav #sidenav mode="over" [(opened)]="opened" (opened)="events.push('open!')"
-    (closed)="events.push('close!')" style="width:40%">
+  <mat-sidenav #sidenav mode="over" [(opened)]="opened" (opened)="events.push('open!')" (closed)="events.push('close!')"
+    style="width:40%">
     Sidenav content
   </mat-sidenav>
 
@@ -13,10 +13,9 @@
       <span class="spacer"></span>
       <div fxShow="true" fxHide.lt-md="true">
 
-        <div>
-          <!-- <a mat-button routerLink="mainpage">Home</a> -->
-          <!-- <a class="topBarBtns" mat-button routerLink="trade">Trade</a> -->
-          <a class="orderBtn" mat-button>New Order</a>
+        <!-- Toolbar when user is not logged in -->
+        <div *ngIf="!isVerified">
+          <a class="orderBtn" mat-button routerLink="order">New Order</a>
           <a class="topBarBtns" mat-button>Blockchain</a>
           <a class="topBarBtns" mat-button>Market</a>
           <a class="topBarBtns" mat-button>About</a>
@@ -24,18 +23,25 @@
 
           <button mat-button routerLink="login">Login</button>
           <button mat-raised-button color="accent" routerLink="register">Register</button>
-
-
         </div>
 
+        <!-- Toolbar when user is logged in -->
+        <div *ngIf="isVerified">
+          <a class="orderBtn" mat-button routerLink="order">New Order</a>
+          <a class="topBarBtns" mat-button>Blockchain</a>
+          <a class="topBarBtns" mat-button>Market</a>
+          <a class="topBarBtns" mat-button>About</a>
+          <!-- <a class="topBarBtns" mat-button>Support</a> -->
+          <a class="topBarBtns" mat-button><mat-icon>account_circle</mat-icon>{{username}}</a>
+
+        </div>
 
       </div>
 
 
       <div fxShow="true" fxHide.gt-sm="true">
         <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
-        (click)="sidenav.toggle()"
-        >
+          (click)="sidenav.toggle()">
           <mat-icon>menu</mat-icon>
         </button>
       </div>

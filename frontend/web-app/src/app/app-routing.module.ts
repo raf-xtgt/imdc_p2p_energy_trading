@@ -7,7 +7,7 @@ import {HomepageComponent} from './homepage/homepage.component';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { ProfileComponent } from './profile/profile.component';
-// import { TradeComponent } from './trade/trade.component';
+import { OrderComponent } from './order/order.component';
 
 const routes: Routes = [
   // when url is loaded, the user lands on the homepage
@@ -16,7 +16,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent}, 
   {path: 'register', component:SignupComponent},
   {path: 'profile', component:ProfileComponent},
-  // {path: 'trade', component:TradeComponent}
+  {path: 'order', component:OrderComponent},
 ];
 
 @NgModule({

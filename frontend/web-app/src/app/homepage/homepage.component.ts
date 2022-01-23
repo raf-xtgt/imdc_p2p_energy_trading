@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { JWTService } from '../userAuth.service';
 @Component({
   selector: 'app-homepage',
   templateUrl: './homepage.component.html',
@@ -7,9 +7,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomepageComponent implements OnInit {
 
-  constructor() { }
+  constructor(private _jwtServ:JWTService) { }
 
   ngOnInit(): void {
+    this._jwtServ.verifyToken().subscribe(data => {
+      console.log("Verified Token", data)
+    })
   }
+  
 
 }

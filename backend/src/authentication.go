@@ -143,7 +143,7 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 		// creating the JWT
 		claims := JWTData{
 			StandardClaims: jwt.StandardClaims{
-				ExpiresAt: time.Now().Add(time.Hour).Unix(),
+				ExpiresAt: time.Now().Add(time.Hour * 20).Unix(),
 			},
 			CustomClaims: map[string]string{
 				"username": Profiles[0].UserName,
