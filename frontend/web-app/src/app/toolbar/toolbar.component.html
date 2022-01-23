@@ -6,18 +6,21 @@
 
   <mat-sidenav-content>
 
-    <mat-toolbar color="primary" style="background-color: #1F3363;">
+    <mat-toolbar color="primary" style="background-color: #1F3363;position: sticky;top: 0;
+    z-index: 1;">
 
-      <span>P2P Optimal Matchmaking</span>
+      <span><a class="topBarBtns" routerLink="homepage">P2P Optimal Matchmaking</a></span>
       <span class="spacer"></span>
       <div fxShow="true" fxHide.lt-md="true">
 
         <div>
           <!-- <a mat-button routerLink="mainpage">Home</a> -->
-          <a mat-button>Blockchain</a>
-          <a mat-button>Market</a>
-          <a mat-button>About</a>
-          <a mat-button>Support</a>
+          <!-- <a class="topBarBtns" mat-button routerLink="trade">Trade</a> -->
+          <a class="orderBtn" mat-button>New Order</a>
+          <a class="topBarBtns" mat-button>Blockchain</a>
+          <a class="topBarBtns" mat-button>Market</a>
+          <a class="topBarBtns" mat-button>About</a>
+          <!-- <a class="topBarBtns" mat-button>Support</a> -->
 
           <button mat-button routerLink="login">Login</button>
           <button mat-raised-button color="accent" routerLink="register">Register</button>

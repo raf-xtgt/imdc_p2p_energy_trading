@@ -260,15 +260,3 @@ func hashPassword(userPass string) string {
 	hashOutput := hex.EncodeToString(passHash)
 	return hashOutput
 }
-
-/*
-- In order to verify the jwt we need the secret key.
-	- We need to store the secret key in a place where it can be retrieved at any time
-	- privateKeyBytes == is what we need.
-	- instead use the hash as the secret key lol
-- Once we verify the jwt, we collect data from the claims part.
-- The claims part will have the doc.id of the user in mongo db.
-- We use the doc.id to get the required user data.
--
-
-*/
