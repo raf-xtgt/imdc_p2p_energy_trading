@@ -52,3 +52,8 @@ type JWTData struct {
 	jwt.StandardClaims
 	CustomClaims map[string]string `json:"custom,omitempty"`
 }
+
+type JWTVerifiedData struct {
+	Email    string `json:"email"`
+	Username string `bson:"username"`
+}

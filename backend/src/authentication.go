@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
-	"encoding/pem"
 	"errors"
 	"fmt"
 	"log"
@@ -12,19 +11,16 @@ import (
 	"time"
 
 	"crypto/sha256" //crypto library to hash the data
-	"crypto/x509"
 
 	// to create the secret(private) key for jwt token
-	"crypto/rand"
-	"crypto/rsa"
-	"os"
 
 	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-var secretkey string = ""
-var SECRET string = "42isTheAnswer"
+//var secretkey string = ""
+//var SECRET string = "42isTheAnswer"
+var jwtSecret string = ""
 
 func addNewUser(w http.ResponseWriter, r *http.Request) {
 	var newUser User
@@ -142,20 +138,21 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	if len(Profiles) == 1 {
 		fmt.Println("Username and password match an account in the db")
 		fmt.Println("Matched profile info", Profiles)
+		jwtSecret = userPass
 
 		// creating the JWT
 		claims := JWTData{
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(time.Hour).Unix(),
 			},
-
 			CustomClaims: map[string]string{
-				"userid": "u1",
+				"username": Profiles[0].UserName,
+				"email":    Profiles[0].Email,
 			},
 		}
 
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		tokenString, err := token.SignedString([]byte(SECRET))
+		tokenString, err := token.SignedString([]byte(jwtSecret))
 		if err != nil {
 			log.Println(err)
 			http.Error(w, "Login failed!", http.StatusUnauthorized)
@@ -174,86 +171,10 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 
 		w.Write(json)
 		return
-
-		//validToken, err := generateJWT(Profiles[0], "user")
-		// if err != nil {
-
-		// 	fmt.Println(err, "Failed to generate token")
-		// 	// w.Header().Set("Content-Type", "application/json")
-		// 	// json.NewEncoder(w).Encode(err)
-		// 	respondWithJSON(w, r, http.StatusBadRequest, r.Body)
-		// 	return
-		// }
-		// create the jwt token
-		//var token Token
-		//token.Email = Profiles[0].Email
-		//token.Role = "user"
-		// token.TokenString = validToken
-		// response.Token = token
-		// w.Header().Set("Content-Type", "application/json")
-		// json.NewEncoder(w).Encode(token)
-		//respondWithJSON(w, r, http.StatusCreated, response)
 	} else {
 		fmt.Println("Username and password do not match")
 	}
 	return
-}
-
-/*
-The GenerateJWT() function takes email and role as input.
-Creates a token by HS256 signing method and adds authorized email, role,
-and expiration time into claims. Claims are pieces of information added into tokens.
-*/
-func generateJWT(user User, role string) (string, error) {
-	//secretkey := generateSecretKey()
-	// secret key is the hash of the user's password
-	secretkey = user.Password
-	var mySigningKey = []byte(secretkey)
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-
-	claims["authorized"] = true
-	//claims["email"] = email
-	claims["role"] = role
-	claims["userInfo"] = user
-	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
-
-	tokenString, err := token.SignedString(mySigningKey)
-
-	if err != nil {
-		fmt.Errorf("Something Went Wrong: %s", err.Error())
-		return "", err
-	}
-	return tokenString, nil
-}
-
-// Generate the secret key for jwt authorization, the key is an array of bytes
-func generateSecretKey() []byte {
-	// generate key pairs
-	secretkey, err := rsa.GenerateKey(rand.Reader, 2048)
-	if err != nil {
-		fmt.Printf("Cannot generate RSA key\n")
-		os.Exit(1)
-	}
-	//fmt.Println("The secret key is", secretkey)
-
-	// dump private key to file (store it in the os)
-	var privateKeyBytes []byte = x509.MarshalPKCS1PrivateKey(secretkey)
-	privateKeyBlock := &pem.Block{
-		Type:  "RSA PRIVATE KEY",
-		Bytes: privateKeyBytes,
-	}
-	privatePem, err := os.Create("private.pem")
-	if err != nil {
-		fmt.Printf("error when create private.pem: %s \n", err)
-		os.Exit(1)
-	}
-	err = pem.Encode(privatePem, privateKeyBlock)
-	if err != nil {
-		fmt.Printf("error when encode private pem: %s \n", err)
-		os.Exit(1)
-	}
-	return privateKeyBytes
 }
 
 // function to check the integrity of the jwt that is sent from server
@@ -261,31 +182,21 @@ func isAuthorized(w http.ResponseWriter, r *http.Request) {
 	//w.Header().Add("Access-Control-Allow-Origin", "*")
 	//w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 	var jwtToken string
-	//fmt.Println("Verification request", r)
+
 	// get the data from json body
 	decoder := json.NewDecoder(r.Body)
-	// place the user data inside newUser
 	if err := decoder.Decode(&jwtToken); err != nil {
 		fmt.Println("Failed adding a new user", err)
-		// w.Header().Set("Content-Type", "application/json")
-		// json.NewEncoder(w).Encode(err)
 		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
 		return
 	}
 	fmt.Println("Request body:\n", jwtToken)
 
-	// if len(authArr) != 2 {
-	// 	log.Println("Authentication header is invalid: " + authToken)
-	// 	http.Error(w, "Request failed!", http.StatusUnauthorized)
-	// }
-
-	// jwtToken := authArr[1]
-
 	claims, err := jwt.ParseWithClaims(jwtToken, &JWTData{}, func(token *jwt.Token) (interface{}, error) {
 		if jwt.SigningMethodHS256 != token.Method {
 			return nil, errors.New("Invalid signing algorithm")
 		}
-		return []byte(SECRET), nil
+		return []byte(jwtSecret), nil
 	})
 
 	if err != nil {
@@ -295,8 +206,9 @@ func isAuthorized(w http.ResponseWriter, r *http.Request) {
 
 	data := claims.Claims.(*JWTData)
 
-	userID := data.CustomClaims["userid"]
-	jsonData, err := getAccountData(userID)
+	userName := data.CustomClaims["username"]
+	userEmail := data.CustomClaims["email"]
+	jsonData, err := getAccountData(userName, userEmail)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Request failed!", http.StatusUnauthorized)
@@ -305,14 +217,21 @@ func isAuthorized(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonData)
 }
 
-type Account struct {
-	Email    string  `json:"email"`
-	Balance  float64 `json:"balance"`
-	Currency string  `json:"currency"`
-}
+func getAccountData(username string, email string) ([]byte, error) {
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
 
-func getAccountData(userID string) ([]byte, error) {
-	output := Account{"nikola.breznjak@gmail.com", 3.14, "BTC"}
+	cursor, err := db.Users.Find(mongoparams.ctx, bson.M{"username": username, "email": email})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var Profile []User
+	if err = cursor.All(mongoparams.ctx, &Profile); err != nil {
+		log.Fatal(err)
+	}
+
+	output := JWTVerifiedData{Profile[0].Email, Profile[0].UserName}
 	json, err := json.Marshal(output)
 	if err != nil {
 		return nil, err
