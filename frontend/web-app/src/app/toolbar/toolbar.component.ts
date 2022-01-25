@@ -18,10 +18,14 @@ export class ToolbarComponent implements OnInit {
       console.log("Verified Token", data)
       let response = JSON.parse(JSON.stringify(data))
       //console.log(response.Username)
-      this.username = response.Username
+      if (data !=null){
+        this.username = response.Username
+        this.isLoggedIn()
+      }
+      
     })
     
-    this.isLoggedIn()
+    
     
   }
 

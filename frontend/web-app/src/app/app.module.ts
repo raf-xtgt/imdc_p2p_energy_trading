@@ -17,7 +17,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms'; 
 import {MatCardModule} from '@angular/material/card';
 import {MatDialogModule} from '@angular/material/dialog';
-
+import {MatListModule} from '@angular/material/list';
 
 // external components
 import { ToolbarComponent } from './toolbar/toolbar.component';
@@ -59,7 +59,8 @@ import { OrderComponent } from './order/order.component';
     HttpClientModule,
     FormsModule,
     MatCardModule,
-    MatDialogModule
+    MatDialogModule,
+    MatListModule
   ],
   providers: [],
   bootstrap: [AppComponent]

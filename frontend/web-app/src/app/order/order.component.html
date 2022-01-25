@@ -1,24 +1,59 @@
-<div class="container" style="margin-left:20px; margin-right: 20px; margin-top: 10px; align-content: center; justify-content: center;">
-    <mat-card style=" display: flex;"> 
+<div class="container" style="margin-left:20px; margin-right: 20px; margin-top: 10px; ">
+    <mat-card> 
         <mat-card-content>
             <div style="width: 100%;"> 
                 <h1>Buy Energy Form</h1>
                 <h4>Make an order for buying energy by simply providing the energy and fiat amount</h4>
 
-                <form #buyOrderForm="ngForm">
-                    <div class="form-group">
-                        <mat-grid-list cols="5" rowHeight="100px">
-                            <mat-grid-tile [colspan]=2>
-                                User details
-                            </mat-grid-tile>
-                            <mat-grid-tile [colspan]=3>
-                             Buyer Form
-                            </mat-grid-tile>
-                        </mat-grid-list>
+                <mat-grid-list cols="3" rowHeight="100px">
+                    <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
+                        <!-- User details -->
+                        
+                        <mat-list role="list">
+                            <mat-list-item role="listitem"><h4 style="text-align: left;">{{username}}</h4></mat-list-item>
+                            <mat-list-item role="listitem"><h4 style="text-align: left;">Current Fiat: RM {{currentFiat}}</h4></mat-list-item>
+                            <mat-list-item role="listitem"><h4 style="text-align: left;">Current Energy Balance:{{currentEnergy}}kWh</h4></mat-list-item>
+                            <mat-list-item role="listitem"><h4 style="text-align: left;">Completed Transactions: {{completedTran}}</h4></mat-list-item>
 
-                    </div>
+                        </mat-list>
+                        
+                        
+                    </mat-grid-tile>
 
-                </form>
+                    <!-- <mat-grid-tile class="userDetailsTile" [rowspan]=1>
+                        <h4 style="text-align: left;">Current Fiat RM: {{currentFiat}}</h4>    
+                    </mat-grid-tile>
+
+                    <mat-grid-tile  class="userDetailsTile" [rowspan]=1>
+                        <h4>Current Energy Balance: {{currentEnergy}} kWH</h4>    
+                    </mat-grid-tile>
+
+                    <mat-grid-tile class="userDetailsTile" [rowspan]=1>    
+                        <h4>Completed Transactions: {{currentEnergy}}</h4>
+                    </mat-grid-tile> -->
+
+                    <mat-grid-tile [colspan]=2 [rowspan]=2>
+                     
+                    <form #buyOrderForm="ngForm">
+                        <div class="form-group">
+                            <label for="energyAmount">Enter Required Amount of Energy(kWh)</label>
+                            <input type="number" class="form-control" id="energyAmount" 
+                            required autocomplete="off">
+                        </div>
+
+                        <div>
+                            Cost: RM 2100 (will be auto calculated using market(price) data)
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-success" [disabled]="!buyOrderForm.form.valid" >Buy</button>
+                        </div>
+                        
+
+                    </form>
+                    </mat-grid-tile>
+                </mat-grid-list>
+
+
             </div>
         </mat-card-content>
     </mat-card>    
