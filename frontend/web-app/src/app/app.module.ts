@@ -18,6 +18,10 @@ import { FormsModule } from '@angular/forms';
 import {MatCardModule} from '@angular/material/card';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatListModule} from '@angular/material/list';
+//import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { ChartsModule } from 'ng2-charts';
+
+
 
 // external components
 import { ToolbarComponent } from './toolbar/toolbar.component';
@@ -29,7 +33,8 @@ import { SuccessDialogComponent } from './success-dialog/success-dialog.componen
 import { FailDialogComponent } from './fail-dialog/fail-dialog.component';
 import { ProfileComponent } from './profile/profile.component';
 import { OrderComponent } from './order/order.component';
- 
+import { LineGraphComponent } from './line-graph/line-graph.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -42,6 +47,7 @@ import { OrderComponent } from './order/order.component';
     FailDialogComponent,
     ProfileComponent,
     OrderComponent,
+    LineGraphComponent
   ],
   imports: [
     BrowserModule,
@@ -60,7 +66,12 @@ import { OrderComponent } from './order/order.component';
     FormsModule,
     MatCardModule,
     MatDialogModule,
-    MatListModule
+    MatListModule,
+    ChartsModule
+    //NgxChartsModule
+  ],
+  exports:[
+    ChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
