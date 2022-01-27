@@ -34,6 +34,7 @@ import { FailDialogComponent } from './fail-dialog/fail-dialog.component';
 import { ProfileComponent } from './profile/profile.component';
 import { OrderComponent } from './order/order.component';
 import { LineGraphComponent } from './line-graph/line-graph.component';
+import { HouseholdPriceGraphComponent } from './household-price-graph/household-price-graph.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import { LineGraphComponent } from './line-graph/line-graph.component';
     FailDialogComponent,
     ProfileComponent,
     OrderComponent,
-    LineGraphComponent
+    LineGraphComponent,
+    HouseholdPriceGraphComponent
   ],
   imports: [
     BrowserModule,
