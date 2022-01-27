@@ -33,7 +33,7 @@ export class LoginComponent {
       console.log("Login response from backend", data)
       localStorage.setItem(this.TOKEN_KEY, data.token);
       console.log("Check local storage")
-      //this.router.navigateByUrl('/profile');
+      this.router.navigateByUrl('/homepage');
     })
   }
   

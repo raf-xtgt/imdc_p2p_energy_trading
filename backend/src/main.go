@@ -53,7 +53,6 @@ func main() {
 	mongoparams.cancel = cancel
 	mongoparams.client = client
 	connectToDb()
-	createEnergyData()
 	log.Fatal(listen())
 
 }
@@ -80,7 +79,7 @@ func getEnvVar(key string) string {
 
 func listen() error {
 	mux := http.NewServeMux()
-	//http.HandleFunc("/")
+	mux.HandleFunc("/AddHouseholdData", createEnergyData)
 	// when a request is made on/register, then run addNewUser function
 	mux.HandleFunc("/Register", addNewUser)
 	mux.HandleFunc("/GetUser", getUser)

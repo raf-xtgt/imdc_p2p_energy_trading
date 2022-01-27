@@ -190,7 +190,7 @@ func isAuthorized(w http.ResponseWriter, r *http.Request) {
 		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
 		return
 	}
-	fmt.Println("Request body:\n", jwtToken)
+	//fmt.Println("Request body:\n", jwtToken)
 
 	claims, err := jwt.ParseWithClaims(jwtToken, &JWTData{}, func(token *jwt.Token) (interface{}, error) {
 		if jwt.SigningMethodHS256 != token.Method {

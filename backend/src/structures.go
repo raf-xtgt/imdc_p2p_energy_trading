@@ -49,7 +49,6 @@ type LoginResponse struct {
 
 type JWTData struct {
 	// Standard claims are the standard jwt claims from the IETF standard
-	// https://tools.ietf.org/html/rfc7519
 	jwt.StandardClaims
 	CustomClaims map[string]string `json:"custom,omitempty"`
 }
@@ -65,4 +64,8 @@ type EnergyPriceData struct {
 	Data     [24]float64 "json: data"
 	DateStr  string      "json:dateString" // date in dd-mm-yyyy format
 	DateTime int64       "json: dateTime"  // time in nano for sorting
+}
+
+type EnergyDataResponse struct {
+	Data EnergyPriceData
 }

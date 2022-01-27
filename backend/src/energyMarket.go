@@ -1,21 +1,52 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"math/rand"
+	"net/http"
 	"strconv"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-func createEnergyData() {
+func createEnergyData(w http.ResponseWriter, r *http.Request) {
+	var fromFrontend EnergyPriceData
+	var response EnergyDataResponse
+	// get the data from json body
+	decoder := json.NewDecoder(r.Body)
+	// place the user data inside newUser
+	if err := decoder.Decode(&fromFrontend); err != nil {
+		fmt.Println("Failed adding a new user", err)
+		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+		return
+	}
+	defer r.Body.Close()
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
 	var energyData EnergyPriceData = generateHouseholdEnergyPriceData()
 	//write user info to the users collection
-	writeUser, err := db.EnergyPriceHouse.InsertOne(mongoparams.ctx, energyData)
-	if err != nil {
-		fmt.Println(err)
+	if checkRepeatedDataEntry(fromFrontend.DateStr) {
+		writeData, err := db.EnergyPriceHouse.InsertOne(mongoparams.ctx, energyData)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("New data added", writeData.InsertedID)
+		response.Data = energyData
+		respondWithJSON(w, r, http.StatusCreated, response)
+
+	} else {
+		fmt.Println("Fetching data from db")
+		response.Data = getHouseholdData(fromFrontend.DateStr)
+		respondWithJSON(w, r, http.StatusCreated, response)
+
 	}
-	fmt.Println("New data added", writeUser.InsertedID)
+
 }
 
 func generateHouseholdEnergyPriceData() EnergyPriceData {
@@ -38,7 +69,7 @@ func generateHouseholdEnergyPriceData() EnergyPriceData {
 		var finalPrice float64 = math.Floor(elPrice*1000) / 1000
 		summation += finalPrice
 		data[count] = finalPrice
-		fmt.Println("Price: ", finalPrice)
+		//fmt.Println("Price: ", finalPrice)
 	}
 	avg = summation / 23
 
@@ -50,13 +81,6 @@ func generateHouseholdEnergyPriceData() EnergyPriceData {
 	energyData.DateTime = nanoSec
 	return energyData
 }
-
-// func processTime() {
-// 	dateStr, weekday, nanoSec := getDateString()
-// 	fmt.Println("Date String:", dateStr)
-// 	fmt.Println("Week day:", weekday)
-// 	fmt.Println("Time in nano seconds:", nanoSec)
-// }
 
 func getDateString() (string, string, int64) {
 	year, month, day := time.Now().Date()
@@ -79,4 +103,56 @@ func getDateString() (string, string, int64) {
 	time := time.Now().Unix()
 	//fmt.Println("Date String:", dateStr)
 	return dateStr, weekday, time
+}
+
+func checkRepeatedDataEntry(dateStr string) bool {
+	var result bool = false
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	// find username and password
+	cursor, err := db.EnergyPriceHouse.Find(ctx, bson.M{"datestr": dateStr})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var Profiles []EnergyPriceData
+	if err = cursor.All(ctx, &Profiles); err != nil {
+		log.Fatal(err)
+
+	}
+	if len(Profiles) == 0 {
+		fmt.Println("No data on this date")
+		result = true
+	} else {
+		fmt.Println("Data on this date exists")
+		result = false
+	}
+	//fmt.Println(Profiles)
+	return result
+}
+
+func getHouseholdData(dateStr string) EnergyPriceData {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	// find the relevant data
+	cursor, err := db.EnergyPriceHouse.Find(ctx, bson.M{"datestr": dateStr})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var Profiles []EnergyPriceData
+	if err = cursor.All(ctx, &Profiles); err != nil {
+		log.Fatal(err)
+
+	}
+	if len(Profiles) == 1 {
+		return Profiles[0]
+
+	} else {
+		fmt.Println("No Data on this date exists")
+		return Profiles[0]
+	}
+	//fmt.Println(Profiles)
+
 }
