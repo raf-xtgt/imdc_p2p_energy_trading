@@ -23,8 +23,9 @@ type User struct {
 }
 
 type MongoDatabase struct {
-	Cluster *mongo.Database   //cluster
-	Users   *mongo.Collection //collection
+	Cluster          *mongo.Database   //cluster
+	Users            *mongo.Collection //collection
+	EnergyPriceHouse *mongo.Collection
 }
 
 // Structure that will be sent as sign up response to frontend
@@ -56,4 +57,12 @@ type JWTData struct {
 type JWTVerifiedData struct {
 	Email    string `json:"email"`
 	Username string `bson:"username"`
+}
+
+type EnergyPriceData struct {
+	Day      string      "json: day" // day of the week
+	Average  float64     "json: average"
+	Data     [24]float64 "json: data"
+	DateStr  string      "json:dateString" // date in dd-mm-yyyy format
+	DateTime int64       "json: dateTime"  // time in nano for sorting
 }

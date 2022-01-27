@@ -26,7 +26,8 @@ var mongoparams MongoParam
 var db MongoDatabase
 
 func main() {
-	//main_2()
+	//generateEnergyPriceData()
+	//processTime()
 	fmt.Println("Starting server")
 	// get the environment variables to required for database authentication
 	dbCluster := getEnvVar("DB_CLUSTER_ADDR")
@@ -52,6 +53,7 @@ func main() {
 	mongoparams.cancel = cancel
 	mongoparams.client = client
 	connectToDb()
+	createEnergyData()
 	log.Fatal(listen())
 
 }
@@ -62,6 +64,7 @@ func connectToDb() MongoDatabase {
 	db.Cluster = mongoparams.client.Database("IMDC-p2p-energy")
 	// refer to the users collection
 	db.Users = db.Cluster.Collection("users")
+	db.EnergyPriceHouse = db.Cluster.Collection("householdEnergyPrice")
 	return db
 }
 
