@@ -5,7 +5,7 @@
                 <h1>Buy Energy Form</h1>
                 <h4>Make an order for buying energy by simply providing the energy and fiat amount</h4>
 
-                <mat-grid-list cols="3" rowHeight="100px">
+                <mat-grid-list cols="3" rowHeight="120px">
                     <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
                         <!-- User details -->
                         
@@ -28,7 +28,12 @@
                         </div>
 
                         <div>
-                            Cost: RM 2100 (will be auto calculated using market(price) data)
+                            <mat-list role="list">
+                                <mat-list-item role="listitem"><h4 style="text-align: left;">Average price per kWh: RM {{this.model.average.toFixed(3)}}</h4></mat-list-item>
+                                <mat-list-item role="listitem"><h4 style="text-align: left;">Cost: RM 2100 (will be auto calculated using market(price) data)</h4></mat-list-item>
+                             
+                            </mat-list>
+                            
                         </div>
                         <div>
                             <button type="submit" class="btn btn-success" [disabled]="!buyOrderForm.form.valid" >Buy</button>

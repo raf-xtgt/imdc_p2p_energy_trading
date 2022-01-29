@@ -39,7 +39,6 @@ export class HouseholdPriceGraphComponent implements OnInit {
 
     ngAfterContentInit(): void {
     let dateToday = this.dateService.getCurrentDate()
-    console.log(dateToday)
     this.model.dateStr = dateToday
     try{
       this._config.getHouseholdData(this.model).subscribe(data => {

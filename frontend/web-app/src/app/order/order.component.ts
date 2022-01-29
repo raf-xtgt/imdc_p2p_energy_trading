@@ -14,7 +14,7 @@ export class OrderComponent implements OnInit {
   constructor(private _jwtServ:JWTService, private _config:ConfigService) { }
 
   private dateService = new DateService()
-  private model = new HouseholdEnergyData("", 0, [0,0],  "", 0)
+  public model = new HouseholdEnergyData("", 0, [0,0],  "", 0)
 
 
   public username :string =""
@@ -22,7 +22,6 @@ export class OrderComponent implements OnInit {
   public completedTran :number = 10;
   public currentFiat :number = 2000
   public currentEnergy :number = 12000;
-  //userDetails :string = this.username+"\n"+this.currentFiat+"\n"+ this.currentEnergy
 
   ngOnInit(): void {
     this._jwtServ.verifyToken().subscribe(data => {
