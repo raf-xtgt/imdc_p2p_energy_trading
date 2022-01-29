@@ -1,7 +1,7 @@
 import { number } from "echarts";
 
 export class User{
-    constructor (public username:string, public email:string, public password:string, public address:string, public smartMeterNo:number){}
+    constructor (public username:string, public email:string, public password:string, public address:string, public smartMeterNo:number, public uId:string){}
 }
 
 

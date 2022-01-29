@@ -22,10 +22,11 @@ import (
 //var SECRET string = "42isTheAnswer"
 var jwtSecret string = ""
 
+// function to store a new user in the database when a signs up
 func addNewUser(w http.ResponseWriter, r *http.Request) {
 	var newUser User
 	var response SignUpResponse
-	w.Header().Add("Access-Control-Allow-Origin", "*")
+	//w.Header().Add("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 
 	// get the data from json body
@@ -37,7 +38,7 @@ func addNewUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	//fmt.Println("This is the data from frontend", NewUser)
+
 	// to prevent backend to timeout
 	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
 	defer mongoparams.cancel()
@@ -53,8 +54,11 @@ func addNewUser(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println("New user added", writeUser.InsertedID)
-		response.Res = true
+
+		if addUniqueUserId(newUser.UserName, newUser.Email, fmt.Sprintf("%v", writeUser.InsertedID)) {
+			response.Res = true
+			fmt.Println("New user added after updating for id", writeUser.InsertedID)
+		}
 
 	} else {
 		fmt.Println("New user not added")
@@ -66,6 +70,32 @@ func addNewUser(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, r, http.StatusCreated, response)
 	//respondWithJSON(w, r, http.StatusCreated, NewUser)
 	return
+}
+
+// function to add a unique id to user document
+func addUniqueUserId(username string, email string, uniqueId string) bool {
+
+	// slice the id to retain the id part only
+	unId := uniqueId[10 : len(uniqueId)-2]
+	//uniqueId = unId
+	fmt.Println(uniqueId)
+	fmt.Println(unId)
+
+	// update the document that matches the username and email
+	_, err := db.Users.UpdateOne(
+		mongoparams.ctx,
+		bson.M{"username": username, "email": email},
+		bson.D{
+			{"$set", bson.D{{"uId", unId}}},
+		},
+	)
+
+	// if the update fails
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	return true
 }
 
 // function to check whether the email and username already exist or not

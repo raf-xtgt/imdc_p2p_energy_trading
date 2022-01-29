@@ -4,6 +4,8 @@ import {HouseholdEnergyData} from '../classes';
 import { DateService } from '../date.service';
 // import the custom http service module to communicate with backend
 import { ConfigService } from '../config.service';
+
+
 @Component({
   selector: 'app-order',
   templateUrl: './order.component.html',
@@ -15,9 +17,9 @@ export class OrderComponent implements OnInit {
 
   private dateService = new DateService()
   public model = new HouseholdEnergyData("", 0, [0,0],  "", 0)
-  public currentAvgPrice :number = 0
-  public energyInput :number = 0;
-  public priceToPay :number = 0;
+  public currentAvgPrice :number = 0 // average price per kWh for the current day
+  public energyInput :number = 0; // amount of energy required by user
+  public priceToPay :number = 0; // amount the user needs to pay
 
   public username :string =""
   // all of this data needs to come from the backend
@@ -61,6 +63,9 @@ export class OrderComponent implements OnInit {
     })
   }
 
+  /** When user clikcs on buy we need to update their account balance
+   * and store the energy request in the database.
+   */
 
   getUserDetails(data: JSON){
 

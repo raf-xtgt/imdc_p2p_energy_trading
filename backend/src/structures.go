@@ -5,6 +5,7 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/mongo"
+	//"labix.org/v2/mgo/bson"
 )
 
 // globally define the db parameters so that other methods can access the db
@@ -14,6 +15,7 @@ type MongoParam struct {
 	client *mongo.Client
 }
 
+// structure to represent a user
 type User struct {
 	UserName     string `bson:"username"`
 	Email        string `bson:"email"`
@@ -21,6 +23,11 @@ type User struct {
 	Address      string `bson:"address"`
 	SmartMeterNo int    `bson:"smartMeterNo"`
 }
+
+// userId structure that represents a unique user id
+// type UserId struct {
+// 	Id bson.ObjectId `bson:"_id,omitempty"` // only uppercase variables can be exported
+// }
 
 type MongoDatabase struct {
 	Cluster          *mongo.Database   //cluster

@@ -22,13 +22,13 @@ export class LoginComponent {
   email = new FormControl('', [Validators.required, Validators.email]);
 
   // this property is used in the frontend
-  model = new User("", "","","",0)
+  model = new User("", "","","",0, "")
   submitted = false;
   TOKEN_KEY = 'token';
 
   login(){
     // only assign the username and password to the model user
-    let user = new User (this.model.username, "", this.model.password, "", 0)
+    let user = new User (this.model.username, "", this.model.password, "", 0, this.model.uId)
     this._config.authUser(user).subscribe(data => {
       console.log("Login response from backend", data)
       localStorage.setItem(this.TOKEN_KEY, data.token);
