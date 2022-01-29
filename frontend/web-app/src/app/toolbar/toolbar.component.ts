@@ -17,9 +17,9 @@ export class ToolbarComponent implements OnInit {
     this._jwtServ.verifyToken().subscribe(data => {
       console.log("Verified Token", data)
       let response = JSON.parse(JSON.stringify(data))
-      //console.log(response.Username)
+      console.log(response.User)
       if (data !=null){
-        this.username = response.Username
+        this.username = response.User.UserName
         this.isLoggedIn()
       }
       

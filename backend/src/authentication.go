@@ -172,9 +172,11 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(time.Hour * 20).Unix(),
 			},
+			// data that the jwt stores
 			CustomClaims: map[string]string{
 				"username": Profiles[0].UserName,
 				"email":    Profiles[0].Email,
+				"uId":      Profiles[0].UId,
 			},
 		}
 
@@ -233,9 +235,10 @@ func isAuthorized(w http.ResponseWriter, r *http.Request) {
 
 	data := claims.Claims.(*JWTData)
 
-	userName := data.CustomClaims["username"]
-	userEmail := data.CustomClaims["email"]
-	jsonData, err := getAccountData(userName, userEmail)
+	//userName := data.CustomClaims["username"]
+	//userEmail := data.CustomClaims["email"]
+	userId := data.CustomClaims["uId"]
+	jsonData, err := getAccountData(userId)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Request failed!", http.StatusUnauthorized)
@@ -244,11 +247,11 @@ func isAuthorized(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonData)
 }
 
-func getAccountData(username string, email string) ([]byte, error) {
+func getAccountData(userId string) ([]byte, error) {
 	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
 	defer mongoparams.cancel()
 
-	cursor, err := db.Users.Find(mongoparams.ctx, bson.M{"username": username, "email": email})
+	cursor, err := db.Users.Find(mongoparams.ctx, bson.M{"uId": userId})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -258,7 +261,8 @@ func getAccountData(username string, email string) ([]byte, error) {
 		log.Fatal(err)
 	}
 
-	output := JWTVerifiedData{Profile[0].Email, Profile[0].UserName}
+	// data that will be sent back to the frontend
+	output := JWTVerifiedData{Profile[0]}
 	json, err := json.Marshal(output)
 	if err != nil {
 		return nil, err

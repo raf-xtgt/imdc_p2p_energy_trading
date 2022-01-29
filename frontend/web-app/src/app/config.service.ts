@@ -38,9 +38,6 @@ export class ConfigService {
   // authenticate a user when they want to login
 
   authUser(data: User): Observable<any> {
-    // const headers = {
-    //   headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' })
-    // };
     const body = JSON.stringify(data)
     return this.http.post<User>(this._loginUrl, body)
   }
@@ -52,7 +49,7 @@ export class ConfigService {
     //return this.http.get(this._verifyToken);
   }
 
-  // verify the jwt from backend
+  // get energy price data for today
   getHouseholdData (data:HouseholdEnergyData){
     const body = JSON.stringify(data)
     return this.http.post(this._addHouseholdPrice, body)

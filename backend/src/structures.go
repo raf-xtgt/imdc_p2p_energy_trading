@@ -21,6 +21,7 @@ type User struct {
 	Email        string `bson:"email"`
 	Password     string `bson:"password"`
 	Address      string `bson:"address"`
+	UId          string `bson:id`
 	SmartMeterNo int    `bson:"smartMeterNo"`
 }
 
@@ -61,8 +62,9 @@ type JWTData struct {
 }
 
 type JWTVerifiedData struct {
-	Email    string `json:"email"`
-	Username string `bson:"username"`
+	//Email    string `json:"email"`
+	//Username string `bson:"username"`
+	User User
 }
 
 type EnergyPriceData struct {
