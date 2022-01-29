@@ -15,7 +15,9 @@ export class OrderComponent implements OnInit {
 
   private dateService = new DateService()
   public model = new HouseholdEnergyData("", 0, [0,0],  "", 0)
-
+  public currentAvgPrice :number = 0
+  public energyInput :number = 0;
+  public priceToPay :number = 0;
 
   public username :string =""
   // all of this data needs to come from the backend
@@ -47,6 +49,8 @@ export class OrderComponent implements OnInit {
       this.model.day = response.Data.Day
       this.model.dateStr = response.Data.DateStr
       this.model.average = response.Data.Average  
+      this.currentAvgPrice = this.model.average 
+
       }
       else{
         console.log("lol")

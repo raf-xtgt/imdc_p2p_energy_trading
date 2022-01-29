@@ -23,15 +23,15 @@
                     <form #buyOrderForm="ngForm">
                         <div class="form-group">
                             <label for="energyAmount">Enter Required Amount of Energy(kWh)</label>
-                            <input type="number" class="form-control" id="energyAmount" 
+                            <input  type="number" class="form-control"
+                            [(ngModel)] = 'energyInput' id="energyAmount" name="energyInput" 
                             required autocomplete="off">
                         </div>
 
                         <div>
                             <mat-list role="list">
-                                <mat-list-item role="listitem"><h4 style="text-align: left;">Average price per kWh: RM {{this.model.average.toFixed(3)}}</h4></mat-list-item>
-                                <mat-list-item role="listitem"><h4 style="text-align: left;">Cost: RM 2100 (will be auto calculated using market(price) data)</h4></mat-list-item>
-                             
+                                <mat-list-item role="listitem"><h4 style="text-align: left;">Average price per kWh: RM {{currentAvgPrice.toFixed(3)}}</h4></mat-list-item>
+                                <mat-list-item role="listitem"><h4 style="text-align: left;" >To Pay: RM {{(energyInput * currentAvgPrice).toFixed(3)}} </h4></mat-list-item>
                             </mat-list>
                             
                         </div>
