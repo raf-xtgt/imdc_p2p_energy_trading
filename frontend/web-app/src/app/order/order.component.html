@@ -5,16 +5,17 @@
                 <h1>Buy Energy Form</h1>
                 <h4>Make an order for buying energy by simply providing the energy and fiat amount</h4>
 
-                <mat-grid-list cols="3" rowHeight="120px">
+                <mat-grid-list cols="3" rowHeight="150px">
                     <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
                         <!-- User details -->
                         
                         <mat-list role="list">
+                           
                             <mat-list-item role="listitem"><h4 style="text-align: left;">{{username}}</h4></mat-list-item>
                             <mat-list-item role="listitem"><h4 style="text-align: left;">Current Fiat: RM {{currentFiat}}</h4></mat-list-item>
                             <mat-list-item role="listitem"><h4 style="text-align: left;">Current Energy Balance:{{currentEnergy}}kWh</h4></mat-list-item>
                             <mat-list-item role="listitem"><h4 style="text-align: left;">Completed Transactions: {{completedTran}}</h4></mat-list-item>
-
+                            <mat-list-item role="listitem"><h5 style="text-align: left; color:red;">Your account will be charged only after the transaction is completed</h5></mat-list-item>
                         </mat-list>    
                     </mat-grid-tile>
 

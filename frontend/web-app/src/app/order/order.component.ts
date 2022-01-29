@@ -33,7 +33,7 @@ export class OrderComponent implements OnInit {
       let response = JSON.parse(JSON.stringify(data))
       //console.log(response.Username)
       if (data !=null){
-        this.username = response.Username
+        this.username = response.User.UserName
         this.getEnergyData()
       }
       
