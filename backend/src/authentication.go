@@ -100,9 +100,6 @@ func checkUsernameAndPass(username string, email string) (result bool) {
 func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Authenticating User")
 	var newUser User
-	//var response LoginResponse
-	//w.Header().Add("Access-Control-Allow-Origin", "*")
-	//w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 
 	// get the data from json body
 	decoder := json.NewDecoder(r.Body)

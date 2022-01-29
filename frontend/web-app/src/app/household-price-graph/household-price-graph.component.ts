@@ -6,6 +6,7 @@ import { Color, Label } from 'ng2-charts';
 import { ConfigService } from '../config.service';
 // import class
 import {HouseholdEnergyData} from '../classes';
+import { DateService } from '../date.service';
 import { color } from 'echarts';
 
 @Component({
@@ -16,6 +17,7 @@ import { color } from 'echarts';
 export class HouseholdPriceGraphComponent implements OnInit {
 
   constructor(private _config:ConfigService) { }
+  private dateService = new DateService()
   private model = new HouseholdEnergyData("", 0, [0,0],  "", 0)
   public chartData: ChartDataSets[] = [
     { data: this.model.data, label: 'Electricity Price per Household(kWh)' }
@@ -36,7 +38,7 @@ export class HouseholdPriceGraphComponent implements OnInit {
     }
 
     ngAfterContentInit(): void {
-    let dateToday = this.getHouseholdMarketData()
+    let dateToday = this.dateService.getCurrentDate()
     this.model.dateStr = dateToday
     try{
       this._config.getHouseholdData(this.model).subscribe(data => {
@@ -69,31 +71,5 @@ export class HouseholdPriceGraphComponent implements OnInit {
     return lineChartData
   }
 
-
-
-
-  getHouseholdMarketData(): string {
-    let date :Date = new Date()
-    let day = date.getDate()
-    let month = date.getMonth()+1
-    let year = date.getFullYear()
-    let dayStr = "";
-    let monthStr = "";
-    if (day < 10){
-      dayStr += "0"+day
-    }else{
-      dayStr += day
-    }
-
-    if(month <10){
-      monthStr += "0" + month
-    }else{
-      monthStr += month
-    }
-
-    let finalDate = dayStr + "-"+monthStr +"-"+ year
-    return finalDate
-  }
-  
 
 }
