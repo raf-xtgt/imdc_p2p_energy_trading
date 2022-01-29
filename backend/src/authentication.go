@@ -18,8 +18,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-//var secretkey string = ""
-//var SECRET string = "42isTheAnswer"
 var jwtSecret string = ""
 
 // function to store a new user in the database when a signs up

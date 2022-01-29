@@ -18,7 +18,7 @@ export class OrderComponent implements OnInit {
   private dateService = new DateService()
   public model = new HouseholdEnergyData("", 0, [0,0],  "", 0)
   public currentAvgPrice :number = 0 // average price per kWh for the current day
-  public energyInput :number = 0; // amount of energy required by user
+  public energyInput :number = 0; // amount of energy required/entered by user
   public priceToPay :number = 0; // amount the user needs to pay
 
   public username :string =""
