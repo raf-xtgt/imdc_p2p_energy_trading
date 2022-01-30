@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { JWTService } from '../userAuth.service';
-import {HouseholdEnergyData} from '../classes';
+import {BuyEnergyRequest, HouseholdEnergyData} from '../classes';
 import { DateService } from '../date.service';
 // import the custom http service module to communicate with backend
 import { ConfigService } from '../config.service';
 import { ModalService } from '../modals.service';
+import Swal from 'sweetalert2'
 
 @Component({
   selector: 'app-order',
@@ -18,11 +19,13 @@ export class OrderComponent implements OnInit {
   private dateService = new DateService()
   public modalService = new ModalService()
   public model = new HouseholdEnergyData("", 0, [0,0],  "", 0)
+  private _buyRequest = new BuyEnergyRequest("", 0,0)
   public currentAvgPrice :number = 0 // average price per kWh for the current day
   public energyInput :number = 0; // amount of energy required/entered by user
   public priceToPay :number = 0; // amount the user needs to pay
 
   public username :string =""
+  private _buyerId :string = ""
   // all of this data needs to come from the backend
   public completedTran :number = 10;
   public currentFiat :number = 2000
@@ -35,6 +38,7 @@ export class OrderComponent implements OnInit {
       //console.log(response.Username)
       if (data !=null){
         this.username = response.User.UserName
+        this._buyerId = response.User.UId
         this.getEnergyData()
       }
       
@@ -53,19 +57,37 @@ export class OrderComponent implements OnInit {
       this.model.dateStr = response.Data.DateStr
       this.model.average = response.Data.Average  
       this.currentAvgPrice = this.model.average 
-
       }
       else{
         console.log("lol")
       }
-      
       console.log("House hold data for order page", response)
       //console.log("House hold data", response.Data.Data)
     })
   }
 
-  buyConfirmation(){
-    this.modalService.showConfirmationModal('Confirm Buy Request', 'Confirm','Your request has been made public!!','Request Cancelled' )
+  createBuyRequest(){  
+        Swal.fire({
+            title: 'Confirm Buy Request',
+            showDenyButton: false,
+            showCancelButton: true,
+            confirmButtonText: 'Confirm',
+            //denyButtonText: denyBtnTxt,
+          }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+              this._buyRequest.buyerId = this._buyerId
+              this._buyRequest.energyAmount = this.energyInput
+              this._buyRequest.fiatAmount = this.energyInput * this.currentAvgPrice
+              console.log("Buy request", this._buyRequest)
+              Swal.fire('Your request has been placed on the market!!', '', 'success')  
+              this._config.makeBuyRequest(this._buyRequest)
+
+            } else if (result.isDismissed) {
+              Swal.fire('Request Cancelled!', '', 'info')
+            
+            }
+          })
   }
 
   /** When user clikcs on buy we need to update their account balance
