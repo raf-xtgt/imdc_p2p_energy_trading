@@ -21,7 +21,7 @@
 
                     <mat-grid-tile [colspan]=2 [rowspan]=2>
                      
-                    <form #buyOrderForm="ngForm">
+                    <form (ngSubmit)="buyConfirmation()" #buyOrderForm="ngForm">
                         <div class="form-group">
                             <label for="energyAmount">Enter Required Amount of Energy(kWh)</label>
                             <input  type="number" class="form-control"

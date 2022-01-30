@@ -4,7 +4,7 @@ import {HouseholdEnergyData} from '../classes';
 import { DateService } from '../date.service';
 // import the custom http service module to communicate with backend
 import { ConfigService } from '../config.service';
-
+import { ModalService } from '../modals.service';
 
 @Component({
   selector: 'app-order',
@@ -16,6 +16,7 @@ export class OrderComponent implements OnInit {
   constructor(private _jwtServ:JWTService, private _config:ConfigService) { }
 
   private dateService = new DateService()
+  public modalService = new ModalService()
   public model = new HouseholdEnergyData("", 0, [0,0],  "", 0)
   public currentAvgPrice :number = 0 // average price per kWh for the current day
   public energyInput :number = 0; // amount of energy required/entered by user
@@ -61,6 +62,10 @@ export class OrderComponent implements OnInit {
       console.log("House hold data for order page", response)
       //console.log("House hold data", response.Data.Data)
     })
+  }
+
+  buyConfirmation(){
+    this.modalService.showConfirmationModal('Confirm Buy Request', 'Confirm','Your request has been made public!!','Request Cancelled' )
   }
 
   /** When user clikcs on buy we need to update their account balance

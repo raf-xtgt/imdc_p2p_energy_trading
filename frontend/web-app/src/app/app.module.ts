@@ -20,8 +20,8 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatListModule} from '@angular/material/list';
 //import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { ChartsModule } from 'ng2-charts';
-
-
+// import {Swal} from 'sweetalert2/dist/sweetalert2.js'
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 
 // external components
 import { ToolbarComponent } from './toolbar/toolbar.component';
@@ -49,7 +49,7 @@ import { HouseholdPriceGraphComponent } from './household-price-graph/household-
     ProfileComponent,
     OrderComponent,
     LineGraphComponent,
-    HouseholdPriceGraphComponent
+    HouseholdPriceGraphComponent,
   ],
   imports: [
     BrowserModule,
@@ -69,7 +69,8 @@ import { HouseholdPriceGraphComponent } from './household-price-graph/household-
     MatCardModule,
     MatDialogModule,
     MatListModule,
-    ChartsModule
+    ChartsModule,
+    SweetAlert2Module.forRoot()
     //NgxChartsModule
   ],
   exports:[
