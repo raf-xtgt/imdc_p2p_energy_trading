@@ -15,5 +15,5 @@ export class HouseholdEnergyData{
 }
 
 export class BuyEnergyRequest{
-    constructor(public buyerId:string, public energyAmount:number, public fiatAmount:number){}
+    constructor(public buyerId:string, public energyAmount:number, public fiatAmount:number, public requestClosed: boolean){}
 }

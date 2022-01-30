@@ -19,7 +19,7 @@ export class OrderComponent implements OnInit {
   private dateService = new DateService()
   public modalService = new ModalService()
   public model = new HouseholdEnergyData("", 0, [0,0],  "", 0)
-  private _buyRequest = new BuyEnergyRequest("", 0,0)
+  private _buyRequest = new BuyEnergyRequest("", 0,0, false)
   public currentAvgPrice :number = 0 // average price per kWh for the current day
   public energyInput :number = 0; // amount of energy required/entered by user
   public priceToPay :number = 0; // amount the user needs to pay
@@ -66,6 +66,9 @@ export class OrderComponent implements OnInit {
     })
   }
 
+  /** process the buy request,
+   * If the user confirms the request, then store it in the database
+   * If the user cancels then just refresh the page **/
   createBuyRequest(){  
         Swal.fire({
             title: 'Confirm Buy Request',
@@ -81,7 +84,9 @@ export class OrderComponent implements OnInit {
               this._buyRequest.fiatAmount = this.energyInput * this.currentAvgPrice
               console.log("Buy request", this._buyRequest)
               Swal.fire('Your request has been placed on the market!!', '', 'success')  
-              this._config.makeBuyRequest(this._buyRequest)
+              this._config.makeBuyRequest(this._buyRequest).subscribe(data => {
+                console.log("Response from backend for buy energy request", data)
+              })
 
             } else if (result.isDismissed) {
               Swal.fire('Request Cancelled!', '', 'info')
