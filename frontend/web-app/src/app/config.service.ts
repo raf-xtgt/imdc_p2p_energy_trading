@@ -21,6 +21,7 @@ export class ConfigService {
   private _verifyToken: string = this._configUrl+"VerifyToken"
   private _addHouseholdPrice: string = this._configUrl+"AddHouseholdData"
   private _buyRequestUrl: string = this._configUrl + 'CreateBuyRequest'
+  private _getBuyRequestUrl: string = this._configUrl + 'GetBuyRequests'
 
   TOKEN_KEY = 'token';
 
@@ -59,5 +60,11 @@ export class ConfigService {
     const body = JSON.stringify(data)
     console.log("Buy request data to send to backend", body)
     return this.http.post(this._buyRequestUrl, body)
+  }
+
+  getBuyRequests(){
+    const body = JSON.stringify("Get energy data")
+    console.log("Buy request data to send to backend", body)
+    return this.http.post(this._getBuyRequestUrl, body)
   }
 }

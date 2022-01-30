@@ -2,11 +2,33 @@
 <h3> Market </h3>
 <mat-tab-group>
     <div>
-        <mat-tab label="Buy" style="width: 100%;"> 
-            <div style="margin-left: 10px; width: 80%; height: 100%;"> Content 1
+        <mat-tab label="Open Requests" style="width: 100%;"> 
+            <div style="margin-left: 10px; width: 80%; height: 100%;"> 
+                <mat-list role="list">
+                           
+                    <mat-list-item role="listitem">
+                        <mat-card class="cardLayout">
+                            <mat-card-content>
+                                entry1
+                            </mat-card-content>
+                        </mat-card>
+                    </mat-list-item>
+                    <mat-list-item role="listitem">
+                        <mat-card>
+                            <mat-card-content>
+                                entry2
+                            </mat-card-content>
+                        </mat-card>
+                    </mat-list-item>
+                    <!-- <mat-list-item role="listitem"><h4 style="text-align: left;">Current Fiat: RM {{currentFiat}}</h4></mat-list-item>
+                    <mat-list-item role="listitem"><h4 style="text-align: left;">Current Energy Balance:{{currentEnergy}}kWh</h4></mat-list-item>
+                    <mat-list-item role="listitem"><h4 style="text-align: left;">Completed Transactions: {{completedTran}}</h4></mat-list-item>
+                    <mat-list-item role="listitem"><h5 style="text-align: left; color:rgba(255, 0, 0, 0.719);">Your account will be charged only after the transaction is completed</h5></mat-list-item> -->
+                </mat-list> 
+                
             </div>
         </mat-tab>
-        <mat-tab label="Sell">
+        <mat-tab label="Closed Requests">
             <div style="margin-left: 10px; width: 80%; height: 100%;">Content 2</div>
         </mat-tab>
         

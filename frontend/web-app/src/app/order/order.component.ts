@@ -85,7 +85,7 @@ export class OrderComponent implements OnInit {
               console.log("Buy request", this._buyRequest)
               Swal.fire('Your request has been placed on the market!!', '', 'success')  
               this._config.makeBuyRequest(this._buyRequest).subscribe(data => {
-                console.log("Response from backend for buy energy request", data)
+                //console.log("Response from backend for buy energy request", data)
               })
 
             } else if (result.isDismissed) {
