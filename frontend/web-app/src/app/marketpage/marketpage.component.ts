@@ -12,6 +12,7 @@ export class MarketpageComponent implements OnInit {
   constructor(private _config:ConfigService) { }
 
   ngOnInit(): void {
+    this.getBuyRequests()
   }
 
 

@@ -87,6 +87,7 @@ func listen() error {
 	mux.HandleFunc("/Login", authenticateUser)
 	mux.HandleFunc("/VerifyToken", isAuthorized)
 	mux.HandleFunc("/CreateBuyRequest", addBuyRequest)
+	mux.HandleFunc("/GetBuyRequests", getEnergyRequests)
 	handler := cors.Default().Handler(mux)
 	log.Fatal(http.ListenAndServe(":8080", handler))
 

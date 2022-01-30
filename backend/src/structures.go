@@ -88,4 +88,10 @@ type BuyRequest struct {
 	EnergyAmount  float64 "json: energyAmount"
 	FiatAmount    float64 "json: fiatAmount"
 	RequestClosed bool    "json: requestClosed"
+	ReqTime       string  "json: requestTime"
+}
+
+// structure of response when buy energy requests are queried
+type GetBuyEnergyResponse struct {
+	Requests []BuyRequest "json:buyEnergyRequests"
 }
