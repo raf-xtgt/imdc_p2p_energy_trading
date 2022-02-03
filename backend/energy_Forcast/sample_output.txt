@@ -1,0 +1,23 @@
+Actual test values: [566. 489. 475. 397. 281. 227. 164.  89.  23.   1.]
+X-axis of actual test values: 15    16.0
+16    17.0
+17    18.0
+18    19.0
+19    20.0
+20    21.0
+21    22.0
+22    23.0
+23    24.0
+24    25.0
+Name: Time, dtype: float64
+Predicted values(y-axis) [797.055   734.3153  750.36176 696.4121  520.4477  333.4522  263.86728
+ 171.48027]
+X-axis values of predicted(y-axis) values: 15    16.0
+16    17.0
+17    18.0
+18    19.0
+19    20.0
+20    21.0
+21    22.0
+22    23.0
+Name: Time, dtype: float64
