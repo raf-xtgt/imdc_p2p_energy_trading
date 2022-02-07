@@ -34,7 +34,6 @@ export class OrderComponent implements OnInit {
 
   ngOnInit(): void {
     
-    console.log("Does this work or what")
       // check if the jwt is stored in local storage or not
     if (this._jwtServ.checkToken()){
       this._jwtServ.verifyToken().subscribe(data => {
@@ -45,6 +44,7 @@ export class OrderComponent implements OnInit {
           this.username = response.User.UserName
           this._buyerId = response.User.UId
           this.getEnergyData()
+          this.initEnergyForecast()
         }
         
       })
@@ -53,6 +53,14 @@ export class OrderComponent implements OnInit {
       this.router.navigateByUrl('/login');
     }
   }
+
+
+  initEnergyForecast(){
+    this._config.runEnergyForecast().subscribe(data => {
+      console.log("Request sent to initiate forecasting", data)
+    })
+  }
+
 
   // get the average price in kWh from backend for the current day
   getEnergyData(){
