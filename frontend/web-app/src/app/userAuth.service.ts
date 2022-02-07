@@ -25,4 +25,14 @@ export class JWTService {
     const body = JSON.stringify(localStorage.getItem('token'))
     return this.http.post(this._verifyToken, body)
   }
+
+  // check if the JWT is stored in local storage or not
+  checkToken(){
+    if (localStorage.getItem("token")=== null){
+      return false
+    }
+    else{
+      return true
+    }
+  }
 }

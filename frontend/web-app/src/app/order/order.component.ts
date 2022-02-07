@@ -6,6 +6,7 @@ import { DateService } from '../date.service';
 import { ConfigService } from '../config.service';
 import { ModalService } from '../modals.service';
 import Swal from 'sweetalert2'
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-order',
@@ -14,7 +15,7 @@ import Swal from 'sweetalert2'
 })
 export class OrderComponent implements OnInit {
 
-  constructor(private _jwtServ:JWTService, private _config:ConfigService) { }
+  constructor(private _jwtServ:JWTService, private _config:ConfigService, private router: Router) { }
 
   private dateService = new DateService()
   public modalService = new ModalService()
@@ -32,17 +33,25 @@ export class OrderComponent implements OnInit {
   public currentEnergy :number = 12000;
 
   ngOnInit(): void {
-    this._jwtServ.verifyToken().subscribe(data => {
-      console.log("Verified Token", data)
-      let response = JSON.parse(JSON.stringify(data))
-      //console.log(response.Username)
-      if (data !=null){
-        this.username = response.User.UserName
-        this._buyerId = response.User.UId
-        this.getEnergyData()
-      }
-      
-    })
+    
+    console.log("Does this work or what")
+      // check if the jwt is stored in local storage or not
+    if (this._jwtServ.checkToken()){
+      this._jwtServ.verifyToken().subscribe(data => {
+        console.log("Verified Token", data)
+        let response = JSON.parse(JSON.stringify(data))
+        //console.log(response.Username)
+        if (data !=null){
+          this.username = response.User.UserName
+          this._buyerId = response.User.UId
+          this.getEnergyData()
+        }
+        
+      })
+    }
+    else{
+      this.router.navigateByUrl('/login');
+    }
   }
 
   // get the average price in kWh from backend for the current day

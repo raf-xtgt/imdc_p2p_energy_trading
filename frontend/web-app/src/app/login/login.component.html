@@ -31,7 +31,9 @@
             </div>
   
           <button type="submit" class="btn btn-success" [disabled]="!loginForm.form.valid" >Login</button>
-         
+          <div><h3>Don't have an account?</h3>
+            <a mat-button style="text-decoration: none;" (click)="redirectToSignUp()">Register and Get Started !</a>
+          </div>
     
     
         </form>

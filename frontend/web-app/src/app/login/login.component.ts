@@ -38,6 +38,9 @@ export class LoginComponent {
   }
   
 
+  redirectToSignUp(){
+    this.router.navigateByUrl('/register')
+  }
 
 
   getErrorMessage() {

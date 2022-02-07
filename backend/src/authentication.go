@@ -232,6 +232,7 @@ func isAuthorized(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := claims.Claims.(*JWTData)
+	fmt.Println("decoded data", data.CustomClaims)
 
 	//userName := data.CustomClaims["username"]
 	//userEmail := data.CustomClaims["email"]
