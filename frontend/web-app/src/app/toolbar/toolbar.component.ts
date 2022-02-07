@@ -35,6 +35,8 @@ export class ToolbarComponent implements OnInit {
 
   logout(){
     window.localStorage.removeItem("token")
+    window.location.reload()
+    this.router.navigateByUrl('/homepage')
   }
 
   isLoggedIn(){
