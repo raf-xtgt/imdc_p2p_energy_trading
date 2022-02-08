@@ -28,6 +28,7 @@ func runEnergyForecast(w http.ResponseWriter, r *http.Request) {
 	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
 	defer mongoparams.cancel()
 
+	// executing the python script from golang
 	cmd := exec.Command("python", "expSmoothingForecast.py", userId)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

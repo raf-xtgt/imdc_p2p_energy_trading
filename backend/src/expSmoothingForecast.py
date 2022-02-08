@@ -9,9 +9,12 @@ import os
 from dotenv import load_dotenv
 # to pass arguments to the script
 import sys
-
 # to determin points to take based on time
 from datetime import datetime
+# pprint library is used to make the output look more pretty
+from pprint import pprint
+
+from random import randint
 
 load_dotenv()
 USERID = ""
@@ -24,7 +27,7 @@ print("Total arguments passed:", n)
 print("\nName of Python script:", sys.argv[0])
  
 print("\nArguments passed:", sys.argv[1], "\n")
-print("\nArguments passed:", sys.argv[2], "\n")
+#print("\nArguments passed:", sys.argv[2], "\n")
 
 timeStamps = ["12:00AM", "12:30AM", "01:00AM","01:30AM","02:00AM","02:30AM", "03:00AM", "03:30AM",
 "04:00AM", "04:30AM", "05:00AM", "05:30AM", "06:00AM", "06:30AM","07:00AM", "07:30AM",
@@ -69,27 +72,28 @@ def energyForecast():
 
     # prediction values
     for i in range(len(prediction_x)):
-        x_axis_pred.append(prediction_x[i])
-        y_axis_pred.append(prediction_y[i])
+        x_axis_pred.append(str(prediction_x[i]))
+        y_axis_pred.append(float(prediction_y[i]))
     
 
     for j in range(len(actual_x)):
-        x_axis_actual.append(actual_x[j])
-        y_axis_actual.append(actual_y[j])
+        x_axis_actual.append(str(actual_x[j]))
+        y_axis_actual.append(float(actual_y[j]))
     
 
     print("Predicted x-axis values:",x_axis_pred)
     print("Predicted y-axis values:",y_axis_pred)
     print()
-    print("Predicted x-axis values:",x_axis_actual)
-    print("Predicted y-axis values:",y_axis_actual)
+    print("Actual x-axis values:",x_axis_actual)
+    print("Actual y-axis values:",y_axis_actual)
 
-
-    plt.xticks(rotation=30)
-    plt.plot(prediction_x, prediction_y, label='Energy Forecast', linestyle="-", color='red', marker="o")
-    plt.plot(actual_x, actual_y, label='Energy Data', linestyle="-", color='blue', marker="o") 
-    plt.legend()
-    plt.show()
+    return [x_axis_actual, y_axis_actual, x_axis_pred, y_axis_pred]
+    #Plot the graph
+    # plt.xticks(rotation=30)
+    # plt.plot(prediction_x, prediction_y, label='Energy Forecast', linestyle="-", color='red', marker="o")
+    # plt.plot(actual_x, actual_y, label='Energy Data', linestyle="-", color='blue', marker="o") 
+    # plt.legend()
+    # plt.show()
 
 # function to get the number of points in the data that needs to be taken based on time
 def findTime():
@@ -107,7 +111,7 @@ def findTime():
 
 def getDateString():
     now = datetime.now()
-    return str(now.strftime('%d/%m/%Y')) 
+    return str(now.strftime('%d-%m-%Y')) 
 
 def connectToDb():
     # load environment variables
@@ -118,10 +122,43 @@ def connectToDb():
     # connect to the database    
     client = pymongo.MongoClient('mongodb+srv://'+db_username+':'+ db_password +'@imdc-p2p-energy.y0a68.mongodb.net/'+db_cluster+'?retryWrites=true&w=majority')
     print("Connected to database")
+    cluster=client["IMDC-p2p-energy"]
+    collection = cluster.energy_forecast
+
+    # Get sample data
+    forecast = energyForecast()
+    actual_x = forecast[0]
+    actual_y = forecast[1]
+    pred_x = forecast[2]
+    pred_y = forecast[3]
+    dateString = getDateString()
+    # data object
+    data = {
+            'actual_x' : actual_x,
+            'actual_y' : actual_y,
+            'pred_x' : pred_x,
+            'pred_y': pred_y,
+            'date': dateString,
+            'userId':  sys.argv[1]
+        }
+    # if the document of this dateString exists for userId
+    print("hehehehehehehe")
+    #print(collection.find({"userId": sys.argv[1], "dateString":dateString}).count_documents)
+    if collection.count_documents({"userId": sys.argv[1], "date":dateString}, limit=1)==1:
+        result = collection.update_one({"userId": sys.argv[1], "date":dateString}, {"$set":data})
+        print('Updated forecast data for', dateString)
+
+    # insert new one if no document exists 
+    else:
+        # Insert business object directly into MongoDB via insert
+        result=collection.insert_one(data)
+        #Step 4: Print to the console the ObjectID of the new document
+        print('Added forecast data, id:', result.inserted_id)
 
 
-#connectToDb()
-energyForecast()
+
+connectToDb()
+#energyForecast()
 
 
 """
