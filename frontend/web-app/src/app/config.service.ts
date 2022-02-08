@@ -70,9 +70,9 @@ export class ConfigService {
     return this.http.post(this._getBuyRequestUrl, body)
   }
 
-  // to run the python script that will do energy forecasting via golang
-  runEnergyForecast(){
-    const body = JSON.stringify("Run the energy forecast")
+  // to run the python script that will do energy forecasting via golang and py script
+  runEnergyForecast(userId: string){
+    const body = JSON.stringify(userId)
     return this.http.post(this._energyForecastURL, body)
   }
 

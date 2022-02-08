@@ -10,6 +10,9 @@ from dotenv import load_dotenv
 # to pass arguments to the script
 import sys
 
+# to determin points to take based on time
+from datetime import datetime
+
 load_dotenv()
 USERID = ""
 # handle arguments passed to the script
@@ -21,19 +24,27 @@ print("Total arguments passed:", n)
 print("\nName of Python script:", sys.argv[0])
  
 print("\nArguments passed:", sys.argv[1], "\n")
+print("\nArguments passed:", sys.argv[2], "\n")
 
+timeStamps = ["12:00AM", "12:30AM", "01:00AM","01:30AM","02:00AM","02:30AM", "03:00AM", "03:30AM",
+"04:00AM", "04:30AM", "05:00AM", "05:30AM", "06:00AM", "06:30AM","07:00AM", "07:30AM",
+"08:00AM", "08:30AM", "09:00AM", "09:30AM", "10:00AM", "10:30AM", "11:00AM", "11:30AM", 
+"12:00PM","12:30PM", "01:00PM","01:30PM","02:00PM","02:30PM", "03:00PM", "03:30PM",
+"04:00PM", "04:30PM", "05:00PM", "05:30PM", "06:00PM", "06:30PM","07:00PM", "07:30PM",
+"08:00PM", "08:30PM", "09:00PM", "09:30PM", "10:00PM", "10:30PM", "11:00PM", "11:30PM",]
 
 def energyForecast():
+    upper_limit = findTime()
     # Load the data
     fields = ['PeriodStart', 'Ghi Curr Day'] # we only want to use these rows
-    filename = "Irradiance_39.xlsx"
+    filename = "Irradiance_data_for_one_day.xlsx"
     df = pd.read_excel(filename, usecols=fields)
     #print(df.info) # print the dataframe
 
     # select a specific segment of the data
-    data = df['Ghi Curr Day'][1:50]
+    data = df['Ghi Curr Day'][1:upper_limit+1]
     # training the model
-    model = ExponentialSmoothing(data, trend="add", damped=True, seasonal="add", seasonal_periods=2)
+    model = ExponentialSmoothing(data, trend="add", damped_trend=True, seasonal="add", seasonal_periods=2)
     model_fit = model.fit() # points according to the model
     #print("Forecast plots:", model_fit.fittedvalues)
     
@@ -43,12 +54,12 @@ def energyForecast():
     #print("Forecast values:", forecast)
 
     # Plot the forecast 
-    actual_x = df['PeriodStart'][1:50].values
-    ypoints = df['Ghi Curr Day'][1:50].values
+    actual_x = timeStamps[1:upper_limit+1]
+    ypoints = df['Ghi Curr Day'][1:upper_limit+1].values
     actual_y = ypoints
 
 
-    prediction_x = df['PeriodStart'][1:51].values # include the next time series
+    prediction_x = timeStamps[1:upper_limit+2] # include the next time series
     prediction_y = np.concatenate((model_fit.fittedvalues, forecast))
     
     x_axis_pred = []
@@ -79,6 +90,24 @@ def energyForecast():
     plt.plot(actual_x, actual_y, label='Energy Data', linestyle="-", color='blue', marker="o") 
     plt.legend()
     plt.show()
+
+# function to get the number of points in the data that needs to be taken based on time
+def findTime():
+    now = datetime.now()
+    hrs = int(now.strftime('%H'))
+    mint = int(now.strftime('%M'))
+    upper_end = 0
+    if mint < 30:
+        upper_end = hrs*2
+    elif mint>=30 and mint<=45:
+        upper_end = (hrs*2) + 1
+    else:
+        upper_end = (hrs*2) + 2
+    return upper_end
+
+def getDateString():
+    now = datetime.now()
+    return str(now.strftime('%d/%m/%Y')) 
 
 def connectToDb():
     # load environment variables

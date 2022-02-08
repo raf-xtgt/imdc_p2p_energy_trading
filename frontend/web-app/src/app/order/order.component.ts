@@ -54,9 +54,9 @@ export class OrderComponent implements OnInit {
     }
   }
 
-
+    // ask the backend to add forecast data for this user on the database
   initEnergyForecast(){
-    this._config.runEnergyForecast().subscribe(data => {
+    this._config.runEnergyForecast(this._buyerId).subscribe(data => {
       console.log("Request sent to initiate forecasting", data)
     })
   }
