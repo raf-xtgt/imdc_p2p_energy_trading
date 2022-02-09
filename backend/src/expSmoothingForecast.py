@@ -142,8 +142,6 @@ def connectToDb():
             'userId':  sys.argv[1]
         }
     # if the document of this dateString exists for userId
-    print("hehehehehehehe")
-    #print(collection.find({"userId": sys.argv[1], "dateString":dateString}).count_documents)
     if collection.count_documents({"userId": sys.argv[1], "date":dateString}, limit=1)==1:
         result = collection.update_one({"userId": sys.argv[1], "date":dateString}, {"$set":data})
         print('Updated forecast data for', dateString)
@@ -152,17 +150,10 @@ def connectToDb():
     else:
         # Insert business object directly into MongoDB via insert
         result=collection.insert_one(data)
-        #Step 4: Print to the console the ObjectID of the new document
+        #Print to the console the ObjectID of the new document
         print('Added forecast data, id:', result.inserted_id)
 
 
 
 connectToDb()
 #energyForecast()
-
-
-"""
-1. Connect the python script to db.
-2. Find a way to call the python script from golang and pass in the user id as argument
-3. Create a forecast dataset for each user. [Data and user id]
-"""
