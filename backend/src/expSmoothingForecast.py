@@ -11,10 +11,6 @@ from dotenv import load_dotenv
 import sys
 # to determin points to take based on time
 from datetime import datetime
-# pprint library is used to make the output look more pretty
-from pprint import pprint
-
-from random import randint
 
 load_dotenv()
 USERID = ""
@@ -73,12 +69,15 @@ def energyForecast():
     # prediction values
     for i in range(len(prediction_x)):
         x_axis_pred.append(str(prediction_x[i]))
-        y_axis_pred.append(float(prediction_y[i]))
+        # convert from W/m^2 to kWh
+        energy = unitConversion(prediction_y[i])
+        y_axis_pred.append(float(energy))
     
 
     for j in range(len(actual_x)):
         x_axis_actual.append(str(actual_x[j]))
-        y_axis_actual.append(float(actual_y[j]))
+        energy = unitConversion(actual_y[j])
+        y_axis_actual.append(float(energy))
     
 
     print("Predicted x-axis values:",x_axis_pred)
@@ -112,6 +111,18 @@ def findTime():
 def getDateString():
     now = datetime.now()
     return str(now.strftime('%d-%m-%Y')) 
+
+# function to convert Watts per square metre to kilowatt hours
+def unitConversion(value):
+    avg_roof_top_size = 50 # 50 square metres worth of panels
+    power_hrs = 0.5 # since we get for 30 min intervals
+    energy_val = (value * avg_roof_top_size * power_hrs)/100
+    if energy_val <0:
+        return 0
+    else:
+        return energy_val
+
+
 
 def connectToDb():
     # load environment variables
@@ -157,3 +168,24 @@ def connectToDb():
 
 connectToDb()
 #energyForecast()
+
+
+"""
+Irradiance (watts per square metre) to kWh
+(2 W/m^2 * 84 m^2 * 0.5hr) /1000
+
+Solar Irradinace: watts per square metre
+Malaysia has an average house size of about 1,264 sq ft 
+
+
+Most residential solar panels on today's market are rated to produce 
+between 250 and 400 watts each per hour.
+take average then 325 per hr 
+
+Domestic solar panel systems typically have a capacity of between 1 kW and 4 kW.
+
+
+- When selling say this can produce 325 w per hr (predict it)
+- When buying say based on capacitance 
+
+"""
