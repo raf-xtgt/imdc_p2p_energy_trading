@@ -24,6 +24,7 @@ export class ConfigService {
   private _getBuyRequestUrl: string = this._configUrl + 'GetBuyRequests'
   private _energyForecastURL: string = this._configUrl+ 'RunBuyEnergyForecast'
   private _latestBuyForecastURL: string = this._configUrl+ 'GetLatestBuyForecast'
+  private _sellEnergyForecastURL: string = this._configUrl+ 'RunSellEnergyForecast'
 
   TOKEN_KEY = 'token';
 
@@ -71,7 +72,8 @@ export class ConfigService {
     return this.http.post(this._getBuyRequestUrl, body)
   }
 
-  // to run the python script that will do energy forecasting via golang and py script
+  // to run the python script that will do energy forecasting via golang
+  // this will produce prediction for the amount of energy that needs to be consumed
   runBuyEnergyForecast(userId: string){
     const body = JSON.stringify(userId)
     return this.http.post(this._energyForecastURL, body)
@@ -81,6 +83,12 @@ export class ConfigService {
   getBuyEnergyForecast(date: string){
     const body = JSON.stringify(date)
     return this.http.post(this._latestBuyForecastURL, body)
+  }
+
+  //to run py script that will produce prediction for the amount of energy that can be produced
+  runSellEnergyForecast(userId: string){
+    const body = JSON.stringify(userId)
+    return this.http.post(this._sellEnergyForecastURL, body)
   }
 
 }

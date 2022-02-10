@@ -18,18 +18,14 @@ export class ToolbarComponent implements OnInit {
   ngOnInit(): void {
     // check if the jwt is stored in local storage or not
       this._jwtServ.verifyToken().subscribe(data => {
-        console.log("Verified Token", data)
+        //console.log("Verified Token", data)
         let response = JSON.parse(JSON.stringify(data))
-        console.log(response.User)
+        //console.log(response.User)
         if (data !=null){
           this.username = response.User.UserName
           this.isLoggedIn()
         }
-        
-      })
-    
-    
-    
+      }) 
   }
 
 

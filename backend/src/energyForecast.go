@@ -13,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// add forecast data for buying energy. This predicts the energy a user can consume
 func runBuyEnergyForecast(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 	var userId string
@@ -77,4 +78,37 @@ func getLatestBuyForecast(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJSON(w, r, http.StatusCreated, buyOrderForecastResponse)
+}
+
+// add forecast data in db for bidding on buy order. This predicts the energy a user can produce
+func runSellEnergyForecast(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
+	var userId string
+
+	// get the data from the request body
+	decoder := json.NewDecoder(r.Body)
+	// place the user data inside newUser
+	if err := decoder.Decode(&userId); err != nil {
+		fmt.Println("Failed adding new forecast data", err)
+		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+		return
+	}
+	defer r.Body.Close()
+	fmt.Println("This is the user id for forecasting from frontend", userId)
+	// to prevent backend to timeout
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	// executing the python script from golang
+	cmd := exec.Command("python", "expSmoothingForecast.py", userId)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if err != nil {
+		fmt.Println("This shit does not work", err)
+	} else {
+		fmt.Println("Ran py script successfully")
+	}
+	var newRequest = ""
+	respondWithJSON(w, r, http.StatusCreated, newRequest)
 }

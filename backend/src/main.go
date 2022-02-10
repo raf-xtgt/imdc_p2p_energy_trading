@@ -91,6 +91,8 @@ func listen() error {
 	mux.HandleFunc("/GetBuyRequests", getEnergyRequests)
 	mux.HandleFunc("/RunBuyEnergyForecast", runBuyEnergyForecast)
 	mux.HandleFunc("/GetLatestBuyForecast", getLatestBuyForecast)
+	mux.HandleFunc("/RunSellEnergyForecast", runSellEnergyForecast)
+
 	handler := cors.Default().Handler(mux)
 	log.Fatal(http.ListenAndServe(":8080", handler))
 

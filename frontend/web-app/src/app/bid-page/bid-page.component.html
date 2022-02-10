@@ -15,9 +15,9 @@
     </mat-grid-list>
     
      <!-- Buy amount prediction graph goes here  -->
-     <!-- <div style="display: block;width: 100%;">
-        <div><h1>Comparison of Energy Consumption(kWh)</h1></div>
-        <canvas baseChart width="500" height="120"
+     <div style="display: block;width: 100%;">
+        <div><h1>Comparison of Energy Production(kWh)</h1></div>
+        <!-- <canvas baseChart width="500" height="120"
           [datasets]="chartData"
           [labels]="xAxis"
           [options]="lineChartOptions"
@@ -25,8 +25,8 @@
           [chartType]="'line'"
           [colors]="chartColors"
         >
-        </canvas>
-      </div> -->
+        </canvas> -->
+      </div>
 
     
     
@@ -35,7 +35,7 @@
     <mat-card> 
         <mat-card-content>
             <div style="width: 100%;"> 
-                <h1>Buy Energy Form</h1>
+                <h1>Bid Form</h1>
                 <h4>Make an order for buying energy by simply providing the energy and fiat amount</h4>
 
                 <mat-grid-list cols="3" rowHeight="150px">
@@ -73,8 +73,6 @@
                         <div>
                             <button type="submit" class="btn btn-success" [disabled]="!buyOrderForm.form.valid" >Buy</button>
                         </div>
-                        
-
                     </form>
                     </mat-grid-tile>
                 </mat-grid-list>
