@@ -12,20 +12,21 @@
                 </mat-card-content>
             </mat-card>
         </mat-grid-tile>
-
-        <mat-grid-tile [colspan]=3 [rowspan]=1>
-            <mat-card>
-                <mat-card-content>
-                    <!-- Buy amount prediction graph goes here  -->
-                    <div>
-                        Graph
-                    </div>
-                </mat-card-content>
-            </mat-card>
-            
-        </mat-grid-tile>
     </mat-grid-list>
     
+     <!-- Buy amount prediction graph goes here  -->
+     <div style="display: block;width: 100%;">
+        <canvas baseChart width="500" height="120"
+          [datasets]="chartData"
+          [labels]="xAxis"
+          [options]="lineChartOptions"
+          [legend]="true"
+          [chartType]="'line'"
+          [colors]="chartColors"
+        >
+        </canvas>
+      </div>
+
     
     
     

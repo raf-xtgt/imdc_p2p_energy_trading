@@ -1,12 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { JWTService } from '../userAuth.service';
-import {BuyEnergyRequest, HouseholdEnergyData} from '../classes';
+import {BuyEnergyRequest, GraphData, HouseholdEnergyData} from '../classes';
 import { DateService } from '../date.service';
 // import the custom http service module to communicate with backend
 import { ConfigService } from '../config.service';
 import { ModalService } from '../modals.service';
 import Swal from 'sweetalert2'
 import { Router } from '@angular/router';
+import { GraphService } from '../graph.service';
+import { ChartDataSets, ChartOptions } from 'chart.js';
+import { Color, Label } from 'ng2-charts';
+
 
 @Component({
   selector: 'app-order',
@@ -31,7 +35,26 @@ export class OrderComponent implements OnInit {
   public completedTran :number = 10;
   public currentFiat :number = 2000
   public currentEnergy :number = 12000;
-  
+
+  // buy forecast graph
+  public actual_x :string[] = []
+  public actual_y :number[] = []
+  public pred_x :string[] = []
+  public pred_y :number[] = []
+  public graphData :GraphData[] = []
+  public chartData: ChartDataSets[] = [];
+  public xAxis: Label[] = [];  
+  public lineChartOptions = {
+    responsive: true,
+  };
+  public chartColors: any[] = [
+    {
+        borderColor:"#2793FF",
+        backgroundColor: ["red", "#B9DCFF"],
+        fill:false
+    }];
+
+
   ngOnInit(): void {
     
       // check if the jwt is stored in local storage or not
@@ -54,10 +77,6 @@ export class OrderComponent implements OnInit {
     }
   }
 
-  // async getData() {
-  //   await this.initEnergyForecast()
-  //   this.getForecastForBuying()
-  // }
 
     // ask the backend to add forecast data for this user on the database
   initEnergyForecast(){
@@ -96,6 +115,24 @@ export class OrderComponent implements OnInit {
     console.log("data as sent in request", dateToday)
     this._config.getBuyEnergyForecast(dateToday).subscribe(data => {
       console.log("data to plot graph when making buy order", data)
+      let response = JSON.parse(JSON.stringify(data))
+      //console.log(response[0].Actual_X)
+      this.actual_x = response[0].Actual_X
+      this.actual_y = response[0].Actual_Y
+      let actualGraphData: GraphData = new GraphData(this.actual_y, this.actual_x, "Actual Power Consumption")
+      this.graphData.push(actualGraphData)
+      this.pred_x = response[0].Pred_X
+      this.pred_y = response[0].Pred_Y
+      let predictedGraphData: GraphData = new GraphData(this.pred_y, this.pred_x, "Predicted Power Consumption")
+      this.graphData.push(predictedGraphData)
+      let makeGraph = new GraphService()
+      makeGraph.data = this.graphData
+      let d = makeGraph.drawGraph()
+      console.log("What we use for plotting graph", d)
+      this.chartData = d.y
+      this.xAxis = d.x[1]
+
+
     })
 
   }
