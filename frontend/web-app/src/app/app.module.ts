@@ -35,6 +35,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { OrderComponent } from './order/order.component';
 import { LineGraphComponent } from './line-graph/line-graph.component';
 import { HouseholdPriceGraphComponent } from './household-price-graph/household-price-graph.component';
+import { BidPageComponent } from './bid-page/bid-page.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { HouseholdPriceGraphComponent } from './household-price-graph/household-
     OrderComponent,
     LineGraphComponent,
     HouseholdPriceGraphComponent,
+    BidPageComponent,
   ],
   imports: [
     BrowserModule,

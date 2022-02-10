@@ -160,11 +160,7 @@ export class OrderComponent implements OnInit {
         this.currentTime = (this.xAxis[this.xAxis.length-2]).toString()
         this.predictionTime = (this.xAxis[this.xAxis.length-1]).toString()
       }
-      
-
-
     })
-
   }
 
 
