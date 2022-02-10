@@ -90,11 +90,11 @@ def forecastForBuyOrders():
 
 
     #Plot the graph
-    plt.xticks(rotation=30)
-    plt.plot(x_axis_pred, y_axis_pred, label='Prediction', linestyle="-", color='red', marker="o")
-    plt.plot(x_axis_actual, y_axis_actual, label='Actual', linestyle="-", color='blue', marker="o") 
-    plt.legend()
-    plt.show()
+    # plt.xticks(rotation=30)
+    # plt.plot(x_axis_pred, y_axis_pred, label='Prediction', linestyle="-", color='red', marker="o")
+    # plt.plot(x_axis_actual, y_axis_actual, label='Actual', linestyle="-", color='blue', marker="o") 
+    # plt.legend()
+    # plt.show()
     return [x_axis_actual, y_axis_actual, x_axis_pred, y_axis_pred]
 
 

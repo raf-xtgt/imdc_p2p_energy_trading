@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func runEnergyForecast(w http.ResponseWriter, r *http.Request) {
+func runBuyEnergyForecast(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 	var userId string
 
@@ -29,7 +29,7 @@ func runEnergyForecast(w http.ResponseWriter, r *http.Request) {
 	defer mongoparams.cancel()
 
 	// executing the python script from golang
-	cmd := exec.Command("python", "expSmoothingForecast.py", userId)
+	cmd := exec.Command("python", "buyForecastForAllUsers.py")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
