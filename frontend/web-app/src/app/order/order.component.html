@@ -1,14 +1,14 @@
 <div class="container" style="margin-left:20px; margin-right: 20px; margin-top: 30px; ">
     
-    <mat-grid-list cols="4" rowHeight="100px" style="margin-bottom:15px">
+    <mat-grid-list cols="1" rowHeight="100px" style="margin-bottom:15px">
         <mat-grid-tile [colspan]=1 [rowspan]=1>
             <mat-card>
                 <mat-card-content>
                     <div style="width: 100%;">
-                        Date: 
+                        Date: {{currentDate}}
                     </div>
-                    <div>Curent Time:</div>
-                    <div>Prediction:</div>           
+                    <div>Consumption: {{currentConsumption}}kWh at {{currentTime}} MYT</div>
+                    <div>Forecast: {{prediction}}kWh at {{predictionTime}} MYT </div>           
                 </mat-card-content>
             </mat-card>
         </mat-grid-tile>

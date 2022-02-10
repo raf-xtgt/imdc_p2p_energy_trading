@@ -42,17 +42,35 @@ export class OrderComponent implements OnInit {
   public pred_x :string[] = []
   public pred_y :number[] = []
   public graphData :GraphData[] = []
+  // y and x axis
   public chartData: ChartDataSets[] = [];
   public xAxis: Label[] = [];  
+
+  // data for the card above the graph
+  public currentDate:string = this.dateService.getCurrentDate()
+  public currentTime:string = ""
+  public currentConsumption :number = 0
+  public predictionTime:string = "" // time at which the prediction is made
+  public prediction:number = 0
+
   public lineChartOptions = {
     responsive: true,
   };
   public chartColors: any[] = [
     {
         borderColor:"#2793FF",
-        backgroundColor: ["red", "#B9DCFF"],
+        backgroundColor: "#B9DCFF",
         fill:false
-    }];
+    },
+
+    // predicted
+    {
+      borderColor: "#FF6347",
+      backgroundColor: "#B22222",
+      fill:false
+  },
+  
+  ];
 
 
   ngOnInit(): void {
@@ -115,22 +133,34 @@ export class OrderComponent implements OnInit {
     console.log("data as sent in request", dateToday)
     this._config.getBuyEnergyForecast(dateToday).subscribe(data => {
       console.log("data to plot graph when making buy order", data)
-      let response = JSON.parse(JSON.stringify(data))
-      //console.log(response[0].Actual_X)
-      this.actual_x = response[0].Actual_X
-      this.actual_y = response[0].Actual_Y
-      let actualGraphData: GraphData = new GraphData(this.actual_y, this.actual_x, "Actual Power Consumption")
-      this.graphData.push(actualGraphData)
-      this.pred_x = response[0].Pred_X
-      this.pred_y = response[0].Pred_Y
-      let predictedGraphData: GraphData = new GraphData(this.pred_y, this.pred_x, "Predicted Power Consumption")
-      this.graphData.push(predictedGraphData)
-      let makeGraph = new GraphService()
-      makeGraph.data = this.graphData
-      let d = makeGraph.drawGraph()
-      console.log("What we use for plotting graph", d)
-      this.chartData = d.y
-      this.xAxis = d.x[1]
+      if (data != null){
+        let response = JSON.parse(JSON.stringify(data))
+        // prepare graph data for actual plot
+        this.actual_x = response[0].Actual_X
+        this.actual_y = response[0].Actual_Y
+        let actualGraphData: GraphData = new GraphData(this.actual_y, this.actual_x, "Actual Power Consumption")
+        this.graphData.push(actualGraphData)
+        
+        // prepare graph data for predicted plot
+        this.pred_x = response[0].Pred_X
+        this.pred_y = response[0].Pred_Y
+        let predictedGraphData: GraphData = new GraphData(this.pred_y, this.pred_x, "Predicted Power Consumption")
+        this.graphData.push(predictedGraphData)
+
+        // draw the graph
+        let makeGraph = new GraphService()
+        makeGraph.data = this.graphData
+        let plot = makeGraph.drawGraph()        
+        this.chartData = plot.y
+        this.xAxis = plot.x[1] // use the timestamps that includes the prediction
+
+        // get the card data
+        this.currentConsumption = this.actual_y[this.actual_y.length-1] // last point is the current one
+        this.prediction =  response[0].Current_Pred 
+        this.currentTime = (this.xAxis[this.xAxis.length-2]).toString()
+        this.predictionTime = (this.xAxis[this.xAxis.length-1]).toString()
+      }
+      
 
 
     })
