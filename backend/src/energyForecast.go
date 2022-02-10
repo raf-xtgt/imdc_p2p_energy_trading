@@ -4,10 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func runBuyEnergyForecast(w http.ResponseWriter, r *http.Request) {
@@ -42,21 +45,36 @@ func runBuyEnergyForecast(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, r, http.StatusCreated, newRequest)
 }
 
-// func runEnergyForecast(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
-// 	var newRequest = ""
-// 	//c := exec.Command("python", "expSmoothingForecast.py")
-// 	c := exec.Command("python expSmoothingForecast.py", "raf")
-// 	err := c.Run()
-// 	if err != nil {
-// 		fmt.Println("Error: ", err)
-// 	}
-// 	//fmt.Println(out)
-// 	// if err := c.Output(); err != nil {
-// 	// 	fmt.Println("Error: ", err)
+// function to get the latest buy energy forecast
+func getLatestBuyForecast(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
+	var dateStr string
 
-// 	// 	respondWithJSON(w, r, http.StatusCreated, "Shit doesn't work")
-// 	// }
-// 	fmt.Println("Ran py script successfully")
-// 	respondWithJSON(w, r, http.StatusCreated, newRequest)
-// }
+	// get the data from the request body
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&dateStr); err != nil {
+		fmt.Println("Failed getting latest forecast data", err)
+		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+		return
+	}
+	defer r.Body.Close()
+	fmt.Println("This is the date for getting buy forecast data from frontend", dateStr)
+	// to prevent backend to timeout
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	// find data
+	cursor, err := db.BuyOrderForecast.Find(mongoparams.ctx, bson.M{"date": dateStr})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// put the data in forecast response
+	var buyOrderForecastResponse []BuyForecastResponse
+	if err = cursor.All(mongoparams.ctx, &buyOrderForecastResponse); err != nil {
+		fmt.Println("Got error here")
+		log.Fatal(err)
+	}
+
+	respondWithJSON(w, r, http.StatusCreated, buyOrderForecastResponse)
+}

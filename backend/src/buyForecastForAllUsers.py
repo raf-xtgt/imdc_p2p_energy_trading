@@ -157,7 +157,7 @@ def connectToDb():
     client = pymongo.MongoClient('mongodb+srv://'+db_username+':'+ db_password +'@imdc-p2p-energy.y0a68.mongodb.net/'+db_cluster+'?retryWrites=true&w=majority')
     print("Connected to database")
     cluster=client["IMDC-p2p-energy"]
-    collection = cluster.buy_order_forecast
+    collection = cluster.buyOrderForecast
 
     # Get sample data
     forecast = forecastForBuyOrders()

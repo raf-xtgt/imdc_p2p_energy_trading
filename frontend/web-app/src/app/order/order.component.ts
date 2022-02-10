@@ -31,7 +31,7 @@ export class OrderComponent implements OnInit {
   public completedTran :number = 10;
   public currentFiat :number = 2000
   public currentEnergy :number = 12000;
-
+  
   ngOnInit(): void {
     
       // check if the jwt is stored in local storage or not
@@ -43,7 +43,7 @@ export class OrderComponent implements OnInit {
         if (data !=null){
           this.username = response.User.UserName
           this._buyerId = response.User.UId
-          this.getEnergyData()
+          this.getEnergyPriceData()
           this.initEnergyForecast()
         }
         
@@ -54,16 +54,23 @@ export class OrderComponent implements OnInit {
     }
   }
 
+  // async getData() {
+  //   await this.initEnergyForecast()
+  //   this.getForecastForBuying()
+  // }
+
     // ask the backend to add forecast data for this user on the database
   initEnergyForecast(){
     this._config.runBuyEnergyForecast(this._buyerId).subscribe(data => {
       console.log("Request sent to initiate forecasting", data)
+      console.log("getting the data")
+      this.getForecastForBuying()
     })
   }
 
 
   // get the average price in kWh from backend for the current day
-  getEnergyData(){
+  getEnergyPriceData(){
     let dateToday = this.dateService.getCurrentDate()
     this.model.dateStr = dateToday
     this._config.getHouseholdData(this.model).subscribe(data => {
@@ -82,6 +89,17 @@ export class OrderComponent implements OnInit {
       //console.log("House hold data", response.Data.Data)
     })
   }
+
+  // function to the get the data for the buy energy forecast
+  getForecastForBuying(){
+    let dateToday = this.dateService.getCurrentDate()
+    console.log("data as sent in request", dateToday)
+    this._config.getBuyEnergyForecast(dateToday).subscribe(data => {
+      console.log("data to plot graph when making buy order", data)
+    })
+
+  }
+
 
   /** process the buy request,
    * If the user confirms the request, then store it in the database

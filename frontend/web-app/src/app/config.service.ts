@@ -23,6 +23,7 @@ export class ConfigService {
   private _buyRequestUrl: string = this._configUrl + 'CreateBuyRequest'
   private _getBuyRequestUrl: string = this._configUrl + 'GetBuyRequests'
   private _energyForecastURL: string = this._configUrl+ 'RunBuyEnergyForecast'
+  private _latestBuyForecastURL: string = this._configUrl+ 'GetLatestBuyForecast'
 
   TOKEN_KEY = 'token';
 
@@ -74,6 +75,12 @@ export class ConfigService {
   runBuyEnergyForecast(userId: string){
     const body = JSON.stringify(userId)
     return this.http.post(this._energyForecastURL, body)
+  }
+
+  // to get the last energy forecast for users making a buy order
+  getBuyEnergyForecast(date: string){
+    const body = JSON.stringify(date)
+    return this.http.post(this._latestBuyForecastURL, body)
   }
 
 }
