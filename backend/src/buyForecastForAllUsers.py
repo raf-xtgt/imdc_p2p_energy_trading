@@ -72,21 +72,22 @@ def forecastForBuyOrders():
     for i in range(len(prediction_x)):
         x_axis_pred.append(str(prediction_x[i]))
         # convert from W/m^2 to kWh
-        energy = unitConversion(prediction_y[i])
+        energy = unitConversion(prediction_y[i], True)
         y_axis_pred.append(float(energy))
     
 
     for j in range(len(actual_x)):
         x_axis_actual.append(str(actual_x[j]))
-        energy = unitConversion(actual_y[j])
+        # actual values need to stay the same so no increase added
+        energy = unitConversion(actual_y[j], False)
         y_axis_actual.append(float(energy))
     
 
-    print("Predicted x-axis values:",x_axis_pred)
-    print("Predicted y-axis values:",y_axis_pred)
-    print()
-    print("Actual x-axis values:",x_axis_actual)
-    print("Actual y-axis values:",y_axis_actual)
+    # print("Predicted x-axis values:",x_axis_pred)
+    # print("Predicted y-axis values:",y_axis_pred)
+    # print()
+    # print("Actual x-axis values:",x_axis_actual)
+    # print("Actual y-axis values:",y_axis_actual)
 
 
     #Plot the graph
@@ -135,11 +136,15 @@ def getDateString():
     return str(now.strftime('%d-%m-%Y')) 
 
 # function to convert Watts per square metre to kilowatt hours
-def unitConversion(value):
+def unitConversion(value, addRandomIncrease):
     increase = random.uniform(0, 0.5) # small number to increase overall demand
     avg_roof_top_size = 50 # 50 square metres worth of panels
     power_hrs = 0.5 # since we get for 30 min intervals
-    energy_val = ((value * avg_roof_top_size * power_hrs)/100) + (  ((value * avg_roof_top_size * power_hrs)/100) *increase )
+    energy_val = 0
+    if addRandomIncrease:
+        energy_val = ((value * avg_roof_top_size * power_hrs)/100) + (  ((value * avg_roof_top_size * power_hrs)/100) *increase )
+    else:
+        energy_val = ((value * avg_roof_top_size * power_hrs)/100)
     if energy_val <0:
         return 0
     else:
