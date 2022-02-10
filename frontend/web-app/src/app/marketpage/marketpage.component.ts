@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ConfigService } from '../config.service';
 import { BuyEnergyRequest } from '../classes';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-marketpage',
@@ -9,7 +10,7 @@ import { BuyEnergyRequest } from '../classes';
 })
 export class MarketpageComponent implements OnInit {
 
-  constructor(private _config:ConfigService) { }
+  constructor(private _config:ConfigService, private router: Router) { }
 
   public allBuyRequests:Array<BuyEnergyRequest>=[];
 
@@ -32,6 +33,11 @@ export class MarketpageComponent implements OnInit {
         //console.log(reqArr[i]);
     }
     })
+  }
+
+  // redirect user to the bidding page
+  navigateToBidPage(){
+    this.router.navigateByUrl('/bid');
   }
 
 }

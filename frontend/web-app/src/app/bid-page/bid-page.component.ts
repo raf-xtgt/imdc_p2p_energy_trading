@@ -7,9 +7,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BidPageComponent implements OnInit {
 
+  public bidEnergyInput: number = 0;
   constructor() { }
 
   ngOnInit(): void {
   }
+
+  createBid(){}
 
 }

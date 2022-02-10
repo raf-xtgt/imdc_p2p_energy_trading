@@ -29,7 +29,7 @@
         <div *ngIf="isVerified">
           <a class="orderBtn" mat-button routerLink="order">New Order</a>
           <a class="topBarBtns" mat-button>Blockchain</a>
-          <a class="topBarBtns" mat-button>Market</a>
+          <a class="topBarBtns" mat-button routerLink="market">Market</a>
           <a class="topBarBtns" mat-button>About</a>
           <!-- <a class="topBarBtns" mat-button>Support</a> -->
           <a class="topBarBtns" mat-button><mat-icon>account_circle</mat-icon>{{username}}</a>
@@ -56,90 +56,3 @@
 
   </mat-sidenav-content>
 </mat-sidenav-container>
-
-
-
-
-
-
-
-
-
-<!-- 
-  
-  <div fxShow = "true" fxHide.gt-sm="true">
-        <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon" (click)="sidenav.toggle()">
-          <mat-icon>menu</mat-icon>
-        </button>
-      </div>
-  
-  <div style="height: 100vh;">
-
-    <mat-toolbar color="primary">
-        <div fxShow = "true" fxHide.gt-sm="true">
-        </div>
-        
-  
-      <span>P2P Energy Trading matchmaking</span>
-  
-      <span class="example-spacer"></span>
-  
-      <div fxShow="true" fxHide.lt-md="true">
-  
-        The following menu items will be hidden on both SM and XS screen sizes 
-  
-        <a href="#" mat-button>Menu Item 1</a>
-  
-        <a href="#" mat-button>Menu Item 2</a>
-  
-        <a href="#" mat-button>Menu Item 3</a>
-  
-        <a href="#" mat-button>Menu Item 4</a>
-  
-      </div>
-  
-     
-  
-    </mat-toolbar>
-
-    <div fxShow = "true" fxHide.gt-sm="true">
-      
-      <mat-sidenav-container class="example-container" *ngIf="shouldRun">
-  
-        <mat-sidenav #sidenav mode="over"
-        [(opened)]="opened"
-      (opened)="events.push('open!')"
-      (closed)="events.push('close!')">
-    
-          <div fxLayout="column">
-    
-            <a href="#" mat-button>Close</a>
-    
-            <a href="#" mat-button>Menu Item 1</a>
-    
-            <a href="#" mat-button>Menu Item 2</a>
-    
-            <a href="#" mat-button>Menu Item 3</a>
-    
-            <a href="#" mat-button>Menu Item 4</a>
-    
-            <a href="#" mat-button>Menu Item 5</a>
-    
-            <a href="#" mat-button>Menu Item 6</a>
-    
-          </div>
-    
-        </mat-sidenav>
-    
-        <mat-sidenav-content fxFlexFill>
-          
-          <button  mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon" (click)="sidenav.toggle()">
-            <mat-icon>menu</mat-icon>
-          </button>
-        </mat-sidenav-content>
-    
-      </mat-sidenav-container>
-  
-    </div>
-      
-  </div> -->
