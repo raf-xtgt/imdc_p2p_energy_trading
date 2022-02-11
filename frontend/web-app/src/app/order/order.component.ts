@@ -180,17 +180,44 @@ export class OrderComponent implements OnInit {
               this._buyRequest.buyerId = this._buyerId
               this._buyRequest.energyAmount = this.energyInput
               this._buyRequest.fiatAmount = this.energyInput * this.currentAvgPrice
-              console.log("Buy request", this._buyRequest)
-              Swal.fire('Your request has been placed on the market!!', '', 'success')  
-              this._config.makeBuyRequest(this._buyRequest).subscribe(data => {
-                //console.log("Response from backend for buy energy request", data)
-              })
+              //console.log("Buy request", this._buyRequest)
+              
+              if (this.orderValidation(this._buyRequest)){
+                Swal.fire('Your request has been placed on the market!!', '', 'success')  
+                  this._config.makeBuyRequest(this._buyRequest).subscribe(data => {
+                  //console.log("Response from backend for buy energy request", data)
+                })
+              }
+              else{
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'Please enter valid energy amount and ensure you have sufficient fiat balance!',
+                })
+              }
+              
+              
 
             } else if (result.isDismissed) {
               Swal.fire('Request Cancelled!', '', 'info')
             
             }
           })
+  }
+
+
+  // to check if the energy amount is within the predicted consumption rate
+  orderValidation(req: BuyEnergyRequest){
+    if (req.energyAmount <= 0 || req.energyAmount > this.prediction){
+      return false
+    }
+    else if (this.currentFiat < req.fiatAmount){
+      return false
+    }
+    else{
+      return true
+    }
+
   }
 
   /** When user clikcs on buy we need to update their account balance
