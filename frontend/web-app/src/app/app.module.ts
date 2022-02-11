@@ -22,6 +22,9 @@ import {MatListModule} from '@angular/material/list';
 import { ChartsModule } from 'ng2-charts';
 // import {Swal} from 'sweetalert2/dist/sweetalert2.js'
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+// for the loading screen
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+
 
 // external components
 import { ToolbarComponent } from './toolbar/toolbar.component';
@@ -72,8 +75,9 @@ import { BidPageComponent } from './bid-page/bid-page.component';
     MatDialogModule,
     MatListModule,
     ChartsModule,
-    SweetAlert2Module.forRoot()
-    //NgxChartsModule
+    SweetAlert2Module.forRoot(),
+    MatProgressSpinnerModule
+
   ],
   exports:[
     ChartsModule

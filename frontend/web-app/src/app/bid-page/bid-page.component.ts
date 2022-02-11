@@ -9,9 +9,10 @@ import { GraphService } from '../graph.service';
 import { ChartDataSets, ChartOptions } from 'chart.js';
 import { Color, Label } from 'ng2-charts';
 import {ProdForecastRequest, GraphData, HouseholdEnergyData} from '../classes';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SendDataService } from '../send-data.service';
 import { BuyEnergyRequest } from '../classes';
+import {ThemePalette} from '@angular/material/core';
+import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
 
 
 @Component({
@@ -82,6 +83,11 @@ export class BidPageComponent implements OnInit {
   // this will hold the buy energy request data for making the bid
   private requestForBid :BuyEnergyRequest = new BuyEnergyRequest("", 0, 0, false) 
 
+  // loading before graph and all data are available
+  public isLoading: boolean = true;
+  color: ThemePalette = 'primary';
+  mode: ProgressSpinnerMode = 'indeterminate';
+  value = 100;
 
   constructor(private _jwtServ:JWTService, private _config:ConfigService, private router: Router, private reqData: SendDataService) { }
 
@@ -154,6 +160,9 @@ export class BidPageComponent implements OnInit {
           this.prediction =  response[0].Current_Pred 
           this.currentTime = (this.xAxis[this.xAxis.length-2]).toString()
           this.predictionTime = (this.xAxis[this.xAxis.length-1]).toString()
+
+          // disable loading since all data has been received for now
+          this.isLoading = false
         }
       })
   }

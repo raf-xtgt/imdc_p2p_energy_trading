@@ -16,16 +16,34 @@
     
      <!-- Buy amount prediction graph goes here  -->
      <div style="display: block;width: 100%;">
-        <div><h1>Comparison of Energy Consumption(kWh)</h1></div>
-        <canvas baseChart width="500" height="120"
-          [datasets]="chartData"
-          [labels]="xAxis"
-          [options]="lineChartOptions"
-          [legend]="true"
-          [chartType]="'line'"
-          [colors]="chartColors"
-        >
-        </canvas>
+
+        <div *ngIf="isLoading" style="text-align: center;">
+            <h3>Loading Graphs...</h3>
+            <mat-progress-spinner
+            
+            diameter = "50"
+            [color]="color"
+            [mode]="mode"
+            [value]="value"
+            
+            ></mat-progress-spinner>
+        </div>
+
+
+
+        <div *ngIf="!isLoading"> 
+            <h1>Comparison of Energy Consumption(kWh)</h1>
+            <canvas baseChart width="500" height="120"
+                [datasets]="chartData"
+                [labels]="xAxis"
+                [options]="lineChartOptions"
+                [legend]="true"
+                [chartType]="'line'"
+                [colors]="chartColors"
+                >
+            </canvas>
+        </div>
+        
       </div>
 
     

@@ -9,7 +9,11 @@ import Swal from 'sweetalert2'
 import { Router } from '@angular/router';
 import { GraphService } from '../graph.service';
 import { ChartDataSets, ChartOptions } from 'chart.js';
-import { Color, Label } from 'ng2-charts';
+import { Label } from 'ng2-charts';
+// for the loading
+import {ThemePalette} from '@angular/material/core';
+import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
+
 
 
 @Component({
@@ -71,6 +75,13 @@ export class OrderComponent implements OnInit {
   },
   
   ];
+
+  // loading before graph and all data are available
+  public isLoading: boolean = true;
+  color: ThemePalette = 'primary';
+  mode: ProgressSpinnerMode = 'indeterminate';
+  value = 100;
+
 
 
   ngOnInit(): void {
@@ -159,6 +170,9 @@ export class OrderComponent implements OnInit {
         this.prediction =  (response[0].Current_Pred).toFixed(2) 
         this.currentTime = (this.xAxis[this.xAxis.length-2]).toString()
         this.predictionTime = (this.xAxis[this.xAxis.length-1]).toString()
+
+        // disable loading since all data has been received for now
+        this.isLoading = false
       }
     })
   }
