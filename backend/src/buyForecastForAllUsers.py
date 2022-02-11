@@ -105,12 +105,15 @@ def findTime():
     hrs = int(now.strftime('%H'))
     mint = int(now.strftime('%M'))
     upper_end = 0
-    if mint < 30:
-        upper_end = hrs*2
-    elif mint>=30 and mint<=45:
-        upper_end = (hrs*2) + 1
+    if not hrs == 0:
+        if mint < 30:
+            upper_end = hrs*2
+        elif mint>=30 and mint<=45:
+            upper_end = (hrs*2) + 1
+        else:
+            upper_end = (hrs*2) + 2
     else:
-        upper_end = (hrs*2) + 2
+        upper_end = 2
     return upper_end
 
 

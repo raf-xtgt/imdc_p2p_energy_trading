@@ -26,7 +26,12 @@ export class GraphData{
 }
 
 // the class that plots the graph
-
 export class Graph{
     constructor(public yAxis: ChartDataSets[], public xAxis: string[], public label: string){}
+}
+
+
+// request sent to backend for requesting data for plotting energy production prediction graph for sellers that make a bid
+export class ProdForecastRequest {
+    constructor(public userId: string, public date: string){}
 }

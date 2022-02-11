@@ -66,6 +66,7 @@ func connectToDb() MongoDatabase {
 	db.EnergyPriceHouse = db.Cluster.Collection("householdEnergyPrice")
 	db.EnergyBuyRequests = db.Cluster.Collection("buyRequests")
 	db.BuyOrderForecast = db.Cluster.Collection("buyOrderForecast")
+	db.ProdForecast = db.Cluster.Collection("energy_forecast")
 	return db
 }
 
@@ -92,6 +93,7 @@ func listen() error {
 	mux.HandleFunc("/RunBuyEnergyForecast", runBuyEnergyForecast)
 	mux.HandleFunc("/GetLatestBuyForecast", getLatestBuyForecast)
 	mux.HandleFunc("/RunSellEnergyForecast", runSellEnergyForecast)
+	mux.HandleFunc("/GetLatestSellForecast", getLatestSellForecast)
 
 	handler := cors.Default().Handler(mux)
 	log.Fatal(http.ListenAndServe(":8080", handler))

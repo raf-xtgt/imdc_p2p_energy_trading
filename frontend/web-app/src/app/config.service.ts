@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 // The HttpClient service makes use of observables for all transactions. You must import the RxJS observable and operator symbols that appear in the example snippets.
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
-import { User, Token, HouseholdEnergyData, BuyEnergyRequest } from './classes';
+import { User, Token, HouseholdEnergyData, BuyEnergyRequest, ProdForecastRequest } from './classes';
 
 /** This file will allow the frontend to communicate with the backend
 * using Angular's HTTP Client
@@ -25,6 +25,7 @@ export class ConfigService {
   private _energyForecastURL: string = this._configUrl+ 'RunBuyEnergyForecast'
   private _latestBuyForecastURL: string = this._configUrl+ 'GetLatestBuyForecast'
   private _sellEnergyForecastURL: string = this._configUrl+ 'RunSellEnergyForecast'
+  private _latestSellForecastURL: string = this._configUrl+ 'GetLatestSellForecast'
 
   TOKEN_KEY = 'token';
 
@@ -89,6 +90,12 @@ export class ConfigService {
   runSellEnergyForecast(userId: string){
     const body = JSON.stringify(userId)
     return this.http.post(this._sellEnergyForecastURL, body)
+  }
+
+  // to get the latest energy production forecast for the current users making a buy order
+  getSellEnergyForecast(data: ProdForecastRequest ){
+    const body = JSON.stringify(data)
+    return this.http.post(this._latestSellForecastURL, body)
   }
 
 }

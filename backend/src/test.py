@@ -1,5 +1,5 @@
-# from datetime import datetime
-# from calendar import monthrange
+from datetime import datetime
+from calendar import monthrange
 # now = datetime.now()
 # print(now.strftime('%Y/%m/%d %H:%M:%S')) #24-hour format
 
@@ -50,6 +50,29 @@
 
 
 
-import random
+# import random
   
-print(random.uniform(0, 0.5))
+# print(random.uniform(0, 0.5))
+
+
+def findTime():
+    now = datetime.now()
+    hrs = int(now.strftime('%H'))
+    mint = int(now.strftime('%M'))
+    print(hrs)
+    print(mint)
+    upper_end = 0
+    
+    if not hrs == 0:
+
+        if mint < 30:
+            upper_end = hrs*2
+        elif mint>=30 and mint<=45:
+            upper_end = (hrs*2) + 1
+        else:
+            upper_end = (hrs*2) + 2
+        
+    else:
+        upper_end = 2
+    return upper_end
+print(findTime())

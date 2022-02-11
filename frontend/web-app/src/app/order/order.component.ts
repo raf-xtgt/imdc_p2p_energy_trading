@@ -43,7 +43,7 @@ export class OrderComponent implements OnInit {
   public pred_y :number[] = []
   public graphData :GraphData[] = []
   // y and x axis
-  public chartData: ChartDataSets[] = [];
+  public chartData: ChartDataSets[] = [{data:[], label:'Consumption Graph'}];
   public xAxis: Label[] = [];  
 
   // data for the card above the graph
@@ -156,7 +156,7 @@ export class OrderComponent implements OnInit {
 
         // get the card data
         this.currentConsumption = this.actual_y[this.actual_y.length-1] // last point is the current one
-        this.prediction =  response[0].Current_Pred 
+        this.prediction =  (response[0].Current_Pred).toFixed(2) 
         this.currentTime = (this.xAxis[this.xAxis.length-2]).toString()
         this.predictionTime = (this.xAxis[this.xAxis.length-1]).toString()
       }

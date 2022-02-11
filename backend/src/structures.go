@@ -36,6 +36,7 @@ type MongoDatabase struct {
 	EnergyPriceHouse  *mongo.Collection
 	EnergyBuyRequests *mongo.Collection
 	BuyOrderForecast  *mongo.Collection
+	ProdForecast      *mongo.Collection
 }
 
 // Structure that will be sent as sign up response to frontend
@@ -105,4 +106,9 @@ type BuyForecastResponse struct {
 	Pred_Y       []float64 "json:pred_y"
 	Current_Pred float64   "json:current_pred" //the prediction for the next 30 minutes of time(future 30 min)
 	Date         string    "json:date"
+}
+
+type ProdForecastRequest struct {
+	UserId string "json: userId"
+	Date   string "json: date"
 }

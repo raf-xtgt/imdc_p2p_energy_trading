@@ -112,3 +112,37 @@ func runSellEnergyForecast(w http.ResponseWriter, r *http.Request) {
 	var newRequest = ""
 	respondWithJSON(w, r, http.StatusCreated, newRequest)
 }
+
+// function to get the latest sell energy forecast
+func getLatestSellForecast(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
+	var request ProdForecastRequest
+
+	// get the data from the request body
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&request); err != nil {
+		fmt.Println("Failed getting latest forecast data", err)
+		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+		return
+	}
+	defer r.Body.Close()
+	fmt.Println("This is the date for getting selling forecast data from frontend", request)
+	// to prevent backend to timeout
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	// find data
+	cursor, err := db.ProdForecast.Find(mongoparams.ctx, bson.M{"date": request.Date, "userId": request.UserId})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// put the data in forecast response
+	var productionForecastResponse []BuyForecastResponse
+	if err = cursor.All(mongoparams.ctx, &productionForecastResponse); err != nil {
+		fmt.Println("Got error here")
+		log.Fatal(err)
+	}
+
+	respondWithJSON(w, r, http.StatusCreated, productionForecastResponse)
+}

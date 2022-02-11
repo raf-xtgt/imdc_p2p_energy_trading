@@ -65,6 +65,7 @@
 
                         <div>
                             <mat-list role="list">
+                                <mat-list-item role="listitem"><h4 style="text-align: left;">Max amount that can be ordered: {{prediction}} kWh</h4></mat-list-item>
                                 <mat-list-item role="listitem"><h4 style="text-align: left;">Average price per kWh: RM {{currentAvgPrice.toFixed(3)}}</h4></mat-list-item>
                                 <mat-list-item role="listitem"><h4 style="text-align: left;" >To Pay: RM {{(energyInput * currentAvgPrice).toFixed(3)}} </h4></mat-list-item>
                             </mat-list>

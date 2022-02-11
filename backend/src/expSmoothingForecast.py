@@ -34,6 +34,7 @@ timeStamps = ["12:00AM", "12:30AM", "01:00AM","01:30AM","02:00AM","02:30AM", "03
 
 def energyForecast():
     upper_limit = findTime()
+    print("Upper Limit:", upper_limit)
     # Load the data
     fields = ['PeriodStart', 'Ghi Curr Day'] # we only want to use these rows
     filename = "Irradiance_data_for_one_day.xlsx"
@@ -100,12 +101,15 @@ def findTime():
     hrs = int(now.strftime('%H'))
     mint = int(now.strftime('%M'))
     upper_end = 0
-    if mint < 30:
-        upper_end = hrs*2
-    elif mint>=30 and mint<=45:
-        upper_end = (hrs*2) + 1
+    if not hrs == 0:
+        if mint < 30:
+            upper_end = hrs*2
+        elif mint>=30 and mint<=45:
+            upper_end = (hrs*2) + 1
+        else:
+            upper_end = (hrs*2) + 2
     else:
-        upper_end = (hrs*2) + 2
+        upper_end = 4
     return upper_end
 
 def getDateString():

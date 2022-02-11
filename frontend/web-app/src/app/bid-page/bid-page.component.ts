@@ -8,8 +8,7 @@ import { DateService } from '../date.service';
 import { GraphService } from '../graph.service';
 import { ChartDataSets, ChartOptions } from 'chart.js';
 import { Color, Label } from 'ng2-charts';
-import {BuyEnergyRequest, GraphData, HouseholdEnergyData} from '../classes';
-
+import {ProdForecastRequest, GraphData, HouseholdEnergyData} from '../classes';
 
 @Component({
   selector: 'app-bid-page',
@@ -43,7 +42,7 @@ export class BidPageComponent implements OnInit {
    public pred_y :number[] = []
    public graphData :GraphData[] = []
    // y and x axis
-   public chartData: ChartDataSets[] = [];
+   public chartData: ChartDataSets[] = [{data:[], label:'Production graph'}];
    public xAxis: Label[] = [];  
 
 
@@ -103,9 +102,51 @@ export class BidPageComponent implements OnInit {
       this._config.runSellEnergyForecast(this._sellerId).subscribe(data => {
         console.log("Request sent to initiate forecasting", data)
         console.log("getting the data")
-        //this.getForecastForBuying()
+        this.getForecastForSelling()
       })
     }
+
+
+
+      // function to the get the data for the buy energy forecast
+    getForecastForSelling(){
+      let dateToday = this.dateService.getCurrentDate()
+      console.log("data as sent in request", dateToday)
+      let dataRequest= new ProdForecastRequest(this._sellerId, dateToday)
+      this._config.getSellEnergyForecast(dataRequest).subscribe(data => {
+        console.log("data to plot graph when making a bid", data)
+        if (data != null){
+          let response = JSON.parse(JSON.stringify(data))
+          // prepare graph data for actual plot
+          this.actual_x = response[0].Actual_X
+          this.actual_y = response[0].Actual_Y
+          let actualGraphData: GraphData = new GraphData(this.actual_y, this.actual_x, "Actual Power Production(kWh)")
+          this.graphData.push(actualGraphData)
+          
+          // prepare graph data for predicted plot
+          this.pred_x = response[0].Pred_X
+          this.pred_y = response[0].Pred_Y
+          let predictedGraphData: GraphData = new GraphData(this.pred_y, this.pred_x, "Predicted Power Production(kWh)")
+          this.graphData.push(predictedGraphData)
+
+          // draw the graph
+          let makeGraph = new GraphService()
+          makeGraph.data = this.graphData
+          let plot = makeGraph.drawGraph()        
+          this.chartData = plot.y
+          this.xAxis = plot.x[1] // use the timestamps that includes the prediction
+
+          // get the card data
+          this.currentConsumption = this.actual_y[this.actual_y.length-1] // last point is the current one
+          this.prediction =  response[0].Current_Pred 
+          this.currentTime = (this.xAxis[this.xAxis.length-2]).toString()
+          this.predictionTime = (this.xAxis[this.xAxis.length-1]).toString()
+        }
+      })
+  }
+
+
+
 
     // get the average price in kWh from backend for the current day
     getEnergyPriceData(){
