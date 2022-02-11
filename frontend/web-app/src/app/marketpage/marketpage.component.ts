@@ -21,8 +21,6 @@ export class MarketpageComponent implements OnInit {
   public message: string = "";
 
   ngOnInit(): void {
-    let id = document.getElementById("uId")
-    console.log("the user id from market page", id)
     this.getBuyRequests()
 
     // subscribe to the message
@@ -34,14 +32,12 @@ export class MarketpageComponent implements OnInit {
     this._config.getBuyRequests().subscribe(data => {
       //console.log("Buy requests data for market page", data)
       let response = JSON.parse(JSON.stringify(data))
-      console.log("Buy requests data for market page", response)
+      //console.log("Buy requests data for market page", response)
       //this.allBuyRequests = response.Requests
       let reqArr = response.Requests
       for(let i = 0; i < reqArr.length; i++) {
         let request = new BuyEnergyRequest(reqArr[i].BuyerId, reqArr[i].EnergyAmount, reqArr[i].FiatAmount, reqArr[i].RequestClosed)
         this.allBuyRequests.push(request)
-        // Prints i-th element of the array
-        //console.log(reqArr[i]);
     }
     })
   }

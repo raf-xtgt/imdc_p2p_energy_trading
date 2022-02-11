@@ -113,8 +113,8 @@ export class BidPageComponent implements OnInit {
      // ask the backend to add forecast data for this user on the database
      initSellEnergyForecast(){
       this._config.runSellEnergyForecast(this._sellerId).subscribe(data => {
-        console.log("Request sent to initiate forecasting", data)
-        console.log("getting the data")
+        //console.log("Request sent to initiate forecasting", data)
+        //console.log("getting the data")
         this.getForecastForSelling()
       })
     }
@@ -124,10 +124,10 @@ export class BidPageComponent implements OnInit {
       // function to the get the data for the buy energy forecast
     getForecastForSelling(){
       let dateToday = this.dateService.getCurrentDate()
-      console.log("data as sent in request", dateToday)
+      //console.log("data as sent in request", dateToday)
       let dataRequest= new ProdForecastRequest(this._sellerId, dateToday)
       this._config.getSellEnergyForecast(dataRequest).subscribe(data => {
-        console.log("data to plot graph when making a bid", data)
+        //console.log("data to plot graph when making a bid", data)
         if (data != null){
           let response = JSON.parse(JSON.stringify(data))
           // prepare graph data for actual plot
@@ -177,7 +177,7 @@ export class BidPageComponent implements OnInit {
         else{
           console.log("lol")
         }
-        console.log("House hold data for order page", response)
+        //console.log("House hold data for order page", response)
         //console.log("House hold data", response.Data.Data)
       })
     }

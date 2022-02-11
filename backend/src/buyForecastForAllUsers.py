@@ -148,8 +148,10 @@ def unitConversion(value, addRandomIncrease):
         energy_val = ((value * avg_roof_top_size * power_hrs)/100) + (  ((value * avg_roof_top_size * power_hrs)/100) *increase )
     else:
         energy_val = ((value * avg_roof_top_size * power_hrs)/100)
-    if energy_val <0:
-        return 0
+    
+    if energy_val <=50:
+        generate_energy = random.uniform(80, 90)
+        return generate_energy
     else:
         return energy_val
 
