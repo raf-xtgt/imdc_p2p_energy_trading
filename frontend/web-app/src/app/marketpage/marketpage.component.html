@@ -11,7 +11,10 @@
                             <mat-card-content>
                                 <mat-grid-list cols="5" rowHeight="40px">
                                     <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
-                                        Consumer: {{request.buyerId}}
+                                        <div>
+                                            Consumer: {{request.buyerId}}
+                                        </div>
+                                        
                                     </mat-grid-tile>
                                     <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
                                         Energy: {{request.energyAmount}} kWh
@@ -23,7 +26,7 @@
                                         <h4>Closes at 11:30pm</h4>
                                     </mat-grid-tile>
                                     <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
-                                        <button type="bid" class="btn btn-success" (click)="navigateToBidPage()">Bid</button>
+                                        <button type="bid" class="btn btn-success" (click)="bid(request)">Bid</button>
                                     </mat-grid-tile>
                                     
                                     

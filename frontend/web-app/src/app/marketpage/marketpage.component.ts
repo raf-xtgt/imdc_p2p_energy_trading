@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ConfigService } from '../config.service';
 import { BuyEnergyRequest } from '../classes';
 import {Router} from '@angular/router';
+import { BidPageComponent } from '../bid-page/bid-page.component';
+import { SendDataService } from '../send-data.service';
 
 @Component({
   selector: 'app-marketpage',
@@ -10,12 +12,21 @@ import {Router} from '@angular/router';
 })
 export class MarketpageComponent implements OnInit {
 
-  constructor(private _config:ConfigService, private router: Router) { }
+  constructor(private _config:ConfigService, private router: Router, private reqData: SendDataService) { }
 
   public allBuyRequests:Array<BuyEnergyRequest>=[];
+  private requestForBid :BuyEnergyRequest = new BuyEnergyRequest("", 0, 0, false) // this will hold the buy energy request data on which the prosumer makes a bid
+
+  public buyerId: string = ""
+  public message: string = "";
 
   ngOnInit(): void {
+    let id = document.getElementById("uId")
+    console.log("the user id from market page", id)
     this.getBuyRequests()
+
+    // subscribe to the message
+    this.reqData.currentMessage.subscribe(message => this.requestForBid = message)
   }
 
 
@@ -39,5 +50,13 @@ export class MarketpageComponent implements OnInit {
   navigateToBidPage(){
     this.router.navigateByUrl('/bid');
   }
+
+  bid(request: BuyEnergyRequest){
+    console.log("the buy energy request", request.buyerId)
+    //send the request to the bidpage that is listening on the msg
+    this.reqData.changeMessage(request)
+    this.router.navigateByUrl('/bid');
+  }
+
 
 }

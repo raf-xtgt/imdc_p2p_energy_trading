@@ -9,6 +9,10 @@ import { GraphService } from '../graph.service';
 import { ChartDataSets, ChartOptions } from 'chart.js';
 import { Color, Label } from 'ng2-charts';
 import {ProdForecastRequest, GraphData, HouseholdEnergyData} from '../classes';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { SendDataService } from '../send-data.service';
+import { BuyEnergyRequest } from '../classes';
+
 
 @Component({
   selector: 'app-bid-page',
@@ -73,7 +77,13 @@ export class BidPageComponent implements OnInit {
   
   ];
 
-  constructor(private _jwtServ:JWTService, private _config:ConfigService, private router: Router) { }
+  //message from market page
+  public message: string = ""
+  // this will hold the buy energy request data for making the bid
+  private requestForBid :BuyEnergyRequest = new BuyEnergyRequest("", 0, 0, false) 
+
+
+  constructor(private _jwtServ:JWTService, private _config:ConfigService, private router: Router, private reqData: SendDataService) { }
 
   ngOnInit(): void {
        // check if the jwt is stored in local storage or not
@@ -87,6 +97,9 @@ export class BidPageComponent implements OnInit {
             this._sellerId = response.User.UId
             this.getEnergyPriceData()
             this.initSellEnergyForecast()
+            // subscribe to the message from the marketpage
+            this.reqData.currentMessage.subscribe(message => this.requestForBid = message)
+            console.log(this.requestForBid)
           }
           
         })
