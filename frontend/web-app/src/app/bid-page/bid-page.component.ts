@@ -203,10 +203,7 @@ export class BidPageComponent implements OnInit {
 
     // get the energy request data on which the bid is being made
     showRequestInfo(){
-      this.buyer = this.requestForBid.buyerId;
-      this.energyAmnt = this.requestForBid.energyAmount
-      this.fiatOffer = this.requestForBid.fiatAmount
-      this.totalBids = 0
+
       // if the page is refreshed, the bid data is lost so give user direction as to what to do   
       if (this.requestForBid.buyerId == "" ){
         Swal.fire({
@@ -219,6 +216,12 @@ export class BidPageComponent implements OnInit {
             this.router.navigateByUrl('/market')
           }
         })
+      }
+      else{
+        this.buyer = this.requestForBid.buyerId;
+        this.energyAmnt = this.requestForBid.energyAmount
+        this.fiatOffer = this.requestForBid.fiatAmount
+        this.totalBids = 0
       }
     }
 
