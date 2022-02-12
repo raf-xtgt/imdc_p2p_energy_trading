@@ -89,6 +89,12 @@ export class BidPageComponent implements OnInit {
   mode: ProgressSpinnerMode = 'indeterminate';
   value = 100;
 
+  // for showing the bid info
+  public buyer: string = ""
+  public energyAmnt: number = 0
+  public fiatOffer: number = 0
+  public totalBids: number = 0
+
   constructor(private _jwtServ:JWTService, private _config:ConfigService, private router: Router, private reqData: SendDataService) { }
 
   ngOnInit(): void {
@@ -107,6 +113,7 @@ export class BidPageComponent implements OnInit {
             this.reqData.currentMessage.subscribe(message => this.requestForBid = message)
             // bid data is here 
             console.log(this.requestForBid)
+            this.showRequestInfo()
           }
           
         })
@@ -192,6 +199,28 @@ export class BidPageComponent implements OnInit {
       })
     }
 
+
+
+    // get the energy request data on which the bid is being made
+    showRequestInfo(){
+      this.buyer = this.requestForBid.buyerId;
+      this.energyAmnt = this.requestForBid.energyAmount
+      this.fiatOffer = this.requestForBid.fiatAmount
+      this.totalBids = 0
+      // if the page is refreshed, the bid data is lost so give user direction as to what to do   
+      if (this.requestForBid.buyerId == "" ){
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Please reselect the bid from the market page',
+        }).then((result)=>{
+          if (result.isConfirmed){
+            console.log("olo")
+            this.router.navigateByUrl('/market')
+          }
+        })
+      }
+    }
 
     createBid(){}
 
