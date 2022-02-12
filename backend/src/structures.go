@@ -91,6 +91,7 @@ type BuyRequest struct {
 	FiatAmount    float64 "json: fiatAmount"
 	RequestClosed bool    "json: requestClosed"
 	ReqTime       string  "json: requestTime"
+	ReqId         string  "json:requestId"
 }
 
 // structure of response when buy energy requests are queried

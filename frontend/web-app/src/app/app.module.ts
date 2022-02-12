@@ -24,6 +24,7 @@ import { ChartsModule } from 'ng2-charts';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 // for the loading screen
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatDividerModule} from '@angular/material/divider';
 
 
 // external components
@@ -76,7 +77,8 @@ import { BidPageComponent } from './bid-page/bid-page.component';
     MatListModule,
     ChartsModule,
     SweetAlert2Module.forRoot(),
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatDividerModule
 
   ],
   exports:[

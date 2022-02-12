@@ -8,7 +8,9 @@
                         Date:
                     </div>
                     <div>Consumption: kWh at  MYT</div>
-                    <div>Forecast: kWh at MYT </div>           
+                    <div>Forecast: kWh at MYT </div>   
+                    <h4 style="text-align: left;">Time Remaining: 20:30</h4>
+        
                 </mat-card-content>
             </mat-card>
         </mat-grid-tile>
@@ -45,36 +47,61 @@
         
       </div>
 
-    
-    
-    
-    
-    <mat-card> 
+      <div>
+        <mat-grid-list cols="4" rowHeight="150px">
+            
+            <!-- Information regarding the buy request  -->
+            <mat-grid-tile [colspan]=2 [rowspan]=2>
+                <mat-card class="userDetailsCard">
+                    <mat-card-content>
+                        <div>
+
+                            <mat-list role="list">
+                                <h3>Buy request information</h3>
+                                <mat-divider></mat-divider>
+                                <mat-list-item role="listitem"><h4 style="text-align: left;">Buyer: lets_see_paul_allens_bid </h4></mat-list-item>
+                                <mat-list-item role="listitem" ><h4 style="text-align: left;">Energy Amount: 100kWh </h4></mat-list-item>
+                                <mat-list-item role="listitem" ><h4 style="text-align: left;">Fiat Offer: RM3000 </h4></mat-list-item>
+                                <mat-list-item role="listitem" ><h4 style="text-align: left;">Total bids so far: 50 </h4></mat-list-item> 
+                                <mat-list-item role="listitem"><h5 style="text-align: left; color:rgba(255, 0, 0, 0.719);"></h5></mat-list-item>
+   
+                            </mat-list>
+                        </div>
+                    </mat-card-content>  
+                  </mat-card>
+            </mat-grid-tile>
+
+            <!-- User Account details -->
+            <mat-grid-tile class="" [colspan]=2 [rowspan]=2>
+                <mat-card class="userDetailsCard">
+                    <mat-card-content>
+                        <div>
+                            <mat-list role="list">
+                                <h3>Your account details</h3>
+                                <mat-divider></mat-divider>
+                                <mat-list-item role="listitem"><h4 style="text-align: left;">username</h4></mat-list-item>
+                                <mat-list-item role="listitem"><h4 style="text-align: left;">Current Fiat: RM </h4></mat-list-item>
+                                <mat-list-item role="listitem"><h4 style="text-align: left;">Current Energy Balance: kWh</h4></mat-list-item>
+                                <mat-list-item role="listitem"><h4 style="text-align: left;">Completed Transactions: </h4></mat-list-item>
+                                <mat-list-item role="listitem"><h5 style="text-align: left; color:rgba(255, 0, 0, 0.719);">Your account will be charged only after the transaction is completed</h5></mat-list-item>
+                            </mat-list>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </mat-grid-tile>
+        </mat-grid-list>                   
+    </div>
+      
+    <mat-card style="margin-top: 15px"> 
         <mat-card-content>
             <div style="width: 100%;"> 
                 <h1>Bid Form</h1>
                 <h4>Make an order for buying energy by simply providing the energy and fiat amount</h4>
-
-                <mat-grid-list cols="3" rowHeight="150px">
-                    <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
-                        <!-- User details -->
-                        
-                        <mat-list role="list">
-                           
-                            <mat-list-item role="listitem"><h4 style="text-align: left;">username</h4></mat-list-item>
-                            <mat-list-item role="listitem"><h4 style="text-align: left;">Current Fiat: RM </h4></mat-list-item>
-                            <mat-list-item role="listitem"><h4 style="text-align: left;">Current Energy Balance: kWh</h4></mat-list-item>
-                            <mat-list-item role="listitem"><h4 style="text-align: left;">Completed Transactions: </h4></mat-list-item>
-                            <mat-list-item role="listitem"><h5 style="text-align: left; color:rgba(255, 0, 0, 0.719);">Your account will be charged only after the transaction is completed</h5></mat-list-item>
-                        </mat-list>    
-                    </mat-grid-tile>
-
-                    <mat-grid-tile [colspan]=2 [rowspan]=2>
-                     
+                <mat-divider></mat-divider>
                     <form (ngSubmit)="createBid()" #buyOrderForm="ngForm">
                         <div class="form-group">
                             <label for="energyAmount">Enter Required Amount of Energy(kWh)</label>
-                            <input  type="number" class="form-control"
+                            <input  type="number" class="form-control" style="width:30%"
                             [(ngModel)] = 'bidEnergyInput' id="energyAmount" name="energyInput"
                             placeholder="prediction" 
                             required autocomplete="off">
@@ -88,11 +115,10 @@
                             
                         </div>
                         <div>
-                            <button type="submit" class="btn btn-success" [disabled]="!buyOrderForm.form.valid" >Buy</button>
+                            <button type="submit" class="btn btn-success" [disabled]="!buyOrderForm.form.valid" >Bid</button>
                         </div>
                     </form>
-                    </mat-grid-tile>
-                </mat-grid-list>
+            
 
 
             </div>

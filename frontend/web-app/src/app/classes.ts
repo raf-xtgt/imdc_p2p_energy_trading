@@ -17,7 +17,7 @@ export class HouseholdEnergyData{
 }
 
 export class BuyEnergyRequest{
-    constructor(public buyerId:string, public energyAmount:number, public fiatAmount:number, public requestClosed: boolean){}
+    constructor(public buyerId:string, public energyAmount:number, public fiatAmount:number, public requestClosed: boolean, public reqId: string){}
 }
 
 // the data that is sent to the graph service

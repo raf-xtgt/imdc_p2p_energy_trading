@@ -43,11 +43,40 @@ func addBuyRequest(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("New energy request added", writeRequest.InsertedID)
+
+	if addUniqueBuyReqId(newRequest.BuyerId, newRequest.ReqTime, fmt.Sprintf("%v", writeRequest.InsertedID)) {
+		fmt.Println("New energy request added", writeRequest.InsertedID)
+	}
 
 	respondWithJSON(w, r, http.StatusCreated, newRequest)
 	//respondWithJSON(w, r, http.StatusCreated, NewUser)
 	return
+}
+
+// function to add a unique id to user document
+func addUniqueBuyReqId(buyerId string, reqTime string, uniqueId string) bool {
+
+	// slice the id to retain the id part only
+	unId := uniqueId[10 : len(uniqueId)-2]
+	//uniqueId = unId
+	fmt.Println(uniqueId)
+	fmt.Println(unId)
+
+	// update the document that matches the buyerid and time of order
+	_, err := db.EnergyBuyRequests.UpdateOne(
+		mongoparams.ctx,
+		bson.M{"buyerid": buyerId, "reqtime": reqTime},
+		bson.D{
+			{"$set", bson.D{{"reqid", unId}}},
+		},
+	)
+
+	// if the update fails
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	return true
 }
 
 // function to get the energy requests

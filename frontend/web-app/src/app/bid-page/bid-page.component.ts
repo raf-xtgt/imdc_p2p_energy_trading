@@ -81,7 +81,7 @@ export class BidPageComponent implements OnInit {
   //message from market page
   public message: string = ""
   // this will hold the buy energy request data for making the bid
-  private requestForBid :BuyEnergyRequest = new BuyEnergyRequest("", 0, 0, false) 
+  private requestForBid :BuyEnergyRequest = new BuyEnergyRequest("", 0, 0, false, "") 
 
   // loading before graph and all data are available
   public isLoading: boolean = true;
@@ -105,6 +105,7 @@ export class BidPageComponent implements OnInit {
             this.initSellEnergyForecast()
             // subscribe to the message from the marketpage
             this.reqData.currentMessage.subscribe(message => this.requestForBid = message)
+            // bid data is here 
             console.log(this.requestForBid)
           }
           

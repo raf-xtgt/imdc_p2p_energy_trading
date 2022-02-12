@@ -15,7 +15,7 @@ export class MarketpageComponent implements OnInit {
   constructor(private _config:ConfigService, private router: Router, private reqData: SendDataService) { }
 
   public allBuyRequests:Array<BuyEnergyRequest>=[];
-  private requestForBid :BuyEnergyRequest = new BuyEnergyRequest("", 0, 0, false) // this will hold the buy energy request data on which the prosumer makes a bid
+  private requestForBid :BuyEnergyRequest = new BuyEnergyRequest("", 0, 0, false, "") // this will hold the buy energy request data on which the prosumer makes a bid
 
   public buyerId: string = ""
   public message: string = "";
@@ -36,7 +36,8 @@ export class MarketpageComponent implements OnInit {
       //this.allBuyRequests = response.Requests
       let reqArr = response.Requests
       for(let i = 0; i < reqArr.length; i++) {
-        let request = new BuyEnergyRequest(reqArr[i].BuyerId, reqArr[i].EnergyAmount, reqArr[i].FiatAmount, reqArr[i].RequestClosed)
+        let request = new BuyEnergyRequest(reqArr[i].BuyerId, reqArr[i].EnergyAmount, reqArr[i].FiatAmount, reqArr[i].RequestClosed, reqArr[i].ReqId)
+        //console.log("All buy requests")
         this.allBuyRequests.push(request)
     }
     })
@@ -48,7 +49,7 @@ export class MarketpageComponent implements OnInit {
   }
 
   bid(request: BuyEnergyRequest){
-    console.log("the buy energy request", request.buyerId)
+    //console.log("the buy energy request", request.buyerId)
     //send the request to the bidpage that is listening on the msg
     this.reqData.changeMessage(request)
     this.router.navigateByUrl('/bid');
