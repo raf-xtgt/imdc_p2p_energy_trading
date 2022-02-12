@@ -22,12 +22,10 @@
         <div *ngIf="isLoading" style="text-align: center;">
             <h3>Loading Graphs...</h3>
             <mat-progress-spinner
-            
             diameter = "50"
             [color]="color"
             [mode]="mode"
             [value]="value"
-            
             ></mat-progress-spinner>
         </div>
 
@@ -94,24 +92,35 @@
       
     <mat-card style="margin-top: 15px"> 
         <mat-card-content>
-            <div style="width: 100%;"> 
+            <div *ngIf="isLoading" style="text-align: center; width: 50%; margin: 0 auto;">
+                <h3>Please wait...</h3>
+                <mat-progress-spinner
+                diameter = "50"
+                [color]="color"
+                [mode]="mode"
+                [value]="value"
+                ></mat-progress-spinner>
+            </div>
+            
+            <div *ngIf="!isLoading" style="width: 100%;"> 
                 <h1>Bid Form</h1>
                 <h4>Make an order for buying energy by simply providing the energy and fiat amount</h4>
                 <mat-divider></mat-divider>
                 <br>
                     <form (ngSubmit)="createBid()" #buyOrderForm="ngForm">
                         <div class="form-group">
-                            <label for="energyAmount">Enter Required Amount of Energy(kWh)</label>
+                            <label for="bidEnergyInput">Enter Required Amount of Energy(kWh)</label>
                             <input  type="number" class="form-control" style="width:30%"
-                            [(ngModel)] = 'bidEnergyInput' id="energyAmount" name="energyInput"
+                            [(ngModel)] = 'bidEnergyInput' id="bidEnergyInput" name="bidEnergyInput"
                             placeholder="prediction" 
                             required autocomplete="off">
                         </div>
 
                         <div>
                             <mat-list role="list">
-                                <mat-list-item role="listitem"><h4 style="text-align: left;">Average price per kWh: RM </h4></mat-list-item>
-                                <mat-list-item role="listitem"><h4 style="text-align: left;" >To Pay: RM  </h4></mat-list-item>
+                                <mat-list-item role="listitem"><h4 style="text-align: left;">Current Tradeable Amount: {{(prediction).toFixed(3)}}kWh </h4></mat-list-item>
+                                <mat-list-item role="listitem"><h4 style="text-align: left;">Average price per kWh: RM{{(currentAvgPrice).toFixed(3)}} </h4></mat-list-item>
+                                <mat-list-item role="listitem"><h4 style="text-align: left;" >Receivable Fiat : RM{{(bidEnergyInput * currentAvgPrice).toFixed(3)}}  </h4></mat-list-item>
                             </mat-list>
                             
                         </div>

@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 // The HttpClient service makes use of observables for all transactions. You must import the RxJS observable and operator symbols that appear in the example snippets.
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
-import { User, Token, HouseholdEnergyData, BuyEnergyRequest, ProdForecastRequest } from './classes';
+import { User, Token, HouseholdEnergyData, BuyEnergyRequest, ProdForecastRequest, SellEnergyRequest } from './classes';
 
 /** This file will allow the frontend to communicate with the backend
 * using Angular's HTTP Client
@@ -21,6 +21,7 @@ export class ConfigService {
   private _verifyToken: string = this._configUrl+"VerifyToken"
   private _addHouseholdPrice: string = this._configUrl+"AddHouseholdData"
   private _buyRequestUrl: string = this._configUrl + 'CreateBuyRequest'
+  private _sellRequestUrl: string = this._configUrl + 'CreateSellRequest'
   private _getBuyRequestUrl: string = this._configUrl + 'GetBuyRequests'
   private _energyForecastURL: string = this._configUrl+ 'RunBuyEnergyForecast'
   private _latestBuyForecastURL: string = this._configUrl+ 'GetLatestBuyForecast'
@@ -65,6 +66,13 @@ export class ConfigService {
     //console.log("Buy request data to send to backend", body)
     return this.http.post(this._buyRequestUrl, body)
   }
+
+  makeSellRequest (data: SellEnergyRequest){
+    const body = JSON.stringify(data)
+    console.log("Sell request data that is sent to backend", body)
+    return this.http.post(this._sellRequestUrl, body)
+  }
+
 
   // to get all the open buy requests made by all users
   getBuyRequests(){

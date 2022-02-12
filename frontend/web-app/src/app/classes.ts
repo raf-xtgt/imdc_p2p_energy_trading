@@ -20,6 +20,32 @@ export class BuyEnergyRequest{
     constructor(public buyerId:string, public energyAmount:number, public fiatAmount:number, public requestClosed: boolean, public reqId: string){}
 }
 
+// structure of bid(selling) energy request
+export class SellEnergyRequest{
+    /**
+     * 
+     * @param sellerId User id of the seller who is making the bid(sell request)
+     * @param energyAmount Amount of energy that the seller can trade
+     * @param fiatAmount Amount of energy the seller wants(or will receive)
+     * @param sellReqId Id of the sell request
+     * @param buyReqId Id of the buy request on which the bid is made
+     */
+    constructor(public sellerId:string, public energyAmount:number, public fiatAmount:number, public sellReqId: string, public buyReqId: string){}
+}
+
+export class ClosedBid{
+    /**
+     * 
+     * @param buyerId Id of the buyer who made the order
+     * @param buyReqId Id of the buy order request
+     * @param bidIds Id of the SellEnergyRequests that were made as a bid on the buy order
+     * @param bidId Id of this bid
+     */
+    constructor(public buyerId:string, public buyReqId:string, public bidIds:string[], public bidId: string){}
+}
+
+
+
 // the data that is sent to the graph service
 export class GraphData{
     constructor(public yAxis: number[], public xAxis: string[], public label: string){}

@@ -31,12 +31,13 @@ type User struct {
 // }
 
 type MongoDatabase struct {
-	Cluster           *mongo.Database   //cluster
-	Users             *mongo.Collection //collection
-	EnergyPriceHouse  *mongo.Collection
-	EnergyBuyRequests *mongo.Collection
-	BuyOrderForecast  *mongo.Collection
-	ProdForecast      *mongo.Collection
+	Cluster            *mongo.Database   //cluster
+	Users              *mongo.Collection //collection
+	EnergyPriceHouse   *mongo.Collection
+	EnergyBuyRequests  *mongo.Collection
+	EnergySellRequests *mongo.Collection
+	BuyOrderForecast   *mongo.Collection
+	ProdForecast       *mongo.Collection
 }
 
 // Structure that will be sent as sign up response to frontend
@@ -92,6 +93,16 @@ type BuyRequest struct {
 	RequestClosed bool    "json: requestClosed"
 	ReqTime       string  "json: requestTime"
 	ReqId         string  "json:requestId"
+}
+
+// structure representing sell(bid) request coming from frontend
+type SellRequest struct {
+	SellerId     string  "json: sellerId"
+	EnergyAmount float64 "json: energyAmount"
+	FiatAmount   float64 "json: fiatAmount"
+	SellReqId    string  "json:sellRequestId"
+	ReqTime      string  "json: requestTime"
+	BuyReqId     string  "json:buyReqId" //the id of the buy request on which the bid is made
 }
 
 // structure of response when buy energy requests are queried

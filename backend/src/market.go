@@ -101,3 +101,69 @@ func getEnergyRequests(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Getting all buy requests for market", allBuyRequests)
 }
+
+// function to store a new buy request in the database
+func addSellRequest(w http.ResponseWriter, r *http.Request) {
+	var newRequest SellRequest
+	//w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
+
+	// get the data from json body
+	decoder := json.NewDecoder(r.Body)
+	// place the user data inside newRequest
+	if err := decoder.Decode(&newRequest); err != nil {
+		fmt.Println("Failed adding a new sell request", err)
+		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+		return
+	}
+	defer r.Body.Close()
+
+	// to prevent backend to timeout
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	//write user info to the users collection\
+	loc, _ := time.LoadLocation("UTC")
+	now := time.Now().In(loc)
+	//requestTime := now
+	//fmt.Println("ZONE : ", loc, " Time : ", now) // UTC
+	newRequest.ReqTime = now.String()
+	writeRequest, err := db.EnergySellRequests.InsertOne(mongoparams.ctx, newRequest)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if addUniqueSellReqId(newRequest.SellerId, newRequest.ReqTime, fmt.Sprintf("%v", writeRequest.InsertedID)) {
+		fmt.Println("New sell energy request added with id", writeRequest.InsertedID)
+	}
+
+	respondWithJSON(w, r, http.StatusCreated, newRequest)
+	//respondWithJSON(w, r, http.StatusCreated, NewUser)
+	return
+}
+
+// function to add a unique id to user document
+func addUniqueSellReqId(buyerId string, reqTime string, uniqueId string) bool {
+
+	// slice the id to retain the id part only
+	unId := uniqueId[10 : len(uniqueId)-2]
+	//uniqueId = unId
+	fmt.Println(uniqueId)
+	fmt.Println(unId)
+
+	// update the document that matches the buyerid and time of order
+	_, err := db.EnergySellRequests.UpdateOne(
+		mongoparams.ctx,
+		bson.M{"sellerid": buyerId, "reqtime": reqTime},
+		bson.D{
+			{"$set", bson.D{{"sellreqid", unId}}},
+		},
+	)
+
+	// if the update fails
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	return true
+}

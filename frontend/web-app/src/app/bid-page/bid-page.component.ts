@@ -8,7 +8,7 @@ import { DateService } from '../date.service';
 import { GraphService } from '../graph.service';
 import { ChartDataSets, ChartOptions } from 'chart.js';
 import { Color, Label } from 'ng2-charts';
-import {ProdForecastRequest, GraphData, HouseholdEnergyData} from '../classes';
+import {ProdForecastRequest, GraphData, HouseholdEnergyData, SellEnergyRequest} from '../classes';
 import { SendDataService } from '../send-data.service';
 import { BuyEnergyRequest } from '../classes';
 import {ThemePalette} from '@angular/material/core';
@@ -54,7 +54,7 @@ export class BidPageComponent implements OnInit {
    // data for the card above the graph
   public currentDate:string = this.dateService.getCurrentDate()
   public currentTime:string = ""
-  public currentConsumption :number = 0
+  public currentProduction :number = 0
   public predictionTime:string = "" // time at which the prediction is made
   public prediction:number = 0
 
@@ -90,10 +90,16 @@ export class BidPageComponent implements OnInit {
   value = 100;
 
   // for showing the bid info
-  public buyer: string = ""
-  public energyAmnt: number = 0
-  public fiatOffer: number = 0
-  public totalBids: number = 0
+  public buyer: string = "";
+  public energyAmnt: number = 0;
+  public fiatOffer: number = 0;
+  public totalBids: number = 0;
+
+  // the data that will be used to make the bid(sell request)
+  public energyTradeAmount: number = 0;
+  private _fiatReceived: number =0; // amount of money the seller will receive
+  private _buyReqId:string = "" // the id of the buy request on which the bid is being made 
+
 
   constructor(private _jwtServ:JWTService, private _config:ConfigService, private router: Router, private reqData: SendDataService) { }
 
@@ -164,8 +170,8 @@ export class BidPageComponent implements OnInit {
           this.xAxis = plot.x[1] // use the timestamps that includes the prediction
 
           // get the card data
-          this.currentConsumption = this.actual_y[this.actual_y.length-1] // last point is the current one
-          this.prediction =  response[0].Current_Pred 
+          this.currentProduction = this.actual_y[this.actual_y.length-1] // last point is the current one
+          this.prediction =  this.pred_y[this.pred_y.length-1]
           this.currentTime = (this.xAxis[this.xAxis.length-2]).toString()
           this.predictionTime = (this.xAxis[this.xAxis.length-1]).toString()
 
@@ -218,13 +224,24 @@ export class BidPageComponent implements OnInit {
         })
       }
       else{
+        
         this.buyer = this.requestForBid.buyerId;
         this.energyAmnt = this.requestForBid.energyAmount
         this.fiatOffer = this.requestForBid.fiatAmount
+        this._fiatReceived = this.bidEnergyInput * this.currentAvgPrice
+        this._buyReqId = this.requestForBid.reqId
         this.totalBids = 0
       }
     }
 
-    createBid(){}
+    // make the sell request bid
+    createBid(){
+      this._fiatReceived = this.bidEnergyInput * this.currentAvgPrice
+      //console.log(this._fiatReceived)
+      let sellingBid = new SellEnergyRequest(this._sellerId, this.bidEnergyInput, this._fiatReceived, "", this._buyReqId)
+      this._config.makeSellRequest(sellingBid).subscribe(data =>{
+        console.log("The selling bid that is stored in db", data)
+      })
+    }
 
 }

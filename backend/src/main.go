@@ -65,6 +65,7 @@ func connectToDb() MongoDatabase {
 	db.Users = db.Cluster.Collection("users")
 	db.EnergyPriceHouse = db.Cluster.Collection("householdEnergyPrice")
 	db.EnergyBuyRequests = db.Cluster.Collection("buyRequests")
+	db.EnergySellRequests = db.Cluster.Collection("sellRequests")
 	db.BuyOrderForecast = db.Cluster.Collection("buyOrderForecast")
 	db.ProdForecast = db.Cluster.Collection("energy_forecast")
 	return db
@@ -89,6 +90,7 @@ func listen() error {
 	mux.HandleFunc("/Login", authenticateUser)
 	mux.HandleFunc("/VerifyToken", isAuthorized)
 	mux.HandleFunc("/CreateBuyRequest", addBuyRequest)
+	mux.HandleFunc("/CreateSellRequest", addSellRequest)
 	mux.HandleFunc("/GetBuyRequests", getEnergyRequests)
 	mux.HandleFunc("/RunBuyEnergyForecast", runBuyEnergyForecast)
 	mux.HandleFunc("/GetLatestBuyForecast", getLatestBuyForecast)
