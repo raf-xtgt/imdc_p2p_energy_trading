@@ -209,7 +209,6 @@ export class BidPageComponent implements OnInit {
 
     // get the energy request data on which the bid is being made
     showRequestInfo(){
-
       // if the page is refreshed, the bid data is lost so give user direction as to what to do   
       if (this.requestForBid.buyerId == "" ){
         Swal.fire({
@@ -225,10 +224,13 @@ export class BidPageComponent implements OnInit {
       }
       else{
         
-        this.buyer = this.requestForBid.buyerId;
+        
         this.energyAmnt = this.requestForBid.energyAmount
         this.fiatOffer = this.requestForBid.fiatAmount
         this._fiatReceived = this.bidEnergyInput * this.currentAvgPrice
+        //let buyerArr = this.requestForBid.buyerId.split('\n')
+        //this.buyer = buyerArr[1];
+        this.buyer = this.requestForBid.buyerId
         this._buyReqId = this.requestForBid.reqId
         this.totalBids = 0
       }
@@ -236,12 +238,59 @@ export class BidPageComponent implements OnInit {
 
     // make the sell request bid
     createBid(){
-      this._fiatReceived = this.bidEnergyInput * this.currentAvgPrice
-      //console.log(this._fiatReceived)
-      let sellingBid = new SellEnergyRequest(this._sellerId, this.bidEnergyInput, this._fiatReceived, "", this._buyReqId)
-      this._config.makeSellRequest(sellingBid).subscribe(data =>{
-        console.log("The selling bid that is stored in db", data)
+
+
+
+
+      Swal.fire({
+        title: 'Confirm Bid',
+        showDenyButton: false,
+        showCancelButton: true,
+        confirmButtonText: 'Confirm',
+        //denyButtonText: denyBtnTxt,
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          //console.log("Buy request", this._buyRequest)
+          this._fiatReceived = this.bidEnergyInput * this.currentAvgPrice
+          //console.log(this._fiatReceived)
+          let sellingBid = new SellEnergyRequest(this._sellerId, this.bidEnergyInput, this._fiatReceived, "", this._buyReqId)
+          
+          //if (this.orderValidation(this._buyRequest)){}
+            Swal.fire('Your bid has been placed !!', '', 'success')  
+            this._config.makeSellRequest(sellingBid).subscribe(data =>{
+              //console.log("The selling bid that is stored in db", data)
+            })
+          
+          // else{
+          //   Swal.fire({
+          //     icon: 'error',
+          //     title: 'Oops...',
+          //     text: 'Please enter valid energy amount and ensure you have sufficient fiat balance!',
+          //   })
+          // }
+          
+          
+
+        } else if (result.isDismissed) {
+          Swal.fire('Request Cancelled!', '', 'info')
+        
+        }
       })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 }

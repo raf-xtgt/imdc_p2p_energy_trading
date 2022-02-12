@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -86,7 +87,7 @@ func listen() error {
 	mux.HandleFunc("/AddHouseholdData", createEnergyData)
 	// when a request is made on/register, then run addNewUser function
 	mux.HandleFunc("/Register", addNewUser)
-	mux.HandleFunc("/GetUser", getUser)
+	mux.HandleFunc("/GetUserDetails", getUserDetails)
 	mux.HandleFunc("/Login", authenticateUser)
 	mux.HandleFunc("/VerifyToken", isAuthorized)
 	mux.HandleFunc("/CreateBuyRequest", addBuyRequest)
@@ -103,7 +104,29 @@ func listen() error {
 	return nil
 }
 
-func getUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("Access-Control-Allow-Origin", "*")
+func getUserDetails(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
+	var request string
+
+	// get the data from json body
+	decoder := json.NewDecoder(r.Body)
+	// place the user data inside newRequest
+	if err := decoder.Decode(&request); err != nil {
+		fmt.Println("Failed getting user data", err)
+		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+		return
+	}
+	defer r.Body.Close()
+
+	// to prevent backend to timeout
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	userData, err := getAccountData(request)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Request failed!", http.StatusUnauthorized)
+	}
+	fmt.Println("The user data as per id", userData)
+	w.Write(userData)
 }

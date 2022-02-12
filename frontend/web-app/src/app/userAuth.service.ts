@@ -13,6 +13,7 @@ export class JWTService {
 
   private _configUrl: string = "http://localhost:8080/";
   private _verifyToken: string = this._configUrl+"VerifyToken"
+  private _getUserDetailsUrl: string = this._configUrl + 'GetUserDetails'
   TOKEN_KEY = 'token';
 
 
@@ -34,5 +35,11 @@ export class JWTService {
     else{
       return true
     }
+  }
+
+  // given userId, get the username of the user
+  gerUsername(userId: string){
+    const body = JSON.stringify(userId)
+    return this.http.post(this._getUserDetailsUrl, body)
   }
 }
