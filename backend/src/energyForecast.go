@@ -33,7 +33,7 @@ func runBuyEnergyForecast(w http.ResponseWriter, r *http.Request) {
 	defer mongoparams.cancel()
 
 	// executing the python script from golang
-	cmd := exec.Command("python", "buyForecastForAllUsers.py")
+	cmd := exec.Command("python", "energyForecast.py", "global", "consm")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
@@ -100,7 +100,7 @@ func runSellEnergyForecast(w http.ResponseWriter, r *http.Request) {
 	defer mongoparams.cancel()
 
 	// executing the python script from golang
-	cmd := exec.Command("python", "expSmoothingForecast.py", userId)
+	cmd := exec.Command("python", "energyForecast.py", userId, "prod")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()

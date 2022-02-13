@@ -11,6 +11,9 @@ from dotenv import load_dotenv
 import sys
 # to determin points to take based on time
 from datetime import datetime
+# to increase the buy forecast amount by a little bit
+import random
+  
 
 load_dotenv()
 USERID = ""
@@ -22,8 +25,15 @@ print("Total arguments passed:", n)
 # Arguments passed
 print("\nName of Python script:", sys.argv[0])
  
-print("\nArguments passed:", sys.argv[1], "\n")
-#print("\nArguments passed:", sys.argv[2], "\n")
+print("\nArguments passed:", sys.argv[1], "\n") # userId or global
+print("\nProcess:", sys.argv[2], "\n") # type of process(prod, consm, optm)
+
+process = sys.argv[2] # what process needs to be run
+
+# prod --> sellEnergyForecast(energy production forecast)
+# consm --> buyEnergyForecast(energy consumption forecast)
+# optm --> matchmaking algo
+
 
 timeStamps = ["12:00AM", "12:30AM", "01:00AM","01:30AM","02:00AM","02:30AM", "03:00AM", "03:30AM",
 "04:00AM", "04:30AM", "05:00AM", "05:30AM", "06:00AM", "06:30AM","07:00AM", "07:30AM",
@@ -67,17 +77,23 @@ def energyForecast():
     x_axis_actual = []
     y_axis_actual = []
 
+    addIncrease = None
+    if process == 'consm':
+        addIncrease = False
+    elif process == 'prod':
+        addIncrease = True
+
     # prediction values
     for i in range(len(prediction_x)):
         x_axis_pred.append(str(prediction_x[i]))
         # convert from W/m^2 to kWh
-        energy = unitConversion(prediction_y[i])
+        energy = unitConversion(prediction_y[i], addIncrease)
         y_axis_pred.append(float(energy))
     
-
+    # we do not want to bias the actual data!!
     for j in range(len(actual_x)):
         x_axis_actual.append(str(actual_x[j]))
-        energy = unitConversion(actual_y[j])
+        energy = unitConversion(actual_y[j], False)
         y_axis_actual.append(float(energy))
     
 
@@ -117,14 +133,33 @@ def getDateString():
     return str(now.strftime('%d-%m-%Y')) 
 
 # function to convert Watts per square metre to kilowatt hours
-def unitConversion(value):
+def unitConversion(value, addRandomIncrease):
+    increase = random.uniform(0, 0.5) # small number to increase overall demand
     avg_roof_top_size = 50 # 50 square metres worth of panels
     power_hrs = 0.5 # since we get for 30 min intervals
-    energy_val = (value * avg_roof_top_size * power_hrs)/100
-    if energy_val <0:
-        return 0
+    energy_val = 0
+
+    # for energy consumption, we cannot let the energy consumption fall to zero, so we add random increase
+    if addRandomIncrease:
+        energy_val = ((value * avg_roof_top_size * power_hrs)/100) + (  ((value * avg_roof_top_size * power_hrs)/100) *increase )
     else:
-        return energy_val
+        energy_val = ((value * avg_roof_top_size * power_hrs)/100)
+    
+
+    # for consumption, the energy cannot fall to zero, so we add random increase
+    if process == 'consm':    
+        if energy_val <=50:
+            generate_energy = random.uniform(80, 90)
+            return generate_energy
+        else:
+            return energy_val
+
+    # solar energy production can fall to zero, as there is no production at night
+    elif process == 'prod':
+        if energy_val <0:
+            return 0
+        else:
+            return energy_val
 
 
 
@@ -138,7 +173,11 @@ def connectToDb():
     client = pymongo.MongoClient('mongodb+srv://'+db_username+':'+ db_password +'@imdc-p2p-energy.y0a68.mongodb.net/'+db_cluster+'?retryWrites=true&w=majority')
     print("Connected to database")
     cluster=client["IMDC-p2p-energy"]
-    collection = cluster.energy_forecast
+    collection = 0
+    if process =='consm':
+        collection = cluster.buyOrderForecast
+    elif process =='prod':
+        collection = cluster.energy_forecast
 
     # Get sample data
     forecast = energyForecast()
@@ -154,7 +193,8 @@ def connectToDb():
             'pred_x' : pred_x,
             'pred_y': pred_y,
             'date': dateString,
-            'userId':  sys.argv[1]
+            'userId':  sys.argv[1], 
+            'current_pred': pred_y[len(pred_y)-1]
         }
     # if the document of this dateString exists for userId
     if collection.count_documents({"userId": sys.argv[1], "date":dateString}, limit=1)==1:
