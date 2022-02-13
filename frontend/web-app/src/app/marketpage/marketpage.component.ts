@@ -44,12 +44,7 @@ export class MarketpageComponent implements OnInit {
     
   }
 
-  ngAfterViewInit() {
-    this.elementRef.nativeElement.ownerDocument
-        .body.style.backgroundColor = 'red';
-}
-
-
+  
   getBuyRequests(){
     this._config.getBuyRequests().subscribe(data => {
       //console.log("Buy requests data for market page", data)
