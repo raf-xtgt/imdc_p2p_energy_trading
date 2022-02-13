@@ -127,6 +127,6 @@ func getUserDetails(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		http.Error(w, "Request failed!", http.StatusUnauthorized)
 	}
-	fmt.Println("The user data as per id", userData)
+	//fmt.Println("The user data as per id", userData)
 	w.Write(userData)
 }

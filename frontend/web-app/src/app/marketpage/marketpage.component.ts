@@ -14,7 +14,7 @@ import Swal from 'sweetalert2'
 })
 export class MarketpageComponent implements OnInit {
 
-  constructor(private _config:ConfigService, private router: Router, private reqData: SendDataService, private _jwtServ:JWTService) { }
+  constructor(private _config:ConfigService, private router: Router, private reqData: SendDataService, private _jwtServ:JWTService, private elementRef: ElementRef) { }
 
   public allBuyRequests:Array<BuyEnergyRequest>=[];
   private requestForBid :BuyEnergyRequest = new BuyEnergyRequest("", 0, 0, false, "") // this will hold the buy energy request data on which the prosumer makes a bid
@@ -43,6 +43,11 @@ export class MarketpageComponent implements OnInit {
     }
     
   }
+
+  ngAfterViewInit() {
+    this.elementRef.nativeElement.ownerDocument
+        .body.style.backgroundColor = 'red';
+}
 
 
   getBuyRequests(){

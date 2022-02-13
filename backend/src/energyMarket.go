@@ -14,6 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// add household data to the database
 func createEnergyData(w http.ResponseWriter, r *http.Request) {
 	var fromFrontend EnergyPriceData
 	var response EnergyDataResponse

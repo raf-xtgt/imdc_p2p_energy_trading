@@ -1,50 +1,58 @@
-<h3 style="margin-left: 10px;">All transactions will occur in MYR</h3>
-<h3> Market </h3>
-<mat-tab-group>
-    <div>
-        <mat-tab label="Open Requests" style="width: 100%;"> 
-            <div style="margin-left: 10px; width: 95%; height: 100%;overflow: hidden;"> 
-                <mat-list role="list" *ngFor="let request of allBuyRequests" style="margin-bottom: 10px; margin-top: 10px;overflow: hidden;">
-                           
-                    <mat-list-item role="listitem">
-                        <mat-card class="cardLayout" style="width: 100%;">
-                            <mat-card-content>
-                                <mat-grid-list cols="5" rowHeight="40px">
-                                    <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
-                                        <div>
-                                            Consumer: {{request.buyerId}}
-                                        </div>
+<div style="background-color: #EBEDEC;">
+    <h3 style="margin-left: 10px;">All transactions will occur in MYR</h3>
+    <h3> Market </h3>
+    <mat-tab-group>
+        <div>
+            <mat-tab label="Open Requests" style="width: 100%;"> 
+                <div style="margin-left: 10px; width: 95%; height: 100%;overflow: hidden;"> 
+                    <mat-list role="list" *ngFor="let request of allBuyRequests" style="margin-bottom: 10px; margin-top: 10px;overflow: hidden;">
+                               
+                        <mat-list-item role="listitem">
+                            <mat-card class="cardLayout" style="width: 100%;">
+                                <mat-card-content>
+                                    <mat-grid-list cols="5" rowHeight="40px">
+                                        <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
+                                            <div>
+                                                Consumer: {{request.buyerId}}
+                                            </div>
+                                            
+                                        </mat-grid-tile>
+                                        <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
+                                            Energy: {{request.energyAmount}} kWh
+                                        </mat-grid-tile>
+                                        <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
+                                            Fiat: RM {{(request.fiatAmount).toFixed(3)}}
+                                        </mat-grid-tile>
+                                        <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
+                                            <h4>Closes at 11:30pm</h4>
+                                        </mat-grid-tile>
+                                        <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
+                                            <button type="bid" class="btn btn-success" (click)="bid(request)">Bid</button>
+                                        </mat-grid-tile>
                                         
-                                    </mat-grid-tile>
-                                    <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
-                                        Energy: {{request.energyAmount}} kWh
-                                    </mat-grid-tile>
-                                    <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
-                                        Fiat: RM {{(request.fiatAmount).toFixed(3)}}
-                                    </mat-grid-tile>
-                                    <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
-                                        <h4>Closes at 11:30pm</h4>
-                                    </mat-grid-tile>
-                                    <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
-                                        <button type="bid" class="btn btn-success" (click)="bid(request)">Bid</button>
-                                    </mat-grid-tile>
-                                    
-                                    
-                                </mat-grid-list>
-                                                                
-                            </mat-card-content>
-                        </mat-card>
-                    </mat-list-item>
-                </mat-list> 
-                
-            </div>
-        </mat-tab>
-        <mat-tab label="Closed Requests">
-            <div style="margin-left: 10px; width: 80%; height: 100%;">Content 2</div>
-        </mat-tab>
+                                        
+                                    </mat-grid-list>
+                                                                    
+                                </mat-card-content>
+                            </mat-card>
+                        </mat-list-item>
+                    </mat-list> 
+                    
+                </div>
+            </mat-tab>
+            <mat-tab label="Closed Requests">
+                <div style="margin-left: 10px; width: 80%; height: 100%;">Content 2</div>
+            </mat-tab>
+            
+        </div>
         
-    </div>
-    
-    
-  </mat-tab-group>
+        
+      </mat-tab-group>
+</div>
+
+
+
+
+
+
   
