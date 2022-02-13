@@ -13,7 +13,8 @@ import sys
 from datetime import datetime
 # to increase the buy forecast amount by a little bit
 import random
-  
+# import all functions from matchmaking.py
+from matchmaking import *  
 
 load_dotenv()
 USERID = ""
@@ -162,7 +163,6 @@ def unitConversion(value, addRandomIncrease):
             return energy_val
 
 
-
 def connectToDb():
     # load environment variables
     db_username = os.getenv("DB_USERNAME")
@@ -178,6 +178,11 @@ def connectToDb():
         collection = cluster.buyOrderForecast
     elif process =='prod':
         collection = cluster.energy_forecast
+    # when matchmaking needs to be run
+    else:
+        print("Running matchmaking")
+        initMatchmaking(client)
+        return
 
     # Get sample data
     forecast = energyForecast()
@@ -211,7 +216,6 @@ def connectToDb():
 
 
 connectToDb()
-#energyForecast()
 
 
 """
