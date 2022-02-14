@@ -49,13 +49,14 @@ def getOrderData(client):
     buyRequests = buyReqColl.find()
     sellRequests = list(sellReqColl.find())
     req_arr = []
+    all_seller_ids = []
     for item in buyRequests:
         # for all open requests
         if item['requestclosed'] == False:
+            all_bids = [] # list to hold all bids made on current buy request
             req_dict = {} # request dictionary
             buy_req_id = item['reqid']
-            all_bids = [] # list to hold all bids made on current buy request
-            #print("Current buy request:", buy_req_id)
+            buyer_id = item['buyerid']
             for bid in sellRequests:
                 # if bid made on current request
                 #print("Current sell request for bid", bid['buyreqid'])
@@ -67,22 +68,36 @@ def getOrderData(client):
                         "sellerEnergySupply": bid['energyamount'] # amount of energy seller wants to supply 
                     }
                     all_bids.append(bid_obj)
+                    if bid['sellerid'] not in all_seller_ids:
+                        all_seller_ids.append(bid['sellerid'])
 
+            opt_payable = item['fiatamount'] * len(all_bids)
             req_dict[buy_req_id]= {
-                'buyerId':item['buyerid'],
+                'buyerId': buyer_id,
                 'buyerPayable': item['fiatamount'], # amount of money buyer willing to pay,
-                'buyerEnergyDemand': item['energyamount'],
+                'buyerEnergyDemand': item['energyamount'], # amount of energy the buyer wants,
+                "PAY": opt_payable, # amount to be used as Pay(E) for Optimal Bid Price
                 'bids':all_bids
+                
             }
 
             req_arr.append(req_dict)
-    
-    # for trns in req_arr:
-    #     print(trns)
-    #     print("\n")
-    # print() 
-    #print(getOptimalPrices(req_arr))
-    return getOptimalPrices(req_arr)
+    print("data")
+    for trns in req_arr:
+        print(trns)
+        print("\n")
+    print(all_seller_ids) 
+    all_receivable = optReceivable(req_arr, all_seller_ids)
+    print("Total Receivable for sellers")
+    for i in all_receivable:
+        print(i)
+        print("\n")
+
+    trns = updateTrnsWtihSellerRew(all_receivable, req_arr)
+    for i in trns:
+        print(i)
+        print("\n")
+    return trns
 
 # to get optimal payable and receivable for each transaction
 def getOptimalPrices(transactions):
@@ -105,7 +120,11 @@ def getOptimalPrices(transactions):
                 "optimalPayable": obj['buyerPayable'] * len(obj['bids'])
             }
             all_payable.append(buyer_info)
-
+            tmp = transactions
+            transactions[k][key] = {"optimalPayable":obj['buyerPayable'] * len(obj['bids'])}
+            transactions = tmp
+            print("after update")
+            print(transactions)
             # if key not in all_request_ids:
             #     all_request_ids.append(key)
 
@@ -120,15 +139,15 @@ def getOptimalPrices(transactions):
     #the seller total receivable amount for each seller
     all_receivable = optReceivable(transactions, all_seller_ids)
 
-    print("Total Payable for buyers")
-    for i in all_payable:
-        print(i)
-        print("\n")
+    # print("Total Payable for buyers")
+    # for i in all_payable:
+    #     print(i)
+    #     print("\n")
     
-    print("Total Receivable for sellers")
-    for i in all_receivable:
-        print(i)
-        print("\n")
+    # print("Total Receivable for sellers")
+    # for i in all_receivable:
+    #     print(i)
+    #     print("\n")
     return selectSeller(all_receivable)
 
 
@@ -162,12 +181,50 @@ def optReceivable(transactions, allSellerIds):
         sell_info = {
             # sellerId and corresponding receivable amount
             "sellerId": current_seller,
-            "buyRequest":buyReq,
-            "receivableOnBid": receivable,
-            "optimalReceivable": total_receivable
+            "REW": total_receivable
         }
         all_receivable.append(sell_info)
     return all_receivable
+
+
+
+def updateTrnsWtihSellerRew(sellerRew, transactions):
+    for data in sellerRew:
+        current_seller = data['sellerId']
+        rew = data['REW']
+        for k in range(0, len(transactions)):
+            # for each transaction
+            for key in transactions[k]:
+                obj = transactions[k][key]
+                all_bids = obj['bids']
+                sorted_bids = sorted(all_bids, key=lambda d: d['sellerReceivable'])
+                for i in range(len(sorted_bids)):
+                    bid = sorted_bids[i]
+                    
+                    seller = bid['sellerId']
+                    
+                    if seller == current_seller:
+                        all_bids[i] = {
+                            'sellerId':seller,
+                            'sellerReceivable':bid['sellerReceivable'],
+                            'sellerEnergySupply': bid['sellerEnergySupply'],
+                            'REW': rew
+                        }
+                        obj['bids'] = all_bids
+                        obj['selectedSeller'] = sorted_bids[0]
+                        transactions[k][key] = obj
+
+                        break
+    #print("New")
+    #print(transactions) 
+    return transactions               
+    
+   
+
+
+
+
+
 
 # get the seller with the minimum total receivable per request
 def selectSeller(all_receivable):
@@ -185,7 +242,7 @@ def selectSeller(all_receivable):
                 "buyRequestId": reqId,
                 "sellerId": i['sellerId'],
                 "fiatPayable": i["receivableOnBid"] # amomut buyer pays and receiver receives
-                
+
             }
             final_list.append(data)
     
