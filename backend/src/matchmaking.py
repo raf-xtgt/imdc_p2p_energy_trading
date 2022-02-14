@@ -136,6 +136,7 @@ def getOptimalPrices(transactions):
 def optReceivable(transactions, allSellerIds):
     # list to hold the seller total receivable amount for each seller
     all_receivable = []
+    cost_factor = 0.3
     for i in range(len(allSellerIds)):
         current_seller = allSellerIds[i]
         total_receivable = 0 # receivable on all the bids that the seller made(this is the reward for OSP)
@@ -153,7 +154,7 @@ def optReceivable(transactions, allSellerIds):
                     # each seller can only make one bid per a specific buy request
                     if seller == current_seller:
                         receivable = bid['sellerReceivable']
-                        total_receivable += receivable
+                        total_receivable += ((receivable*receivable))/(4*cost_factor)
                         buyReq = key
                         break # break because seller found
 
@@ -184,6 +185,7 @@ def selectSeller(all_receivable):
                 "buyRequestId": reqId,
                 "sellerId": i['sellerId'],
                 "fiatPayable": i["receivableOnBid"] # amomut buyer pays and receiver receives
+                
             }
             final_list.append(data)
     
