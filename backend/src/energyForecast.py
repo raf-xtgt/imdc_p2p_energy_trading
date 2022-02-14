@@ -14,7 +14,7 @@ from datetime import datetime
 # to increase the buy forecast amount by a little bit
 import random
 # import all functions from matchmaking.py
-from optimalAllocation import *  
+from sellerSelection import *  
 
 load_dotenv()
 USERID = ""

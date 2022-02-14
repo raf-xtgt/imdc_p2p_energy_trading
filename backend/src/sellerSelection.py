@@ -99,59 +99,7 @@ def getOrderData(client):
         print("\n")
     return trns
 
-# to get optimal payable and receivable for each transaction
-def getOptimalPrices(transactions):
-    #print("running")
-    all_seller_ids = [] # list of all sellers that are involved in the current transaction pool
-    all_request_ids = [] # list of all buy request ids to be used to find the cheapest 
-    # list to hold the buyer total payable amount for each seller
-    all_payable = []
-    for k in range(0, len(transactions)):
-        # for each transaction
-        for key in transactions[k]:
-            obj = transactions[k][key]
-            #print(obj)
-
-            # optimal payable is the summation of the payable amount for all bids
-            # since the payable to the sellers are same just multiply by number of bids on the buy request
-            buyer_info = {
-                "buyerId":obj['buyerId'],
-                "buyerReq":key,
-                "optimalPayable": obj['buyerPayable'] * len(obj['bids'])
-            }
-            all_payable.append(buyer_info)
-            tmp = transactions
-            transactions[k][key] = {"optimalPayable":obj['buyerPayable'] * len(obj['bids'])}
-            transactions = tmp
-            print("after update")
-            print(transactions)
-            # if key not in all_request_ids:
-            #     all_request_ids.append(key)
-
-            # make a list of all sellerIds
-            all_bids = obj['bids']
-            for i in range(len(all_bids)):
-                bid = all_bids[i]
-                seller = bid['sellerId']
-                if seller not in all_seller_ids:
-                    all_seller_ids.append(seller)
-    
-    #the seller total receivable amount for each seller
-    all_receivable = optReceivable(transactions, all_seller_ids)
-
-    # print("Total Payable for buyers")
-    # for i in all_payable:
-    #     print(i)
-    #     print("\n")
-    
-    # print("Total Receivable for sellers")
-    # for i in all_receivable:
-    #     print(i)
-    #     print("\n")
-    return selectSeller(all_receivable)
-
-
-# to get optimal fiat money receivable by seller
+# to get the optimal reward that each seller in the current transaction pool can receive
 def optReceivable(transactions, allSellerIds):
     # list to hold the seller total receivable amount for each seller
     all_receivable = []
@@ -160,7 +108,6 @@ def optReceivable(transactions, allSellerIds):
         current_seller = allSellerIds[i]
         total_receivable = 0 # receivable on all the bids that the seller made(this is the reward for OSP)
         receivable = 0 # receivable on the current bid
-        buyReq = 0 # id of the buy request on which the bid is made
         # summation of the money they received from all the bids they made on the requests
         for k in range(0, len(transactions)):
             # for each transaction
@@ -174,7 +121,6 @@ def optReceivable(transactions, allSellerIds):
                     if seller == current_seller:
                         receivable = bid['sellerReceivable']
                         total_receivable += ((receivable*receivable))/(4*cost_factor)
-                        buyReq = key
                         break # break because seller found
 
                     
@@ -187,7 +133,7 @@ def optReceivable(transactions, allSellerIds):
     return all_receivable
 
 
-
+# add the reward of each seller in the bids array of each transaction
 def updateTrnsWtihSellerRew(sellerRew, transactions):
     for data in sellerRew:
         current_seller = data['sellerId']
@@ -211,6 +157,8 @@ def updateTrnsWtihSellerRew(sellerRew, transactions):
                             'REW': rew
                         }
                         obj['bids'] = all_bids
+                        # selected seller is the one with the least receivable amount on current bid
+                        # since list is sorted, it is the first person in the list
                         obj['selectedSeller'] = sorted_bids[0]
                         transactions[k][key] = obj
 
@@ -218,51 +166,3 @@ def updateTrnsWtihSellerRew(sellerRew, transactions):
     #print("New")
     #print(transactions) 
     return transactions               
-    
-   
-
-
-
-
-
-
-# get the seller with the minimum total receivable per request
-def selectSeller(all_receivable):
-    sorted_list = sorted(all_receivable, key=lambda d: d['receivableOnBid'])
-    final_list = []
-    # print("Sorted list")
-    seenIds = []
-    for i in sorted_list:
-        reqId = i['buyRequest']
-        if reqId not in seenIds:
-            seenIds.append(reqId)
-            # since it is sorted, we start from lowest to highest
-            # Best seller per request
-            data = {
-                "buyRequestId": reqId,
-                "sellerId": i['sellerId'],
-                "fiatPayable": i["receivableOnBid"] # amomut buyer pays and receiver receives
-
-            }
-            final_list.append(data)
-    
-    print("Final list")
-    print(final_list)
-    return final_list
-
-
-
-
-
-"""
-# to get optimal fiat money payable by buyer
-def optPayable(obj):
-    # optimal payable by buyer
-    buyer_payable = obj['buyerPayable']
-    opt_payable = 0
-    all_bids = obj['bids']
-    for i in range(len(all_bids)):
-        # selling_price = all_bids[i]['sellerReceivable']
-        opt_payable += buyer_payable
-    return opt_payable
-"""
