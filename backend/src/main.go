@@ -69,6 +69,7 @@ func connectToDb() MongoDatabase {
 	db.EnergySellRequests = db.Cluster.Collection("sellRequests")
 	db.BuyOrderForecast = db.Cluster.Collection("buyOrderForecast")
 	db.ProdForecast = db.Cluster.Collection("energy_forecast")
+	db.UserAccBalance = db.Cluster.Collection("accountBalance")
 	return db
 }
 

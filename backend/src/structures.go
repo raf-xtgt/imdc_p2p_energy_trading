@@ -25,11 +25,14 @@ type User struct {
 	SmartMeterNo int    `bson:"smartMeterNo"`
 }
 
-// userId structure that represents a unique user id
-// type UserId struct {
-// 	Id bson.ObjectId `bson:"_id,omitempty"` // only uppercase variables can be exported
-// }
+// structure to represent a user account balance
+type AccountBalance struct {
+	UserId        string  "bson: userId"
+	FiatBalance   float64 "bson: fiatBalance"
+	EnergyBalance float64 "bson: energyBalance"
+}
 
+// lists all the collections in the db
 type MongoDatabase struct {
 	Cluster            *mongo.Database   //cluster
 	Users              *mongo.Collection //collection
@@ -38,6 +41,7 @@ type MongoDatabase struct {
 	EnergySellRequests *mongo.Collection
 	BuyOrderForecast   *mongo.Collection
 	ProdForecast       *mongo.Collection
+	UserAccBalance     *mongo.Collection
 }
 
 // Structure that will be sent as sign up response to frontend

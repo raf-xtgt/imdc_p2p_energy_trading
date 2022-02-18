@@ -93,6 +93,9 @@ func addUniqueUserId(username string, email string, uniqueId string) bool {
 		log.Fatal(err)
 		return false
 	}
+
+	// create a user account
+	createUserAccount(unId)
 	return true
 }
 

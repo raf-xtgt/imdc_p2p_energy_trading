@@ -82,21 +82,21 @@ def getOrderData(client):
             }
 
             req_arr.append(req_dict)
-    print("data")
-    for trns in req_arr:
-        print(trns)
-        print("\n")
-    print(all_seller_ids) 
+    # print("data")
+    # for trns in req_arr:
+    #     print(trns)
+    #     print("\n")
+    # print(all_seller_ids) 
     all_receivable = optReceivable(req_arr, all_seller_ids)
-    print("Total Receivable for sellers")
-    for i in all_receivable:
-        print(i)
-        print("\n")
+    # print("Total Receivable for sellers")
+    # for i in all_receivable:
+    #     print(i)
+    #     print("\n")
 
     trns = updateTrnsWtihSellerRew(all_receivable, req_arr)
-    for i in trns:
-        print(i)
-        print("\n")
+    # for i in trns:
+    #     print(i)
+    #     print("\n")
     return trns
 
 # to get the optimal reward that each seller in the current transaction pool can receive

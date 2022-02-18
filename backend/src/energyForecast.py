@@ -98,11 +98,11 @@ def energyForecast():
         y_axis_actual.append(float(energy))
     
 
-    print("Predicted x-axis values:",x_axis_pred)
-    print("Predicted y-axis values:",y_axis_pred)
-    print()
-    print("Actual x-axis values:",x_axis_actual)
-    print("Actual y-axis values:",y_axis_actual)
+    # print("Predicted x-axis values:",x_axis_pred)
+    # print("Predicted y-axis values:",y_axis_pred)
+    # print()
+    # print("Actual x-axis values:",x_axis_actual)
+    # print("Actual y-axis values:",y_axis_actual)
 
     return [x_axis_actual, y_axis_actual, x_axis_pred, y_axis_pred]
     #Plot the graph
