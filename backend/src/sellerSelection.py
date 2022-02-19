@@ -51,17 +51,19 @@ def getOrderData(client):
     req_arr = []
     all_seller_ids = []
     for item in buyRequests:
+        # request_id = item['reqid']
         # for all open requests
         if item['requestclosed'] == False:
             all_bids = [] # list to hold all bids made on current buy request
             req_dict = {} # request dictionary
             buy_req_id = item['reqid']
             buyer_id = item['buyerid']
+            print("Buy Request:", buy_req_id)
             for bid in sellRequests:
                 # if bid made on current request
                 #print("Current sell request for bid", bid['buyreqid'])
                 if bid['buyreqid'] == buy_req_id:
-                    #print("bid on request found")
+                    
                     bid_obj = {
                         "sellerId": bid['sellerid'],
                         "sellerReceivable": bid['fiatamount'], # amount of money seller wants to receive
@@ -81,7 +83,13 @@ def getOrderData(client):
                 
             }
 
+            # update the buy request to be closed
             req_arr.append(req_dict)
+            myquery = { "reqid": buy_req_id }
+            newvalues = { "$set": { "requestclosed": True } }
+            buyReqColl.update_one(myquery, newvalues)
+            
+        
     # print("data")
     # for trns in req_arr:
     #     print(trns)
@@ -105,6 +113,7 @@ def optReceivable(transactions, allSellerIds):
     all_receivable = []
     cost_factor = 0.3
     for i in range(len(allSellerIds)):
+        num_bids = 0 # number of open bids the seller is currently involved
         current_seller = allSellerIds[i]
         total_receivable = 0 # receivable on all the bids that the seller made(this is the reward for OSP)
         receivable = 0 # receivable on the current bid
@@ -119,6 +128,7 @@ def optReceivable(transactions, allSellerIds):
                     seller = bid['sellerId']
                     # each seller can only make one bid per a specific buy request
                     if seller == current_seller:
+                        num_bids += 1
                         receivable = bid['sellerReceivable']
                         total_receivable += ((receivable*receivable))/(4*cost_factor)
                         break # break because seller found
@@ -127,7 +137,8 @@ def optReceivable(transactions, allSellerIds):
         sell_info = {
             # sellerId and corresponding receivable amount
             "sellerId": current_seller,
-            "REW": total_receivable
+            "REW": total_receivable,
+            "bidsInvolved": num_bids
         }
         all_receivable.append(sell_info)
     return all_receivable
@@ -155,7 +166,8 @@ def updateTrnsWtihSellerRew(sellerRew, transactions):
                             'sellerId': current_seller, 
                             'sellerReceivable': trn_bid['sellerReceivable'], 
                             'sellerEnergySupply': trn_bid['sellerEnergySupply'],
-                            'REWARD': reward
+                            'REWARD': reward,
+                            'bidsInvolved': sell_obj['bidsInvolved'],
                         }
                         trn['selectedSeller'] = selected_seller
                         transactions[k][key] = trn

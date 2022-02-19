@@ -15,6 +15,7 @@ from datetime import datetime
 import random
 # import all functions from matchmaking.py
 from sellerSelection import *  
+from doubleAuction import *
 
 load_dotenv()
 USERID = ""
@@ -182,6 +183,8 @@ def connectToDb():
     else:
         print("Running matchmaking")
         initMatchmaking(client)
+        print("Running double auction")
+        initDoubleAuction(client)
         return
 
     # Get sample data

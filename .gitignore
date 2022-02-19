@@ -1,2 +1,4 @@
 
 backend/energy_Forcast/.env
+
+backend/src/__pycache__/
