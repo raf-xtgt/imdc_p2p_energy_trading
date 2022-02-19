@@ -1,8 +1,9 @@
 import { dashCaseToCamelCase } from '@angular/compiler/src/util';
 import { Component, OnInit } from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
-import {MatDialog} from '@angular/material/dialog';
- 
+import Swal from 'sweetalert2'
+import { Router } from '@angular/router';
+
 // import the user class
 import {User} from '../classes';
 
@@ -16,23 +17,15 @@ import { ConfigService } from '../config.service';
 })
 export class SignupComponent implements OnInit {
 
-  constructor(private _config:ConfigService, public dialog: MatDialog) { }
+  constructor(private _config:ConfigService, private router: Router) { }
 
   ngOnInit(): void {
   }
   
-
   //select = ['He is fat', 'Mikasa']
   model = new User("", "","","",0, "")
   submitted = false;
 
-  /** Method to check whether the username and email is unique or not.
-   * If an account with the same username and email, exist, then
-   * ask for using different credentials
-   */
-  checkUsernameAndEmail () {
-    
-  }
 
   /** Method to add user to the database */
   addUser(){
@@ -51,26 +44,28 @@ export class SignupComponent implements OnInit {
   }
 
   openSuccessDialog() {
-    this.dialog.open(DialogElementsSuccess);
+    Swal.fire({
+      icon: 'success',
+      title: 'Sign Up Successful',
+      text: 'Click OK and login to the site',
+    }).then((result)=>{
+      if (result.isConfirmed){
+        this.router.navigateByUrl('/login')
+      }
+    })
   }
 
   openFailDialog() {
-    this.dialog.open(DialogElementsFail);
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Username and/or email already being used. Please enter a different username and/or email',
+    }).then((result)=>{
+      if (result.isConfirmed){
+        this.router.navigateByUrl('/register')
+      }
+    })
   }
 
 
 }
-
-
-@Component({
-  selector: 'app-success-dialog',
-  templateUrl: '../success-dialog/./success-dialog.component.html',
-})
-export class DialogElementsSuccess {}
-
-
-@Component({
-  selector: 'app-fail-dialog',
-  templateUrl: '../fail-dialog/./fail-dialog.component.html',
-})
-export class DialogElementsFail {}

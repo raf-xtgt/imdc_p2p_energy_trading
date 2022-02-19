@@ -18,6 +18,7 @@ func createUserAccount(userId string) {
 	defer mongoparams.cancel()
 	var balance AccountBalance
 	balance.UserId = userId
+	// add dummy data
 	balance.FiatBalance = 2000
 	balance.EnergyBalance = 80
 

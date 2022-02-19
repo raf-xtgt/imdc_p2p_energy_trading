@@ -217,7 +217,7 @@ export class BidPageComponent implements OnInit {
           text: 'Please reselect the bid from the market page',
         }).then((result)=>{
           if (result.isConfirmed){
-            console.log("olo")
+            //console.log("olo")
             this.router.navigateByUrl('/market')
           }
         })
