@@ -16,9 +16,9 @@
     
      <!-- Buy amount prediction graph goes here  -->
      <div style="display: block;width: 100%;">
-
+        <!-- Loading for order card form -->
         <div *ngIf="isLoading" style="text-align: center;">
-            <h3>Loading Graphs...</h3>
+            <h3>Loading charts...</h3>
             <mat-progress-spinner
             
             diameter = "50"
@@ -30,7 +30,7 @@
         </div>
 
 
-
+        <!-- Show chart when loading is done -->
         <div *ngIf="!isLoading"> 
             <h1>Comparison of Energy Consumption(kWh)</h1>
             <canvas baseChart width="500" height="120"
@@ -52,7 +52,20 @@
     
     <mat-card> 
         <mat-card-content>
-            <div style="width: 100%;"> 
+            <!-- Loading for order card form -->
+            <div *ngIf="isLoading" style="text-align: center;">
+                <h3>Loading ...</h3>
+                <mat-progress-spinner
+                
+                diameter = "50"
+                [color]="color"
+                [mode]="mode"
+                [value]="value"
+                
+                ></mat-progress-spinner>
+            </div>
+
+            <div *ngIf="!isLoading" style="width: 100%;"> 
                 <h1>Buy Energy Form</h1>
                 <h4>Make an order for buying energy by simply providing the energy and fiat amount</h4>
 

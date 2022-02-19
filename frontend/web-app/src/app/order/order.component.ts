@@ -200,6 +200,7 @@ export class OrderComponent implements OnInit {
                 Swal.fire('Your request has been placed on the market!!', '', 'success')  
                   this._config.makeBuyRequest(this._buyRequest).subscribe(data => {
                   //console.log("Response from backend for buy energy request", data)
+                  this.router.navigateByUrl('/market');
                 })
               }
               else{

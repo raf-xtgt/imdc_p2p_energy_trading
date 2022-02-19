@@ -46,7 +46,7 @@ def getOrderData(client):
     cluster=client["IMDC-p2p-energy"]
     buyReqColl = cluster.buyRequests
     sellReqColl = cluster.sellRequests
-    buyRequests = buyReqColl.find()
+    buyRequests = list(buyReqColl.find())
     sellRequests = list(sellReqColl.find())
     req_arr = []
     all_seller_ids = []
@@ -135,34 +135,33 @@ def optReceivable(transactions, allSellerIds):
 
 # add the reward of each seller in the bids array of each transaction
 def updateTrnsWtihSellerRew(sellerRew, transactions):
-    for data in sellerRew:
-        current_seller = data['sellerId']
-        rew = data['REW']
-        for k in range(0, len(transactions)):
-            # for each transaction
-            for key in transactions[k]:
-                obj = transactions[k][key]
-                all_bids = obj['bids']
-                sorted_bids = sorted(all_bids, key=lambda d: d['sellerReceivable'])
-                for i in range(len(sorted_bids)):
-                    bid = sorted_bids[i]
-                    
-                    seller = bid['sellerId']
-                    
-                    if seller == current_seller:
-                        all_bids[i] = {
-                            'sellerId':seller,
-                            'sellerReceivable':bid['sellerReceivable'],
-                            'sellerEnergySupply': bid['sellerEnergySupply'],
-                            'REW': rew
-                        }
-                        obj['bids'] = all_bids
-                        # selected seller is the one with the least receivable amount on current bid
-                        # since list is sorted, it is the first person in the list
-                        obj['selectedSeller'] = sorted_bids[0]
-                        transactions[k][key] = obj
+    for i in range(len(sellerRew)):
+        sell_obj = sellerRew[i]
+        current_seller = sell_obj['sellerId']
 
-                        break
-    #print("New")
-    #print(transactions) 
-    return transactions               
+        for k in range(len(transactions)):
+            for key in transactions[k]:
+                trn = transactions[k][key]
+                trn_bids = trn['bids']
+                sorted_bids = sorted(trn_bids, key=lambda d: d['sellerReceivable'])
+                selected_seller = sorted_bids[0]
+                
+                for j in range(len(trn_bids)):
+                    trn_bid = trn_bids[j]
+                    trn_seller = trn_bid['sellerId']
+                    if current_seller == trn_seller:
+                        reward = sell_obj['REW']
+                        trn['bids'][j] = {
+                            'sellerId': current_seller, 
+                            'sellerReceivable': trn_bid['sellerReceivable'], 
+                            'sellerEnergySupply': trn_bid['sellerEnergySupply'],
+                            'REWARD': reward
+                        }
+                        trn['selectedSeller'] = selected_seller
+                        transactions[k][key] = trn
+
+    # for z in transactions:
+    #     print(z)
+    #     print('\n')
+    return transactions
+    #print(transactions)
