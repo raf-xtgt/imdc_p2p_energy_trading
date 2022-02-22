@@ -1,8 +1,14 @@
+import numpy as np # linear algebra
+from datetime import datetime
 
 def initDoubleAuction(client):
     data = getBidData(client)
     auctionData = prepareAuctionData(data, client)
-    print(auctionData)
+    #print(auctionData)
+    for i in auctionData:
+        print(i)
+    print('\n')
+    auction = doubleAuction(auctionData)
 
 def prepareAuctionData(data, client):
     """
@@ -26,8 +32,8 @@ def prepareAuctionData(data, client):
     all_auction_data = [] # list to hold all the required data for auction
     for i in range(len(data)):
         # print(i)
-        # print(data[i])
-        # print("\n")
+        print(data[i])
+        print("\n")
         for key in data[i]:
             
             obj = data[i][key]
@@ -43,22 +49,39 @@ def prepareAuctionData(data, client):
             seller_energy_balance = seller_acc[0]['energybalance']
             bids = obj['bids']
             sorted_bids = sorted(bids, key=lambda d: d['sellerReceivable']) 
+            bidFiats = [] # list to hold all the bid(fiat amount) for each seller
+            for bid in bids:
+                fiat = bid['sellerReceivable']
+                bidFiats.append(fiat)
+            
+            enFromSellers = []  #list to hold all the energy amount that each seller can provide
+            for bid in bids:
+                en = bid['sellerEnergySupply']
+                enFromSellers.append(en)
+            
+
             reward = sorted_bids[0]['REWARD'] 
             sellerBids = sorted_bids[0]['bidsInvolved']# number of bids the seller is involved in      
             #print(reward)
-
+            energy_price = getAvgHouseholdPrice(client)
             auction_data = {
                 'buyerId': buyer_id,
                 'buyerFiatBalance': buyer_fiat_balance,
                 'buyerEnergyBalance': buyer_energy_balance,
                 'buyerEnergyDemand': obj['buyerEnergyDemand'],
-                'bids_i': len(bids), 
+                'buyerPayable': obj['buyerPayable'],
+                'bids_j': len(bids), 
+                'bidFiats': bidFiats, #list of all the bids in fiat amount made on the request
+                'enFromSellers': enFromSellers, # list of all the energy amount that sellers can give
                 'Pay': obj['PAY'],
                 'sellerId': seller_id,
                 'sellerFiatBalance': seller_fiat_balance,
                 'sellerEnergyBalance': seller_energy_balance,
-                'bids_j': sellerBids,
+                'sellerReceivable':sorted_bids[0]['sellerReceivable'], 
+                'sellerEnergySupply': sorted_bids[0]['sellerEnergySupply'], # amount of energy the seller wants to trade
+                'bids_i': sellerBids,
                 'Rew': reward,
+                'householdEnergyPrice': energy_price   
             }
             all_auction_data.append(auction_data)
     return all_auction_data
@@ -67,12 +90,103 @@ def prepareAuctionData(data, client):
 
 
 def getAccData(uId, client):
+    """
+    Given the userId return the user's account data
+    """
     cluster=client["IMDC-p2p-energy"]
     collection = cluster.accountBalance
     account = list(collection.find({'userid': uId}, {"_id":0}))
     return account
 
 
+def getAvgHouseholdPrice(client):
+
+    now = datetime.now()
+    date_str= str(now.strftime('%d-%m-%Y')) 
+    print("Date String:", date_str)
+    cluster=client["IMDC-p2p-energy"]
+    collection = cluster.householdEnergyPrice
+    price_data = list(collection.find({'datestr': date_str}, {"_id":0}))
+    #print("Household data:", price[0]['average'])
+    price = price_data[0]['average']
+    return price
+
+def doubleAuction(auctionData):
+    epsilon = 0.005
+    charging_eff = 0.85
+    for data in auctionData:
+        en_balance = data['buyerEnergyBalance']
+        flag = True
+        t = 0
+        bn = data['buyerPayable']
+        en = data['buyerEnergyDemand']
+        pn = data['bidFiats']
+        sn = data['sellerEnergySupply']
+        j = data['bids_j'] # number of bids made by the selected seller for all open requests
+        i = data['bids_i'] # number of bids on the request
+        pay = data['Pay'] # total amount if buyer had to pay all the bidders
+        rew = data['Rew'] # total amount if seller can provide all the buyers they bidded on
+        while flag:
+            # optimal energy allocation for buyer and seller
+            opt_en = optimalAllocation(bn,en, pn, sn, j, en_balance)
+            print("Optimal allocation", opt_en)
+            print("\n")
+            buyer_satisfaction = buyerSatisfaction(j, opt_en)
+            # optimal bid price for buyer
+            ebp = buyer_satisfaction - pay
+            ebp = abs(ebp)
+            print("EBP:", ebp)
+
+            seller_cost = sellerCost(sn,i, opt_en)
+            print("seller reward:", rew)
+            print("seller cost:", seller_cost)
+            esp = rew-seller_cost 
+            print("ESP:", esp)
+            flag= False
+    
+    return
+
+
+
+def optimalAllocation(bn, en, pn, sn, bids_j, en_balance):
+    """
+    bn amount of money the buyer wants to pay
+    en amount of energy the buyer needs
+    pn amount of money the seller wants (Array)
+    sn amount of energy the seller can provide (array)
+    note: for pn and sn, we will loop through all the sellers and to get optimal for the selected seller
+    The buyer makes a single request which is sent to all sellers, so no need
+    the outer loop
+    
+    Returns the optimal energy that buyer and seller can trade while 
+    maximising social welfare
+    """
+    summation = 0
+    # willingness = phi/en_balance
+    willingness = 100 # always willing to charge
+    min_energy = 85
+    n = 0.085 # average charging efficiency
+    
+    # optimal bid
+    for j in range(bids_j):
+        val = en - min_energy
+        summation += val
+    
+    num = ((n*summation) +1)*bn
+    opt_en = num/(n*willingness) # optimal energy allocated for buyer
+    print("Optimal energy allocated for buyer, en:", opt_en)
+
+    # cost factors c1 and c2
+    c1 = 0.45
+    c2 = 0.5
+
+    opt_seller_en = (2*c1*sn) + c2
+    print("Optimal energy that can be provided:", opt_seller_en)
+    output = {
+        'buyerOptEn': opt_en,
+        'sellerOptEn': opt_seller_en
+    }
+    return output
 
 
 
@@ -80,19 +194,37 @@ def getAccData(uId, client):
 
 
 # the satisfaction function for a buyer (U)
-def buyerSatisfaction(client):
-    selectedSellers = 0
+def buyerSatisfaction(j, optEnergyValues):
 
-    min_energy = 20 # minimum energy that can be consumed
-    demand = 0 # energy needed by the buyer
-    current_energy_balance = 0 
-    
-    n = 0 # average charging efficiecny 
-    phi = 3 # constant
+    min_energy = 80 # minimum energy that can be consumed
+    demand = optEnergyValues['buyerOptEn'] # optimised energy needed by the buyer from optimalAllocation
+    n = 0.085 # average charging efficiecny 
     # charging willingness
-    will = phi/current_energy_balance
+    willingness = 1
+    summation = 0
+    for bids in range(j):
+        val = demand - min_energy
+        summation+=val
+    inner_exp = (n*summation)+1
+    satisfaction_val = willingness * np.log(inner_exp)
+    return satisfaction_val
 
-    return
+
+
+def sellerCost(sn, i, opt_en):
+    opt_allc_en = opt_en['sellerOptEn']
+    cost_sum1 = 0
+    cost_sum2 = 0
+    # cost factors c1 and c2
+    c1 = 0
+    c2 = 0.05
+    for cost in range(i):
+        cost_sum1 += opt_allc_en*opt_allc_en
+        cost_sum2 += sn
+    
+    final_cost = (c1*cost_sum1) + (c2*cost_sum2)
+    return final_cost
+
 
 def getBidData(client):
     cluster=client["IMDC-p2p-energy"]
@@ -101,19 +233,6 @@ def getBidData(client):
     selectedSellers = list(collection.find({},{"_id":0}))
     return selectedSellers
 
-def optimalAllocation():
-    en = 0 # optimal energy buyer needs
-    sn = 0 # optimal energy seller wants to send
-
-    bn = 0 # amount buyer wants to pay
-    pn = 0 # amount seller wants to receive 
-    
-    i = 0 # number of buyer
-
-
-def doubleAuction():
-    epsilon = 0.005
-    return
 
 """
 When the user signs up, add an account balance for them with
@@ -144,4 +263,72 @@ def initDoubleAuction(client):
     #         print("\n")
     #         break
 
+
+def optimalAllocation(bn, en, pn, sn, bids_j):
+    
+    bn amount of money the buyer wants to pay
+    en amount of energy the buyer needs
+    pn amount of money the seller wants (Array)
+    sn amount of energy the seller can provide (array)
+    note: for pn and sn, we will loop through all the sellers and to get optimal for the selected seller
+    The buyer makes a single request which is sent to all sellers, so no need
+    the outer loop
+    
+    Returns the optimal energy that buyer and seller can trade while 
+    maximising social welfare
+
+    final_arr = []
+    summation = 0
+    for j in range(bids_j):
+        val = (bn*np.log(en)) - (pn[j]*sn[j])
+        summation += val
+        final_arr.append(val)
+
+    print("Sum", summation)
+    print("Energy values", final_arr)
+    optAmount = max(final_arr)
+    return optAmount
+
+def optimalAllocation(bn, en, pn, sn, bids_j, en_balance):
+    final_arr = []
+    summation = 0
+    phi = 1
+    # willingness = phi/en_balance
+    willingness = 100
+    min_energy = 85
+    n = 0.085 # average charging efficiency
+    
+    # optimal bid
+    for j in range(bids_j):
+        val = en - min_energy
+        summation += val
+    
+    denom = (n*summation) +1
+    print("denom", denom)
+    opt_bid = (n*willingness*en)/denom
+    print("Optimal bid, bn:", opt_bid)
+    bn = opt_bid
+
+    opt_seller_rec = []
+    c1 = 0.9
+    c2 = 0.9
+    for j in range(bids_j):
+        val = 2*c1*sn[j] - c2
+        opt_seller_rec.append(val)
+    
+    print("Optimal energy, sn:", opt_seller_rec)
+
+
+
+
+    for j in range(bids_j):
+        val = (opt_bid*np.log(en)) - (pn[j]*opt_seller_rec[j])
+        summation += val
+        final_arr.append(val)
+
+
+    print("Sum", summation)
+    print("Energy values", final_arr)
+    optAmount = max(final_arr)
+    return optAmount
 """

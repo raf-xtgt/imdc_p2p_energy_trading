@@ -111,12 +111,13 @@ def getOrderData(client):
 def optReceivable(transactions, allSellerIds):
     # list to hold the seller total receivable amount for each seller
     all_receivable = []
-    cost_factor = 0.3
+    cost_factor = 0.45
     for i in range(len(allSellerIds)):
         num_bids = 0 # number of open bids the seller is currently involved
         current_seller = allSellerIds[i]
         total_receivable = 0 # receivable on all the bids that the seller made(this is the reward for OSP)
         receivable = 0 # receivable on the current bid
+        receivable_arr = [] # receivables of current seller on all open bids
         # summation of the money they received from all the bids they made on the requests
         for k in range(0, len(transactions)):
             # for each transaction
@@ -130,10 +131,14 @@ def optReceivable(transactions, allSellerIds):
                     if seller == current_seller:
                         num_bids += 1
                         receivable = bid['sellerReceivable']
-                        total_receivable += ((receivable*receivable))/(4*cost_factor)
+                        receivable_arr.append(receivable)
+                        #total_receivable += ((receivable*receivable))/(4*cost_factor)
                         break # break because seller found
-
-                    
+        
+        total_receivable = 0
+        print("Seller id:", current_seller," receivables:", receivable_arr)
+        for receivable in receivable_arr:
+            total_receivable+= ((receivable*receivable))/(4*cost_factor)
         sell_info = {
             # sellerId and corresponding receivable amount
             "sellerId": current_seller,
