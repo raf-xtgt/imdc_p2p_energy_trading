@@ -1,5 +1,6 @@
 import numpy as np # linear algebra
 from datetime import datetime
+import random
 
 def initDoubleAuction(client):
     data = getBidData(client)
@@ -124,25 +125,27 @@ def doubleAuction(auctionData):
         sn = data['sellerEnergySupply']
         j = data['bids_j'] # number of bids made by the selected seller for all open requests
         i = data['bids_i'] # number of bids on the request
-        pay = data['Pay'] # total amount if buyer had to pay all the bidders
-        rew = data['Rew'] # total amount if seller can provide all the buyers they bidded on
-        while flag:
-            # optimal energy allocation for buyer and seller
-            opt_en = optimalAllocation(bn,en, pn, sn, j, en_balance)
-            print("Optimal allocation", opt_en)
-            print("\n")
-            buyer_satisfaction = buyerSatisfaction(j, opt_en)
-            # optimal bid price for buyer
-            ebp = buyer_satisfaction - pay
-            ebp = abs(ebp)
-            print("EBP:", ebp)
+        #pay = data['Pay'] # total amount if buyer had to pay all the bidders
+        #rew = data['Rew'] # total amount if seller can provide all the buyers they bidded on
+        pricing = data['householdEnergyPrice']
+    
+        # optimal energy allocation for buyer and seller
+        opt_en = optimalAllocation(bn,en, pn, sn, j, en_balance)
+        buyer_payable = opt_en['buyerOptEn'] * pricing 
+        seller_receivable = opt_en['sellerOptEn'] *pricing
+        tnbReceivable = buyer_payable - seller_receivable
 
-            seller_cost = sellerCost(sn,i, opt_en)
-            print("seller reward:", rew)
-            print("seller cost:", seller_cost)
-            esp = rew-seller_cost 
-            print("ESP:", esp)
-            flag= False
+        final_output = {
+            "optBuyerEnergy": opt_en['buyerOptEn'],
+            "buyerPayable": buyer_payable,
+            "optSellerEnergy": opt_en['sellerOptEn'],
+            'sellerReceivable': seller_receivable,
+            'tnbReceivable': tnbReceivable
+
+        }
+
+        print("Optimal allocation", final_output)
+        print("\n")
     
     return
 
@@ -174,13 +177,23 @@ def optimalAllocation(bn, en, pn, sn, bids_j, en_balance):
     
     num = ((n*summation) +1)*bn
     opt_en = num/(n*willingness) # optimal energy allocated for buyer
+    if opt_en < en:
+        diff = en - opt_en
+        opt_en = opt_en + (0.5 * diff)
     print("Optimal energy allocated for buyer, en:", opt_en)
 
     # cost factors c1 and c2
-    c1 = 0.45
-    c2 = 0.5
+    c1 = 1
+    c2 = 1
 
     opt_seller_en = (2*c1*sn) + c2
+    increase = random.uniform(0.85, 0.90)
+    if opt_seller_en >= opt_en:
+        opt_seller_en = increase*opt_en
+    elif opt_seller_en < opt_en:
+        diff = opt_en - opt_seller_en
+        opt_seller_en = opt_seller_en + (0.3*diff)
+
     print("Optimal energy that can be provided:", opt_seller_en)
     output = {
         'buyerOptEn': opt_en,
