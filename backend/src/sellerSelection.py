@@ -35,8 +35,10 @@ def initMatchmaking(client):
     # add the matchmaking data in the db
     cluster=client["IMDC-p2p-energy"]
     # collection to store selected sellers
-    collection = cluster.selectedSellers
+    collection = cluster.auctionData
     for data in final_list:
+        # print(data)
+        # print("\n")
         result = collection.insert_one(data)
         print("Added optimal seller for buy requests", result.inserted_id)
     return "Success"
@@ -63,24 +65,33 @@ def getOrderData(client):
                 # if bid made on current request
                 #print("Current sell request for bid", bid['buyreqid'])
                 if bid['buyreqid'] == buy_req_id:
-                    
+                    seller_id = bid['sellerid']                
+                    seller_acc = getAccData(seller_id, client)
+                    seller_fiat_balance = seller_acc[0]['fiatbalance']
+                    seller_energy_balance = seller_acc[0]['energybalance']
                     bid_obj = {
-                        "sellerId": bid['sellerid'],
+                        "sellerId": seller_id,
                         "sellerReceivable": bid['fiatamount'], # amount of money seller wants to receive
-                        "sellerEnergySupply": bid['energyamount'] # amount of energy seller wants to supply 
+                        "sellerFiatBalance": seller_fiat_balance,
+                        "sellerEnergySupply": bid['energyamount'], # amount of energy seller wants to supply 
+                        "sellerEnergyBalance": seller_energy_balance,
                     }
                     all_bids.append(bid_obj)
                     if bid['sellerid'] not in all_seller_ids:
                         all_seller_ids.append(bid['sellerid'])
 
             opt_payable = item['fiatamount'] * len(all_bids)
+            buyer_acc = getAccData(buyer_id, client)
+            buyer_fiat_balance = buyer_acc[0]['fiatbalance']
+            buyer_energy_balance = buyer_acc[0]['energybalance']
             req_dict[buy_req_id]= {
                 'buyerId': buyer_id,
                 'buyerPayable': item['fiatamount'], # amount of money buyer willing to pay,
                 'buyerEnergyDemand': item['energyamount'], # amount of energy the buyer wants,
                 "PAY": opt_payable, # amount to be used as Pay(E) for Optimal Bid Price
-                'bids':all_bids
-                
+                'bids':all_bids,
+                'buyerFiatBalance': buyer_fiat_balance,
+                'buyerEnergyBalance': buyer_energy_balance
             }
 
             # update the buy request to be closed
@@ -90,95 +101,15 @@ def getOrderData(client):
             buyReqColl.update_one(myquery, newvalues)
             
         
-    # print("data")
-    # for trns in req_arr:
-    #     print(trns)
-    #     print("\n")
-    # print(all_seller_ids) 
-    all_receivable = optReceivable(req_arr, all_seller_ids)
-    # print("Total Receivable for sellers")
-    # for i in all_receivable:
-    #     print(i)
-    #     print("\n")
 
-    trns = updateTrnsWtihSellerRew(all_receivable, req_arr)
-    # for i in trns:
-    #     print(i)
-    #     print("\n")
-    return trns
-
-# to get the optimal reward that each seller in the current transaction pool can receive
-def optReceivable(transactions, allSellerIds):
-    # list to hold the seller total receivable amount for each seller
-    all_receivable = []
-    cost_factor = 0.45
-    for i in range(len(allSellerIds)):
-        num_bids = 0 # number of open bids the seller is currently involved
-        current_seller = allSellerIds[i]
-        total_receivable = 0 # receivable on all the bids that the seller made(this is the reward for OSP)
-        receivable = 0 # receivable on the current bid
-        receivable_arr = [] # receivables of current seller on all open bids
-        # summation of the money they received from all the bids they made on the requests
-        for k in range(0, len(transactions)):
-            # for each transaction
-            for key in transactions[k]:
-                obj = transactions[k][key]
-                all_bids = obj['bids']
-                for i in range(len(all_bids)):
-                    bid = all_bids[i]
-                    seller = bid['sellerId']
-                    # each seller can only make one bid per a specific buy request
-                    if seller == current_seller:
-                        num_bids += 1
-                        receivable = bid['sellerReceivable']
-                        receivable_arr.append(receivable)
-                        #total_receivable += ((receivable*receivable))/(4*cost_factor)
-                        break # break because seller found
-        
-        total_receivable = 0
-        print("Seller id:", current_seller," receivables:", receivable_arr)
-        for receivable in receivable_arr:
-            total_receivable+= ((receivable*receivable))/(4*cost_factor)
-        sell_info = {
-            # sellerId and corresponding receivable amount
-            "sellerId": current_seller,
-            "REW": total_receivable,
-            "bidsInvolved": num_bids
-        }
-        all_receivable.append(sell_info)
-    return all_receivable
+    return req_arr
 
 
-# add the reward of each seller in the bids array of each transaction
-def updateTrnsWtihSellerRew(sellerRew, transactions):
-    for i in range(len(sellerRew)):
-        sell_obj = sellerRew[i]
-        current_seller = sell_obj['sellerId']
-
-        for k in range(len(transactions)):
-            for key in transactions[k]:
-                trn = transactions[k][key]
-                trn_bids = trn['bids']
-                sorted_bids = sorted(trn_bids, key=lambda d: d['sellerReceivable'])
-                selected_seller = sorted_bids[0]
-                
-                for j in range(len(trn_bids)):
-                    trn_bid = trn_bids[j]
-                    trn_seller = trn_bid['sellerId']
-                    if current_seller == trn_seller:
-                        reward = sell_obj['REW']
-                        trn['bids'][j] = {
-                            'sellerId': current_seller, 
-                            'sellerReceivable': trn_bid['sellerReceivable'], 
-                            'sellerEnergySupply': trn_bid['sellerEnergySupply'],
-                            'REWARD': reward,
-                            'bidsInvolved': sell_obj['bidsInvolved'],
-                        }
-                        trn['selectedSeller'] = selected_seller
-                        transactions[k][key] = trn
-
-    # for z in transactions:
-    #     print(z)
-    #     print('\n')
-    return transactions
-    #print(transactions)
+def getAccData(uId, client):
+    """
+    Given the userId return the user's account data
+    """
+    cluster=client["IMDC-p2p-energy"]
+    collection = cluster.accountBalance
+    account = list(collection.find({'userid': uId}, {"_id":0}))
+    return account

@@ -33,23 +33,24 @@ def prepareAuctionData(data, client):
     all_auction_data = [] # list to hold all the required data for auction
     for i in range(len(data)):
         # print(i)
-        print(data[i])
-        print("\n")
+        # print(data[i])
+        # print("\n")
         for key in data[i]:
             
             obj = data[i][key]
             buyer_id = obj['buyerId']
-            buyer_acc = getAccData(buyer_id, client)
-            buyer_fiat_balance = buyer_acc[0]['fiatbalance']
-            buyer_energy_balance = buyer_acc[0]['energybalance']
+
+            buyer_fiat_balance = obj['buyerFiatBalance']
+            buyer_energy_balance = obj['buyerEnergyBalance']
             
             #print("buyer account:", buyer_acc)
-            seller_id = obj['selectedSeller']['sellerId']
-            seller_acc = getAccData(seller_id, client)
-            seller_fiat_balance = seller_acc[0]['fiatbalance']
-            seller_energy_balance = seller_acc[0]['energybalance']
             bids = obj['bids']
             sorted_bids = sorted(bids, key=lambda d: d['sellerReceivable']) 
+            selected_seller = sorted_bids[0]
+            seller_id = selected_seller['sellerId']
+            seller_fiat_balance = selected_seller['sellerFiatBalance']
+            seller_energy_balance = selected_seller['sellerEnergyBalance']
+            
             bidFiats = [] # list to hold all the bid(fiat amount) for each seller
             for bid in bids:
                 fiat = bid['sellerReceivable']
@@ -60,9 +61,6 @@ def prepareAuctionData(data, client):
                 en = bid['sellerEnergySupply']
                 enFromSellers.append(en)
             
-
-            reward = sorted_bids[0]['REWARD'] 
-            sellerBids = sorted_bids[0]['bidsInvolved']# number of bids the seller is involved in      
             #print(reward)
             energy_price = getAvgHouseholdPrice(client)
             auction_data = {
@@ -80,8 +78,6 @@ def prepareAuctionData(data, client):
                 'sellerEnergyBalance': seller_energy_balance,
                 'sellerReceivable':sorted_bids[0]['sellerReceivable'], 
                 'sellerEnergySupply': sorted_bids[0]['sellerEnergySupply'], # amount of energy the seller wants to trade
-                'bids_i': sellerBids,
-                'Rew': reward,
                 'householdEnergyPrice': energy_price   
             }
             all_auction_data.append(auction_data)
@@ -89,22 +85,11 @@ def prepareAuctionData(data, client):
 
 
 
-
-def getAccData(uId, client):
-    """
-    Given the userId return the user's account data
-    """
-    cluster=client["IMDC-p2p-energy"]
-    collection = cluster.accountBalance
-    account = list(collection.find({'userid': uId}, {"_id":0}))
-    return account
-
-
 def getAvgHouseholdPrice(client):
 
     now = datetime.now()
     date_str= str(now.strftime('%d-%m-%Y')) 
-    print("Date String:", date_str)
+    #print("Date String:", date_str)
     cluster=client["IMDC-p2p-energy"]
     collection = cluster.householdEnergyPrice
     price_data = list(collection.find({'datestr': date_str}, {"_id":0}))
@@ -124,9 +109,6 @@ def doubleAuction(auctionData):
         pn = data['bidFiats']
         sn = data['sellerEnergySupply']
         j = data['bids_j'] # number of bids made by the selected seller for all open requests
-        i = data['bids_i'] # number of bids on the request
-        #pay = data['Pay'] # total amount if buyer had to pay all the bidders
-        #rew = data['Rew'] # total amount if seller can provide all the buyers they bidded on
         pricing = data['householdEnergyPrice']
     
         # optimal energy allocation for buyer and seller
@@ -180,7 +162,7 @@ def optimalAllocation(bn, en, pn, sn, bids_j, en_balance):
     if opt_en < en:
         diff = en - opt_en
         opt_en = opt_en + (0.5 * diff)
-    print("Optimal energy allocated for buyer, en:", opt_en)
+    #print("Optimal energy allocated for buyer, en:", opt_en)
 
     # cost factors c1 and c2
     c1 = 1
@@ -194,7 +176,7 @@ def optimalAllocation(bn, en, pn, sn, bids_j, en_balance):
         diff = opt_en - opt_seller_en
         opt_seller_en = opt_seller_en + (0.3*diff)
 
-    print("Optimal energy that can be provided:", opt_seller_en)
+    #print("Optimal energy that can be provided:", opt_seller_en)
     output = {
         'buyerOptEn': opt_en,
         'sellerOptEn': opt_seller_en
@@ -205,7 +187,7 @@ def optimalAllocation(bn, en, pn, sn, bids_j, en_balance):
 
 def getBidData(client):
     cluster=client["IMDC-p2p-energy"]
-    collection = cluster.selectedSellers
+    collection = cluster.auctionData
     # get the data without the '_id:Object(..)' part
     selectedSellers = list(collection.find({},{"_id":0}))
     return selectedSellers
