@@ -86,7 +86,6 @@ def prepareAuctionData(data, client):
 
 
 def getAvgHouseholdPrice(client):
-
     now = datetime.now()
     date_str= str(now.strftime('%d-%m-%Y')) 
     #print("Date String:", date_str)
@@ -122,8 +121,7 @@ def doubleAuction(auctionData):
             "buyerPayable": buyer_payable,
             "optSellerEnergy": opt_en['sellerOptEn'],
             'sellerReceivable': seller_receivable,
-            'tnbReceivable': tnbReceivable
-
+            'TNBReceivable': tnbReceivable
         }
 
         print("Optimal allocation", final_output)
@@ -159,22 +157,14 @@ def optimalAllocation(bn, en, pn, sn, bids_j, en_balance):
     
     num = ((n*summation) +1)*bn
     opt_en = num/(n*willingness) # optimal energy allocated for buyer
-    if opt_en < en:
-        diff = en - opt_en
-        opt_en = opt_en + (0.5 * diff)
-    #print("Optimal energy allocated for buyer, en:", opt_en)
 
     # cost factors c1 and c2
     c1 = 1
     c2 = 1
-
-    opt_seller_en = (2*c1*sn) + c2
+    opt_seller_en = (2*c1*sn) + c2 # optimal energy seller can provide
     increase = random.uniform(0.85, 0.90)
     if opt_seller_en >= opt_en:
         opt_seller_en = increase*opt_en
-    elif opt_seller_en < opt_en:
-        diff = opt_en - opt_seller_en
-        opt_seller_en = opt_seller_en + (0.3*diff)
 
     #print("Optimal energy that can be provided:", opt_seller_en)
     output = {
