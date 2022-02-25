@@ -45,11 +45,6 @@ def prepareAuctionData(data, client):
             
             #print("buyer account:", buyer_acc)
             bids = obj['bids']
-            sorted_bids = sorted(bids, key=lambda d: d['sellerReceivable']) 
-            selected_seller = sorted_bids[0]
-            seller_id = selected_seller['sellerId']
-            seller_fiat_balance = selected_seller['sellerFiatBalance']
-            seller_energy_balance = selected_seller['sellerEnergyBalance']
             
             bidFiats = [] # list to hold all the bid(fiat amount) for each seller
             for bid in bids:
@@ -73,12 +68,8 @@ def prepareAuctionData(data, client):
                 'bidFiats': bidFiats, #list of all the bids in fiat amount made on the request
                 'enFromSellers': enFromSellers, # list of all the energy amount that sellers can give
                 'Pay': obj['PAY'],
-                'sellerId': seller_id,
-                'sellerFiatBalance': seller_fiat_balance,
-                'sellerEnergyBalance': seller_energy_balance,
-                'sellerReceivable':sorted_bids[0]['sellerReceivable'], 
-                'sellerEnergySupply': sorted_bids[0]['sellerEnergySupply'], # amount of energy the seller wants to trade
-                'householdEnergyPrice': energy_price   
+                'bids': obj['bids'],
+                'householdEnergyPrice': energy_price
             }
             all_auction_data.append(auction_data)
     return all_auction_data
@@ -100,38 +91,31 @@ def doubleAuction(auctionData):
     epsilon = 0.005
     charging_eff = 0.85
     for data in auctionData:
-        en_balance = data['buyerEnergyBalance']
-        flag = True
-        t = 0
-        bn = data['buyerPayable']
-        en = data['buyerEnergyDemand']
-        pn = data['bidFiats']
-        sn = data['sellerEnergySupply']
-        j = data['bids_j'] # number of bids made by the selected seller for all open requests
-        pricing = data['householdEnergyPrice']
-    
         # optimal energy allocation for buyer and seller
-        opt_en = optimalAllocation(bn,en, pn, sn, j, en_balance)
-        buyer_payable = opt_en['buyerOptEn'] * pricing 
-        seller_receivable = opt_en['sellerOptEn'] *pricing
-        tnbReceivable = buyer_payable - seller_receivable
+        opt_en = optimalAllocation(data)
+        # buyer_payable = opt_en['buyerOptEn'] * pricing 
+        # seller_receivable = opt_en['sellerOptEn'] *pricing
+        # tnbReceivable = buyer_payable - seller_receivable
 
-        final_output = {
-            "optBuyerEnergy": opt_en['buyerOptEn'],
-            "buyerPayable": buyer_payable,
-            "optSellerEnergy": opt_en['sellerOptEn'],
-            'sellerReceivable': seller_receivable,
-            'TNBReceivable': tnbReceivable
-        }
+        # final_output = {
+        #     "optBuyerEnergy": opt_en['buyerOptEn'],
+        #     "buyerPayable": buyer_payable,
+        #     "optSellerEnergy": opt_en['sellerOptEn'],
+        #     'sellerReceivable': seller_receivable,
+        #     'TNBReceivable': tnbReceivable
+        # }
 
-        print("Optimal allocation", final_output)
+        print("Optimal allocation", opt_en)
         print("\n")
     
     return
 
 
 
-def optimalAllocation(bn, en, pn, sn, bids_j, en_balance):
+def optimalAllocation(data):
+    # print("inside optimal allocation\n <=========================> ")
+    # print(data)
+    # print("inside optimal allocation\n <=========================> ")
     """
     bn amount of money the buyer wants to pay
     en amount of energy the buyer needs
@@ -144,32 +128,80 @@ def optimalAllocation(bn, en, pn, sn, bids_j, en_balance):
     Returns the optimal energy that buyer and seller can trade while 
     maximising social welfare
     """
-    summation = 0
-    # willingness = phi/en_balance
+    diff = "infinity"    
     willingness = 100 # always willing to charge
     min_energy = 85
     n = 0.085 # average charging efficiency
-    
-    # optimal bid
-    for j in range(bids_j):
-        val = en - min_energy
-        summation += val
-    
-    num = ((n*summation) +1)*bn
-    opt_en = num/(n*willingness) # optimal energy allocated for buyer
+    buyer_id = data['buyerId']
+    buyerPayable = data['buyerPayable']
+    buyerDemand = data['buyerEnergyDemand']
+    numOfBids = data['bids_j'] # number of bids made by the selected seller for all open requests
+    pricing = data['householdEnergyPrice']
+    bids = data['bids']
+    sorted_bids = sorted(bids, key=lambda d: d['sellerReceivable'])
+    auction_bids = []
+    buyerEnReceivable = 0
+    buyerOriginalPayable = buyerPayable # amount buyer agreed to pay when they made the buy request
+    buyerOriginalDemand = buyerDemand
 
-    # cost factors c1 and c2
-    c1 = 1
-    c2 = 1
-    opt_seller_en = (2*c1*sn) + c2 # optimal energy seller can provide
-    increase = random.uniform(0.85, 0.90)
-    if opt_seller_en >= opt_en:
-        opt_seller_en = increase*opt_en
+    while (diff=="infinity" or diff>0) and len(sorted_bids) !=0 :
+         
+        selected_seller = sorted_bids[0]
+        seller_id = selected_seller['sellerId']
+        seller_fiat_balance = selected_seller['sellerFiatBalance']
+        seller_energy_balance = selected_seller['sellerEnergyBalance']
+        seller_energy_supply = selected_seller['sellerEnergySupply']
+        
+        
+        # optimal energy allocation for buyer from selected seller
+        summation = 0
+        for j in range(numOfBids):
+            if buyerDemand < min_energy:
+                summation += buyerDemand
+            else:
+                val = buyerDemand - min_energy
+                summation += val
+        
+        num = ((n*summation) +1)*buyerPayable
+        opt_en = num/(n*willingness) # optimal energy allocated for buyer
 
-    #print("Optimal energy that can be provided:", opt_seller_en)
+        # optimal energy produceable by selected seller for buyer
+        c1 = 1
+        c2 = 1
+        opt_seller_en = (2*c1*seller_energy_supply) + c2
+        increase = random.uniform(0.85, 0.90)
+        if opt_seller_en >= opt_en:
+            opt_seller_en = increase*opt_en
+
+        buyerEnReceivable += opt_seller_en
+        # deficit for buyer to be addressed in next round
+        diff = buyerDemand - opt_en
+
+        selected_seller_info = {
+            'sellerId': seller_id,
+            'optimalEnFromSeller': opt_seller_en,
+            'optimalSellerReceivable':opt_seller_en*pricing,
+            'sellerFiatBalance': seller_fiat_balance,
+            'sellerEnergyBalance': seller_energy_balance
+        }
+        auction_bids.append(selected_seller_info)
+        buyerDemand = diff
+        buyerPayable = buyerDemand * pricing # payable for the new deficit demand
+        sorted_bids.pop(0)
+
+
+    total_seller_rec = 0    # total seller receivable
+    for obj in auction_bids:
+        total_seller_rec += obj['optimalSellerReceivable']
+    TNBReceivable = buyerOriginalPayable - total_seller_rec
     output = {
-        'buyerOptEn': opt_en,
-        'sellerOptEn': opt_seller_en
+        'buyerId': buyer_id,
+        'buyerPayable': buyerOriginalPayable,
+        'buyerEnReceivableFromAuction': buyerEnReceivable,
+        'buyerEnReceivableFromTNB': buyerOriginalDemand - buyerEnReceivable,
+        'auctionBids': auction_bids, 
+        'TNBReceivable': TNBReceivable,
+        'TNBReceivableFromBuyerDirect': (buyerOriginalDemand - buyerEnReceivable)*0.20,
     }
     return output
 
