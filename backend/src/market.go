@@ -99,7 +99,7 @@ func getEnergyRequests(w http.ResponseWriter, r *http.Request) {
 	response.Requests = allBuyRequests
 	respondWithJSON(w, r, http.StatusCreated, response)
 
-	fmt.Println("Getting all buy requests for market", allBuyRequests)
+	//fmt.Println("Getting all buy requests for market", allBuyRequests)
 }
 
 // function to store a new buy request in the database
@@ -166,4 +166,42 @@ func addUniqueSellReqId(buyerId string, reqTime string, uniqueId string) bool {
 		return false
 	}
 	return true
+}
+
+// function to close a buy request by updating it
+func closeBuyRequest(w http.ResponseWriter, r *http.Request) {
+	var reqId string
+	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
+
+	// get the data from json body
+	decoder := json.NewDecoder(r.Body)
+	// place the user data inside the string
+	if err := decoder.Decode(&reqId); err != nil {
+		fmt.Println("Failed adding a new sell request", err)
+		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+		return
+	}
+	defer r.Body.Close()
+
+	// to prevent backend to timeout
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	// update the document that matches the buyerid and time of order
+	_, err := db.EnergyBuyRequests.UpdateOne(
+		mongoparams.ctx,
+		bson.M{"reqid": reqId},
+		bson.D{
+			{"$set", bson.D{{"requestclosed", true}}},
+		},
+	)
+
+	// if the update fails
+	if err != nil {
+		fmt.Println("Failed to close buy request")
+		log.Fatal(err)
+		return
+	}
+	respondWithJSON(w, r, http.StatusCreated, "Request Close Successful")
+	return
 }

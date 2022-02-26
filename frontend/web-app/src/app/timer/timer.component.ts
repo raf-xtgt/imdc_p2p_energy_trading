@@ -7,9 +7,7 @@ import { Component} from '@angular/core';
 })
 export class TimerComponent {
 
-  
   public dateNow = new Date();
- 
   milliSecondsInASecond = 1000;
   hoursInADay = 24;
   minutesInAnHour = 60;
@@ -21,7 +19,6 @@ export class TimerComponent {
 
 
   constructor() { }
-
 
 private allocateTimeUnits (timeDifference: number):string {
     this.secondsToDday = Math.floor((timeDifference) / (this.milliSecondsInASecond) % this.SecondsInAMinute);
