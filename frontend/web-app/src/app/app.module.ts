@@ -40,6 +40,7 @@ import { OrderComponent } from './order/order.component';
 import { LineGraphComponent } from './line-graph/line-graph.component';
 import { HouseholdPriceGraphComponent } from './household-price-graph/household-price-graph.component';
 import { BidPageComponent } from './bid-page/bid-page.component';
+import { TimerComponent } from './timer/timer.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { BidPageComponent } from './bid-page/bid-page.component';
     LineGraphComponent,
     HouseholdPriceGraphComponent,
     BidPageComponent,
+    TimerComponent,
   ],
   imports: [
     BrowserModule,

@@ -6,6 +6,7 @@ import { BidPageComponent } from '../bid-page/bid-page.component';
 import { SendDataService } from '../send-data.service';
 import { JWTService } from '../userAuth.service';
 import Swal from 'sweetalert2'
+import { TimerComponent } from '../timer/timer.component';
 
 @Component({
   selector: 'app-marketpage',
@@ -14,13 +15,13 @@ import Swal from 'sweetalert2'
 })
 export class MarketpageComponent implements OnInit {
 
-  constructor(private _config:ConfigService, private router: Router, private reqData: SendDataService, private _jwtServ:JWTService, private elementRef: ElementRef) { }
+  constructor(private _config:ConfigService, private router: Router, private reqData: SendDataService, private _jwtServ:JWTService) { }
 
   public allOpenBuyRequests:Array<BuyEnergyRequest>=[];
   public allClosedBuyRequests:Array<BuyEnergyRequest>=[];
   public noOpenBuyRequests: boolean = false;
   public noClosedBuyRequests: boolean = false;
-  private requestForBid :BuyEnergyRequest = new BuyEnergyRequest("", 0, 0, false, "") // this will hold the buy energy request data on which the prosumer makes a bid
+  private requestForBid :BuyEnergyRequest = new BuyEnergyRequest("", 0, 0, false, "","") // this will hold the buy energy request data on which the prosumer makes a bid
 
   public buyerId: string = ""
   public message: string = "";
@@ -53,25 +54,31 @@ export class MarketpageComponent implements OnInit {
     this._config.getBuyRequests().subscribe(data => {
       //console.log("Buy requests data for market page", data)
       let response = JSON.parse(JSON.stringify(data))
-      console.log("Buy requests data for market page", response)
+      //console.log("Buy requests data for market page", response)
       //this.allBuyRequests = response.Requests
       let reqArr = response.Requests
       for(let i = 0; i < reqArr.length; i++) {
         //console.log("All buy requests")
         this._jwtServ.gerUsername(reqArr[i].BuyerId).subscribe(data => {
           let response = JSON.parse(JSON.stringify(data))
-          console.log("response", response)
+          //console.log("response", response)
           // concatenate username and buyer id
-          let request = new BuyEnergyRequest("("+response.User.UserName+")\n"+reqArr[i].BuyerId, reqArr[i].EnergyAmount, reqArr[i].FiatAmount, reqArr[i].RequestClosed, reqArr[i].ReqId)
-          console.log("Closed request",reqArr[i].RequestClosed)
+          // let request = new BuyEnergyRequest("("+response.User.UserName+")\n"+reqArr[i].BuyerId, reqArr[i].EnergyAmount, reqArr[i].FiatAmount, reqArr[i].RequestClosed, reqArr[i].ReqId, "")
+          //console.log("Closed request",reqArr[i].RequestClosed)
           if (reqArr[i].RequestClosed){
+
+            let request = new BuyEnergyRequest("("+response.User.UserName+")\n"+reqArr[i].BuyerId, reqArr[i].EnergyAmount, reqArr[i].FiatAmount, reqArr[i].RequestClosed, reqArr[i].ReqId, "Closed")
             this.allClosedBuyRequests.push(request)
             if (this.allClosedBuyRequests.length==0){
               this.noClosedBuyRequests = true
             }
           }
           else{
+            let timer = new TimerComponent()
+            let remainingTime = timer.getTimeDiff(reqArr[i])
+            let request = new BuyEnergyRequest("("+response.User.UserName+")\n"+reqArr[i].BuyerId, reqArr[i].EnergyAmount, reqArr[i].FiatAmount, reqArr[i].RequestClosed, reqArr[i].ReqId, remainingTime)
             this.allOpenBuyRequests.push(request)
+            console.log(this.allOpenBuyRequests)
             if (this.allOpenBuyRequests.length==0){
               this.noOpenBuyRequests = true
             }

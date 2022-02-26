@@ -17,7 +17,16 @@ export class HouseholdEnergyData{
 }
 
 export class BuyEnergyRequest{
-    constructor(public buyerId:string, public energyAmount:number, public fiatAmount:number, public requestClosed: boolean, public reqId: string){}
+    /**
+     * 
+     * @param buyerId 
+     * @param energyAmount 
+     * @param fiatAmount 
+     * @param requestClosed 
+     * @param reqId 
+     * @param remTime String in Minutes and Seconds
+     */
+    constructor(public buyerId:string, public energyAmount:number, public fiatAmount:number, public requestClosed: boolean, public reqId: string, public remTime:string){}
 }
 
 // structure of bid(selling) energy request

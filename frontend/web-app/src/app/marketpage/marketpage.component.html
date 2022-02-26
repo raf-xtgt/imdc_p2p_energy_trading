@@ -1,6 +1,7 @@
 <div style="width:100%; height:100%; background-color: #EBEDEC;">
     <h3 style="margin-left: 10px;">All transactions will occur in MYR</h3>
     <h3> Market </h3>
+    
     <mat-tab-group>
         <div>
             <mat-tab label="Open Requests" style="width: 100%;"> 
@@ -27,7 +28,8 @@
                                             Fiat: RM {{(request.fiatAmount).toFixed(3)}}
                                         </mat-grid-tile>
                                         <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
-                                            <h4>Closes at 11:30pm</h4>
+                                            <!-- <h4>Closes at 11:30pm</h4> -->
+                                            Time Elapsed: {{request.remTime}}
                                         </mat-grid-tile>
                                         <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
                                             <button type="bid" class="btn btn-success" (click)="bid(request)">Bid</button>
@@ -70,7 +72,7 @@
                                             Fiat: RM {{(request.fiatAmount).toFixed(3)}}
                                         </mat-grid-tile>
                                         <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
-                                            <h4>Closes at 11:30pm</h4>
+                                            <h4>Closed</h4>
                                         </mat-grid-tile>
                                         <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
                                             <button type="bid" class="btn btn-success" (click)="bid(request)">Bid</button>

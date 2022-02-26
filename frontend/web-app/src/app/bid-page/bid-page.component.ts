@@ -81,7 +81,7 @@ export class BidPageComponent implements OnInit {
   //message from market page
   public message: string = ""
   // this will hold the buy energy request data for making the bid
-  private requestForBid :BuyEnergyRequest = new BuyEnergyRequest("", 0, 0, false, "") 
+  private requestForBid :BuyEnergyRequest = new BuyEnergyRequest("", 0, 0, false, "", "") 
 
   // loading before graph and all data are available
   public isLoading: boolean = true;
