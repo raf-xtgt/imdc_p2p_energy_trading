@@ -8,7 +8,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/joho/godotenv"
 )
 
@@ -37,24 +36,21 @@ func main() {
 		log.Fatal(err)
 	}
 	readjson()
+	readUserjson()
 	go func() {
 		if Blockchain == nil {
-			t := time.Now()
-			genesisTransactionData := TransactionData{}
-			genesisTransactionData = TransactionData{t.String(), 0}
-			spew.Dump(genesisTransactionData)
-			pending = append(pending, genesisTransactionData)
-
-			genesisBlock := Block{}
-			genesisBlock = Block{0, pending, calculateHash(genesisBlock), "", difficulty, ""}
-			spew.Dump(genesisBlock)
+			genesisBlock := createGenesisBlock()
 			Blockchain = append(Blockchain, genesisBlock)
-			clearPending()
+		}
+		if profiles == nil {
+			CreateAdmin() //Create an Admin account
 		}
 	}()
 	log.Fatal(run())
 }
 
+// Can ignore this when implement Mongo DB
+// Read Blockchain from blockchain.json
 func readjson() {
 	jsonFile, err := os.Open("blockchain.json")
 	if err != nil {
@@ -64,12 +60,15 @@ func readjson() {
 	json.Unmarshal(byteValue, &Blockchain)
 }
 
+// Write Blockchain to blockchain.json
 func writejson() {
 	jsonFile, _ := json.MarshalIndent(Blockchain, "", " ")
 
 	_ = ioutil.WriteFile("blockchain.json", jsonFile, 0644)
 }
 
+// Clear everything in Pending array
+// Pending is the array that stores the Transaction data before it is validated and form a block
 func clearPending() {
 	var emptyPending []TransactionData
 	pending = emptyPending

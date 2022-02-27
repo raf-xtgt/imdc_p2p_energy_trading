@@ -19,8 +19,8 @@ export class MarketpageComponent implements OnInit {
 
   public allOpenBuyRequests:Array<BuyEnergyRequest>=[];
   public allClosedBuyRequests:Array<BuyEnergyRequest>=[];
-  public noOpenBuyRequests: boolean = false;
-  public noClosedBuyRequests: boolean = false;
+  public noOpenBuyRequests: boolean = true;
+  public noClosedBuyRequests: boolean = true;
   private requestForBid :BuyEnergyRequest = new BuyEnergyRequest("", 0, 0, false, "","") // this will hold the buy energy request data on which the prosumer makes a bid
 
   public buyerId: string = ""
@@ -69,8 +69,8 @@ export class MarketpageComponent implements OnInit {
 
             let request = new BuyEnergyRequest("("+response.User.UserName+")\n"+reqArr[i].BuyerId, reqArr[i].EnergyAmount, reqArr[i].FiatAmount, reqArr[i].RequestClosed, reqArr[i].ReqId, "Closed")
             this.allClosedBuyRequests.push(request)
-            if (this.allClosedBuyRequests.length==0){
-              this.noClosedBuyRequests = true
+            if (this.allClosedBuyRequests.length>0){
+              this.noClosedBuyRequests = false
             }
           }
           else{
@@ -89,8 +89,8 @@ export class MarketpageComponent implements OnInit {
             let request = new BuyEnergyRequest("("+response.User.UserName+")\n"+reqArr[i].BuyerId, reqArr[i].EnergyAmount, reqArr[i].FiatAmount, reqArr[i].RequestClosed, reqArr[i].ReqId, remainingTime)
             this.allOpenBuyRequests.push(request)
             console.log(this.allOpenBuyRequests)
-            if (this.allOpenBuyRequests.length==0){
-              this.noOpenBuyRequests = true
+            if (this.allOpenBuyRequests.length>0){
+              this.noOpenBuyRequests = false
             }
           }
           
