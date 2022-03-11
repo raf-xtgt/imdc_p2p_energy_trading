@@ -28,6 +28,7 @@ export class ConfigService {
   private _sellEnergyForecastURL: string = this._configUrl+ 'RunSellEnergyForecast'
   private _latestSellForecastURL: string = this._configUrl+ 'GetLatestSellForecast'
   private _closeBuyRequestURL:string = this._configUrl+'CloseBuyRequest'
+  private _runDoubleAuction: string = this._configUrl + 'RunDoubleAuction'
 
   TOKEN_KEY = 'token';
 
@@ -110,6 +111,11 @@ export class ConfigService {
   closeBuyRequest(data: string){
     const body = JSON.stringify(data)
     return this.http.post(this._closeBuyRequestURL, body)
+  }
+
+  runDoubleAuction(){
+    const body = JSON.stringify("RUN DOUBLE AUCTION")
+    return this.http.post(this._runDoubleAuction, body)
   }
 
 }

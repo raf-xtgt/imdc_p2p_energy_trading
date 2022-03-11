@@ -97,6 +97,7 @@ type BuyRequest struct {
 	RequestClosed bool    "json: requestClosed"
 	ReqTime       string  "json: requestTime"
 	ReqId         string  "json:requestId"
+	Auctioned     bool    "json:auctioned" // to check whether the request hsa undergone the double auction
 }
 
 // structure representing sell(bid) request coming from frontend

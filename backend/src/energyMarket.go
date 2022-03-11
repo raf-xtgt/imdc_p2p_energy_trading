@@ -52,10 +52,10 @@ func createEnergyData(w http.ResponseWriter, r *http.Request) {
 
 func generateHouseholdEnergyPriceData() EnergyPriceData {
 	var energyData EnergyPriceData
-	var maxMinDiff float64 = 0.2 // fluctuate price between +20% and -20%
+	var maxMinDiff float64 = 0.02 // fluctuate price between +20% and -20%
 	var elPriceHouse float64 = 0.221
 	var maxElPriceHouse float64 = (elPriceHouse + (maxMinDiff * elPriceHouse))
-	var minElPriceHouse float64 = (elPriceHouse + (maxMinDiff * elPriceHouse))
+	var minElPriceHouse float64 = (elPriceHouse - (maxMinDiff * elPriceHouse))
 	//var elPriceBus float64 = 0.388
 
 	//var maxPrice float64 =
@@ -66,7 +66,7 @@ func generateHouseholdEnergyPriceData() EnergyPriceData {
 	var avg float64
 	var summation float64 = 0
 	for count := 0; count < 24; count++ {
-		var elPrice float64 = (rand.Float64() * (maxElPriceHouse - minElPriceHouse + 0.1)) + minElPriceHouse
+		var elPrice float64 = (rand.Float64() * (maxElPriceHouse - minElPriceHouse)) + minElPriceHouse
 		var finalPrice float64 = math.Floor(elPrice*1000) / 1000
 		summation += finalPrice
 		data[count] = finalPrice

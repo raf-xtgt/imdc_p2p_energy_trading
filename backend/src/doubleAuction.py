@@ -201,7 +201,7 @@ def optimalAllocation(data):
         'buyerEnReceivableFromTNB': buyerOriginalDemand - buyerEnReceivable,
         'auctionBids': auction_bids, 
         'TNBReceivable': TNBReceivable,
-        'TNBReceivableFromBuyerDirect': (buyerOriginalDemand - buyerEnReceivable)*0.20,
+        #'TNBReceivableFromBuyerDirect': (buyerOriginalDemand - buyerEnReceivable)*0.20,
     }
     return output
 

@@ -146,3 +146,36 @@ func getLatestSellForecast(w http.ResponseWriter, r *http.Request) {
 
 	respondWithJSON(w, r, http.StatusCreated, productionForecastResponse)
 }
+
+// function to run the double auction once the request is closed
+func runDoubleAuction(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
+	var fr string // input from frontend
+
+	// get the data from the request body
+	decoder := json.NewDecoder(r.Body)
+	// place the user data inside newUser
+	if err := decoder.Decode(&fr); err != nil {
+		fmt.Println("Failed adding new forecast data", err)
+		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+		return
+	}
+	defer r.Body.Close()
+	fmt.Println("Backend server invoking double auction")
+	// to prevent backend to timeout
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	// executing the python script from golang
+	cmd := exec.Command("python", "energyForecast.py", "global", "optm")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if err != nil {
+		fmt.Println("This shit does not work", err)
+	} else {
+		fmt.Println("Ran py script successfully")
+	}
+	var newRequest = ""
+	respondWithJSON(w, r, http.StatusCreated, newRequest)
+}

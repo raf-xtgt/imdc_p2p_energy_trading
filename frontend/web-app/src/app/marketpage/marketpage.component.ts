@@ -54,7 +54,7 @@ export class MarketpageComponent implements OnInit {
     this._config.getBuyRequests().subscribe(data => {
       //console.log("Buy requests data for market page", data)
       let response = JSON.parse(JSON.stringify(data))
-      //console.log("Buy requests data for market page", response)
+      console.log("Buy requests data for market page", response)
       //this.allBuyRequests = response.Requests
       let reqArr = response.Requests
       for(let i = 0; i < reqArr.length; i++) {
@@ -83,6 +83,11 @@ export class MarketpageComponent implements OnInit {
               //close the request
               this._config.closeBuyRequest(reqArr[i].ReqId).subscribe(data => {
                 console.log("buy request closed", data)
+                this._config.runDoubleAuction().subscribe(data=>{
+                  console.log("Finished running double auction")
+                })
+
+
               })
 
             }

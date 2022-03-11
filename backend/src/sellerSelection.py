@@ -54,8 +54,8 @@ def getOrderData(client):
     all_seller_ids = []
     for item in buyRequests:
         # request_id = item['reqid']
-        # for all open requests
-        if item['requestclosed'] == False:
+        # for all requests that have not undergone auction
+        if item['auctioned'] == False:
             all_bids = [] # list to hold all bids made on current buy request
             req_dict = {} # request dictionary
             buy_req_id = item['reqid']
@@ -94,10 +94,10 @@ def getOrderData(client):
                 'buyerEnergyBalance': buyer_energy_balance
             }
 
-            # update the buy request to be closed
+            # update the buy request to be set as auctioned
             req_arr.append(req_dict)
             myquery = { "reqid": buy_req_id }
-            newvalues = { "$set": { "requestclosed": True } }
+            newvalues = { "$set": { "auctioned": True } }
             buyReqColl.update_one(myquery, newvalues)
             
         

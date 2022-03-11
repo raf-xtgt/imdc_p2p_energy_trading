@@ -39,6 +39,7 @@ func addBuyRequest(w http.ResponseWriter, r *http.Request) {
 	//requestTime := now
 	//fmt.Println("ZONE : ", loc, " Time : ", now) // UTC
 	newRequest.ReqTime = now.String()
+	newRequest.Auctioned = false
 	writeRequest, err := db.EnergyBuyRequests.InsertOne(mongoparams.ctx, newRequest)
 	if err != nil {
 		log.Fatal(err)
