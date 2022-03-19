@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"crypto/rand"
@@ -73,27 +72,14 @@ func addNewUser(w http.ResponseWriter, r *http.Request) {
 		)
 		newUser.PublicKey = pubPEM
 
-		//export the RSA private key into a PEM file.
-		// create a file to store the private key
-		pemPrivateFile, err := os.Create(newUser.UserName + "_private_key.pem")
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-		// To start with the export process we need to encode our private key with x509
-		var pemPrivateBlock = &pem.Block{
-			Type:  "RSA PRIVATE KEY",
-			Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
-		}
-		// write the private key to the file
-		err = pem.Encode(pemPrivateFile, pemPrivateBlock)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-		pemPrivateFile.Close()
-
+		// Encode private key to PKCS#1 ASN.1 PEM.
+		privatePEM := pem.EncodeToMemory(
+			&pem.Block{
+				Type:  "RSA PRIVATE KEY",
+				Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
+			},
+		)
+		newUser.PrivateKey = privatePEM
 		//write user info to the users collection
 		writeUser, err := db.Users.InsertOne(mongoparams.ctx, newUser)
 		if err != nil {

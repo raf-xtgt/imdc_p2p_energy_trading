@@ -21,6 +21,7 @@ type User struct {
 	Email        string `bson:"email"`
 	Password     string `bson:"password"`
 	PublicKey    []byte `bson:publicKey`
+	PrivateKey   []byte `bson:privateKey`
 	Address      string `bson:"address"`
 	UId          string `bson:id`
 	SmartMeterNo int    `bson:"smartMeterNo"`

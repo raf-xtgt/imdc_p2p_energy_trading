@@ -2,14 +2,16 @@ import numpy as np # linear algebra
 from datetime import datetime
 import random
 
-def initDoubleAuction(client):
-    data = getBidData(client)
+def initDoubleAuction(client, biddings):
+    data = [biddings]
     auctionData = prepareAuctionData(data, client)
     #print(auctionData)
-    for i in auctionData:
-        print(i)
-    print('\n')
-    auction = doubleAuction(auctionData)
+    # for i in auctionData:
+    #     print(i)
+    # print('\n')
+    auctionOutput = doubleAuction(auctionData)
+    return auctionOutput
+
 
 def prepareAuctionData(data, client):
     """
@@ -108,7 +110,7 @@ def doubleAuction(auctionData):
         print("Optimal allocation", opt_en)
         print("\n")
     
-    return
+    return opt_en
 
 
 

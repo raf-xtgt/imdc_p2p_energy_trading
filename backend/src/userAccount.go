@@ -19,8 +19,8 @@ func createUserAccount(userId string) {
 	var balance AccountBalance
 	balance.UserId = userId
 	// add dummy data
-	balance.FiatBalance = 2000
-	balance.EnergyBalance = 80
+	balance.FiatBalance = 20000
+	balance.EnergyBalance = 800
 
 	//write the balance in the database info to the users collection
 	writeData, err := db.UserAccBalance.InsertOne(mongoparams.ctx, balance)

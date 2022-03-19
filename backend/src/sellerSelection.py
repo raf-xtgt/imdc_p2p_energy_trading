@@ -29,18 +29,20 @@ Steps:
     return min[selling_request with min opt_price_payable_by_seller]
 
 """
+from doubleAuction import *
 
 def initMatchmaking(client):
     final_list = getOrderData(client)
     # add the matchmaking data in the db
     cluster=client["IMDC-p2p-energy"]
-    # collection to store selected sellers
-    collection = cluster.auctionData
     for data in final_list:
-        # print(data)
-        # print("\n")
-        result = collection.insert_one(data)
-        print("Added optimal seller for buy requests", result.inserted_id)
+        print("Running double auction")
+        transaction = initDoubleAuction(client, data)
+        
+        # store the double auction in the database
+        collection = cluster.transactions
+        collection.insert_one(transaction)
+        print("Transaction stored on database successfully")
     return "Success"
 
 
