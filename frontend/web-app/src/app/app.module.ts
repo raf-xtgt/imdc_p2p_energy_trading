@@ -25,6 +25,8 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 // for the loading screen
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatDividerModule} from '@angular/material/divider';
+// for dropdown menu
+import {MatMenuModule} from '@angular/material/menu';
 
 
 // external components
@@ -41,6 +43,7 @@ import { LineGraphComponent } from './line-graph/line-graph.component';
 import { HouseholdPriceGraphComponent } from './household-price-graph/household-price-graph.component';
 import { BidPageComponent } from './bid-page/bid-page.component';
 import { TimerComponent } from './timer/timer.component';
+import { ManageValidatorsComponent } from './manage-validators/manage-validators.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +61,7 @@ import { TimerComponent } from './timer/timer.component';
     HouseholdPriceGraphComponent,
     BidPageComponent,
     TimerComponent,
+    ManageValidatorsComponent,
   ],
   imports: [
     BrowserModule,
@@ -80,7 +84,8 @@ import { TimerComponent } from './timer/timer.component';
     ChartsModule,
     SweetAlert2Module.forRoot(),
     MatProgressSpinnerModule,
-    MatDividerModule
+    MatDividerModule,
+    MatMenuModule
 
   ],
   exports:[

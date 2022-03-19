@@ -10,6 +10,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { OrderComponent } from './order/order.component';
 import { MarketpageComponent } from './marketpage/marketpage.component';
 import { BidPageComponent } from './bid-page/bid-page.component';
+import { ManageValidatorsComponent } from './manage-validators/manage-validators.component';
 
 const routes: Routes = [
   // when url is loaded, the user lands on the homepage
@@ -20,7 +21,8 @@ const routes: Routes = [
   {path: 'profile', component:ProfileComponent},
   {path: 'order', component:OrderComponent},
   {path: 'market', component:MarketpageComponent},
-  {path: 'bid', component:BidPageComponent}
+  {path: 'bid', component:BidPageComponent},
+  {path: 'manageValidators', component:ManageValidatorsComponent}
 ];
 
 @NgModule({

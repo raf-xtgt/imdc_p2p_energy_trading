@@ -22,8 +22,7 @@ export class SignupComponent implements OnInit {
   ngOnInit(): void {
   }
   
-  //select = ['He is fat', 'Mikasa']
-  model = new User("", "","","",0, "")
+  model = new User("", "","","",0, "", "")
   submitted = false;
 
 
@@ -32,7 +31,7 @@ export class SignupComponent implements OnInit {
     this.submitted = true;
     //console.log(this.model.fullname)
     //console.log(this.model.email)
-    let newUser = new User(this.model.username, this.model.email, this.model.password, this.model.address, this.model.smartMeterNo, this.model.uId)
+    let newUser = new User(this.model.username, this.model.email, this.model.password, this.model.address, this.model.smartMeterNo, this.model.uId, "normal")
     this._config.addNewUser(newUser).subscribe(data => {
       console.log("Data from backend", data)
       if (data.Res){

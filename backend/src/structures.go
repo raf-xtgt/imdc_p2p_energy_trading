@@ -25,6 +25,14 @@ type User struct {
 	Address      string `bson:"address"`
 	UId          string `bson:id`
 	SmartMeterNo int    `bson:"smartMeterNo"`
+	Type         string `bson:type` // normal, validator, clerk
+}
+
+// represents validator and one administrator
+type Validator struct {
+	General  User   `bson:"generalDetails"`
+	FullName string `bson:"fullName"`
+	ICNum    int    `bson:identificationCardNo`
 }
 
 // structure to represent a user account balance

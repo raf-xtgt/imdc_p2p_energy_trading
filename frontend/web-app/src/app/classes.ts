@@ -3,7 +3,11 @@ import { number } from "echarts";
 import { Injectable } from '@angular/core';
 
 export class User{
-    constructor (public username:string, public email:string, public password:string, public address:string, public smartMeterNo:number, public uId:string){}
+    constructor (public username:string, public email:string, public password:string, public address:string, public smartMeterNo:number, public uId:string, public type:string){}
+}
+
+export class Validator{
+    constructor (public username:string, public email:string, public password:string, public address:string, public smartMeterNo:number, public uId:string, public type:string, public fullName:string, public ICNum:number){}
 }
 
 // class for jwt
