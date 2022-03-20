@@ -7,7 +7,7 @@ export class User{
 }
 
 export class Validator{
-    constructor (public username:string, public email:string, public password:string, public address:string, public smartMeterNo:number, public uId:string, public type:string, public fullName:string, public ICNum:number){}
+    constructor (public username:string, public email:string, public password:string, public address:string, public uId:string, public type:string, public fullName:string, public ICNum:number){}
 }
 
 // class for jwt

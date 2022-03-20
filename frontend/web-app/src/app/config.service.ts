@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 // The HttpClient service makes use of observables for all transactions. You must import the RxJS observable and operator symbols that appear in the example snippets.
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
-import { User, Token, HouseholdEnergyData, BuyEnergyRequest, ProdForecastRequest, SellEnergyRequest } from './classes';
+import { User, Token, HouseholdEnergyData, BuyEnergyRequest, ProdForecastRequest, SellEnergyRequest, Validator } from './classes';
 
 /** This file will allow the frontend to communicate with the backend
 * using Angular's HTTP Client
@@ -29,6 +29,7 @@ export class ConfigService {
   private _latestSellForecastURL: string = this._configUrl+ 'GetLatestSellForecast'
   private _closeBuyRequestURL:string = this._configUrl+'CloseBuyRequest'
   private _runDoubleAuction: string = this._configUrl + 'RunDoubleAuction'
+  private _addValidator:string = this._configUrl + 'AddValidator'
 
   TOKEN_KEY = 'token';
 
@@ -42,6 +43,11 @@ export class ConfigService {
     //console.log(body)
     //console.log(this._registerUrl)
     return this.http.post<User>(this._registerUrl, body)
+  }
+
+  addNewValidator(data:Validator) :Observable<any>{
+    const body = JSON.stringify(data)
+    return this.http.post<Validator>(this._addValidator, body)  
   }
 
   // authenticate a user when they want to login  

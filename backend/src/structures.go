@@ -30,9 +30,16 @@ type User struct {
 
 // represents validator and one administrator
 type Validator struct {
-	General  User   `bson:"generalDetails"`
-	FullName string `bson:"fullName"`
-	ICNum    int    `bson:identificationCardNo`
+	UserName   string `bson:"username"`
+	Email      string `bson:"email"`
+	Password   string `bson:"password"`
+	PublicKey  []byte `bson:publicKey`
+	PrivateKey []byte `bson:privateKey`
+	Address    string `bson:"address"`
+	UId        string `bson:id`
+	Type       string `bson:type` // normal, validator, clerk
+	FullName   string `bson:"fullName"`
+	ICNum      int    `bson:identificationCardNo`
 }
 
 // structure to represent a user account balance
@@ -56,9 +63,10 @@ type MongoDatabase struct {
 
 // Structure that will be sent as sign up response to frontend
 type SignUpResponse struct {
-	Email string
-	Res   bool
-	User  User
+	Email     string
+	Res       bool
+	User      User
+	Validator Validator
 }
 
 // JWT structure upon login

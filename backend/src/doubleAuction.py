@@ -95,18 +95,6 @@ def doubleAuction(auctionData):
     for data in auctionData:
         # optimal energy allocation for buyer and seller
         opt_en = optimalAllocation(data)
-        # buyer_payable = opt_en['buyerOptEn'] * pricing 
-        # seller_receivable = opt_en['sellerOptEn'] *pricing
-        # tnbReceivable = buyer_payable - seller_receivable
-
-        # final_output = {
-        #     "optBuyerEnergy": opt_en['buyerOptEn'],
-        #     "buyerPayable": buyer_payable,
-        #     "optSellerEnergy": opt_en['sellerOptEn'],
-        #     'sellerReceivable': seller_receivable,
-        #     'TNBReceivable': tnbReceivable
-        # }
-
         print("Optimal allocation", opt_en)
         print("\n")
     

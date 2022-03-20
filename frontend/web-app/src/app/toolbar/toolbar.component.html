@@ -32,11 +32,13 @@
           <a class="topBarBtns" mat-button>Blockchain</a>
           <a class="topBarBtns" mat-button routerLink="market">Market</a>
           <a class="topBarBtns" mat-button>About</a>
-          <button *ngIf="isAdmin" mat-button [matMenuTriggerFor]="menu">Menu<mat-icon>keyboard_arrow_down</mat-icon></button>
+          <button mat-button [matMenuTriggerFor]="menu">Menu<mat-icon>keyboard_arrow_down</mat-icon></button>
             <mat-menu #menu="matMenu">
 
-              <a class="menuBtns" mat-menu-item routerLink="manageValidators">Manage Validators</a>
-              <a class="menuBtns" mat-menu-item>Manage Clerks</a>
+              <a *ngIf="isAdmin" class="menuBtns" mat-menu-item routerLink="manageValidators">Manage Validators</a>
+              <a *ngIf="isAdmin" class="menuBtns" mat-menu-item>Manage Clerks</a>
+              <a *ngIf="isValidator" class="menuBtns" mat-menu-item routerLink="manageValidators">Manage Blockchain</a>
+              <a *ngIf="isValidator" class="menuBtns" mat-menu-item>Manage Transactions</a>
             </mat-menu>
           
           <a class="topBarBtns" mat-button><mat-icon>account_circle</mat-icon>{{username}}</a>
