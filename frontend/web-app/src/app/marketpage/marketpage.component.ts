@@ -80,7 +80,7 @@ export class MarketpageComponent implements OnInit {
             let timeArr = remainingTime.split(' Min')
             let timeMin = parseInt(timeArr[0])
             console.log("Minutes elapsed", timeMin)
-            if (timeMin>=3){
+            if (timeMin>=30){
               //close the request
               this._config.closeBuyRequest(reqArr[i].ReqId).subscribe(data => {
                 console.log("buy request closed", data)
