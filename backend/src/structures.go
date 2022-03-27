@@ -59,6 +59,7 @@ type MongoDatabase struct {
 	BuyOrderForecast   *mongo.Collection
 	ProdForecast       *mongo.Collection
 	UserAccBalance     *mongo.Collection
+	Blockchain         *mongo.Collection
 }
 
 // Structure that will be sent as sign up response to frontend
@@ -146,4 +147,32 @@ type BuyForecastResponse struct {
 type ProdForecastRequest struct {
 	UserId string "json: userId"
 	Date   string "json: date"
+}
+
+// structure of a single block
+type Block struct {
+	Index    int
+	Data     []TransactionData
+	Hash     string
+	PrevHash string
+	Nonce    string
+}
+
+// structure of a single transaction
+type TransactionData struct {
+	BuyerId                      string  "json: buyerId"
+	BuyerPayable                 float64 "json: buyerPayable"
+	BuyerEnReceivableFromAuction float64 "json: buyerEnReceivableFromAuction"
+	BuyerEnReceivableFromTNB     float64 "json: buyerEnReceivableFromTNB"
+	auctionBids                  []Bid   "json: auctionBids"
+	TNBReceivable                float64 "json: TNBReceivable"
+}
+
+// structure of a bid made by seller in the auction
+type Bid struct {
+	SellerId            string  "json: sellerId"
+	OptEnFromSeller     float64 "json: optEnFromSeller"
+	OptSellerReceivable float64 "json: optSellerReceivable"
+	SellerFiatBalance   float64 "json: sellerFiatBalance"
+	SellerEnergyBalance float64 "json: sellerEnergyBalance"
 }

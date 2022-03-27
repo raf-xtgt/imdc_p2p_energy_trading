@@ -13,6 +13,8 @@ import (
 	"time"
 )
 
+/**All code concerning validators and clerks go here **/
+
 func addValidator(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 
@@ -80,6 +82,7 @@ func addValidator(w http.ResponseWriter, r *http.Request) {
 			response.Res = true
 			response.Email = newValidator.Email
 			response.Validator = newValidator
+			createValidatorCluster(newValidator.UserName)
 			respondWithJSON(w, r, http.StatusCreated, response)
 			return
 			//fmt.Println("Validator Data from frontend", newValidator)
