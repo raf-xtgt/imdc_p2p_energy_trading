@@ -152,19 +152,19 @@ type ProdForecastRequest struct {
 // structure of a single block
 type Block struct {
 	Index    int
-	Data     []TransactionData
+	Data     []Transaction
 	Hash     string
 	PrevHash string
 	Nonce    string
 }
 
 // structure of a single transaction
-type TransactionData struct {
+type Transaction struct {
 	BuyerId                      string  "json: buyerId"
 	BuyerPayable                 float64 "json: buyerPayable"
 	BuyerEnReceivableFromAuction float64 "json: buyerEnReceivableFromAuction"
 	BuyerEnReceivableFromTNB     float64 "json: buyerEnReceivableFromTNB"
-	auctionBids                  []Bid   "json: auctionBids"
+	AuctionBids                  []Bid   "json: auctionBids"
 	TNBReceivable                float64 "json: TNBReceivable"
 }
 

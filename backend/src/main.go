@@ -70,6 +70,7 @@ func connectToDb() MongoDatabase {
 	db.BuyOrderForecast = db.Cluster.Collection("buyOrderForecast")
 	db.ProdForecast = db.Cluster.Collection("energy_forecast")
 	db.UserAccBalance = db.Cluster.Collection("accountBalance")
+	db.Blockchain = db.Cluster.Collection("blockchain")
 	return db
 }
 
@@ -101,6 +102,7 @@ func listen() error {
 	mux.HandleFunc("/CloseBuyRequest", closeBuyRequest)
 	mux.HandleFunc("/RunDoubleAuction", runDoubleAuction)
 	mux.HandleFunc("/AddValidator", addValidator)
+	mux.HandleFunc("/CreateGenesisBlock", createGenesisBlock)
 
 	handler := cors.Default().Handler(mux)
 	log.Fatal(http.ListenAndServe(":8080", handler))

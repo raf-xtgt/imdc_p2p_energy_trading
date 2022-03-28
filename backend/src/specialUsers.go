@@ -82,7 +82,6 @@ func addValidator(w http.ResponseWriter, r *http.Request) {
 			response.Res = true
 			response.Email = newValidator.Email
 			response.Validator = newValidator
-			createValidatorCluster(newValidator.UserName)
 			respondWithJSON(w, r, http.StatusCreated, response)
 			return
 			//fmt.Println("Validator Data from frontend", newValidator)

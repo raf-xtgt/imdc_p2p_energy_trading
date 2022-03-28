@@ -31,6 +31,9 @@ export class ConfigService {
   private _runDoubleAuction: string = this._configUrl + 'RunDoubleAuction'
   private _addValidator:string = this._configUrl + 'AddValidator'
 
+  //blockchain urls
+  private _createGenesis: string = this._configUrl+ 'CreateGenesisBlock'
+
   TOKEN_KEY = 'token';
 
 
@@ -122,6 +125,11 @@ export class ConfigService {
   runDoubleAuction(){
     const body = JSON.stringify("RUN DOUBLE AUCTION")
     return this.http.post(this._runDoubleAuction, body)
+  }
+
+  createGenesisBlock(){
+    const body = JSON.stringify("Genesis")
+    return this.http.post(this._createGenesis, body)
   }
 
 }

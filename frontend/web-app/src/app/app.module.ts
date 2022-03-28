@@ -44,6 +44,7 @@ import { HouseholdPriceGraphComponent } from './household-price-graph/household-
 import { BidPageComponent } from './bid-page/bid-page.component';
 import { TimerComponent } from './timer/timer.component';
 import { ManageValidatorsComponent } from './manage-validators/manage-validators.component';
+import { BlockchainPageComponent } from './blockchain-page/blockchain-page.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +63,7 @@ import { ManageValidatorsComponent } from './manage-validators/manage-validators
     BidPageComponent,
     TimerComponent,
     ManageValidatorsComponent,
+    BlockchainPageComponent,
   ],
   imports: [
     BrowserModule,
