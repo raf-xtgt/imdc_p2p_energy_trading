@@ -61,6 +61,7 @@ type MongoDatabase struct {
 	UserAccBalance     *mongo.Collection
 	Blockchain         *mongo.Collection
 	Transactions       *mongo.Collection
+	LatestIndex        *mongo.Collection //collection to hold the latest index
 }
 
 // Structure that will be sent as sign up response to frontend
@@ -152,11 +153,11 @@ type ProdForecastRequest struct {
 
 // structure of a single block
 type Block struct {
-	Index    int
-	Data     []Transaction
-	Hash     string
-	PrevHash string
-	Nonce    string
+	Index    int           "json: index"
+	Data     []Transaction "json: data"
+	Hash     string        "json: hash"
+	PrevHash string        "json: prevHash"
+	Nonce    string        "json: nonce"
 }
 
 // structure of a single transaction
@@ -167,6 +168,9 @@ type Transaction struct {
 	BuyerEnReceivableFromTNB     float64 "json: buyerEnReceivableFromTNB"
 	AuctionBids                  []Bid   "json: auctionBids"
 	TNBReceivable                float64 "json: TNBReceivable"
+	Verified                     bool    "json:verified"
+	IsBlocked                    bool    "json:isBlocked"
+	TId                          string  "json: tId"
 }
 
 // structure of a bid made by seller in the auction

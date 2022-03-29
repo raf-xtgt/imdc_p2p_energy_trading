@@ -192,7 +192,8 @@ def optimalAllocation(data):
         'auctionBids': auction_bids, 
         'TNBReceivable': TNBReceivable,
         'verified': False, # whether the buyer has the required fiat amount for the transaction
-        'isBlocked':False # whether the transaction is part of a block or not
+        'isBlocked':False, # whether the transaction is part of a block or not
+        'tId': "", # id of the transaction in the database
         #'TNBReceivableFromBuyerDirect': (buyerOriginalDemand - buyerEnReceivable)*0.20,
     }
     return output

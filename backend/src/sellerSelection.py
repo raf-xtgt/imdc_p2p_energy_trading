@@ -41,7 +41,10 @@ def initMatchmaking(client):
         
         # store the double auction in the database
         collection = cluster.transactions
-        collection.insert_one(transaction)
+        transactionId = collection.insert_one(transaction)
+        myquery = { "tId": "" }
+        newvalues = { "$set": { "tId": str(transactionId.inserted_id) } }
+        result = collection.update_one(myquery, newvalues)
         print("Transaction stored on database successfully")
     return "Success"
 

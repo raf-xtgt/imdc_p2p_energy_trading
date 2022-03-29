@@ -72,6 +72,7 @@ func connectToDb() MongoDatabase {
 	db.UserAccBalance = db.Cluster.Collection("accountBalance")
 	db.Blockchain = db.Cluster.Collection("blockchain")
 	db.Transactions = db.Cluster.Collection("transactions")
+	db.LatestIndex = db.Cluster.Collection("latestIndex")
 	return db
 }
 
