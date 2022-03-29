@@ -339,6 +339,7 @@ func addBlock(newBlock Block) {
 
 }
 
+// increment the latest index to the value of the new blocks
 func updateLatestBlockIndex(index int) {
 	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
 	defer mongoparams.cancel()
@@ -361,59 +362,3 @@ func updateLatestBlockIndex(index int) {
 	}
 
 }
-
-//verify transaction by checking whether buyer has the required amount of fiat money
-/**
-func verifyTransaction(transaction Transaction) bool {
-	// to prevent timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
-
-	// find the relevant data
-	cursor, err := db.UserAccBalance.Find(ctx, bson.M{"buyerId": transaction.BuyerId})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var userAccount AccountBalance
-	if err = cursor.All(ctx, &userAccount); err != nil {
-		log.Fatal(err)
-		fmt.Println("User Account not found")
-		return false
-	} else {
-		if userAccount.FiatBalance >= transaction.BuyerPayable {
-			fmt.Println("User: ", transaction.BuyerId, "has sufficient account balance")
-			return true
-		} else {
-			fmt.Println("User: ", transaction.BuyerId, "does not have sufficient account balance")
-			return false
-		}
-	}
-}
-
-// update the fiat balance for verified transaction
-func updateUserAccBalances(userAccount AccountBalance, userType string, payable float64, userId string) {
-	var newBalance float64
-	if userType == buyer {
-		newBalance = userAccount.FiatBalance - payable
-		userAccount.FiatBalance = newBalance
-
-		// update the database
-		_, err := db.UserAccBalance.UpdateOne(
-			mongoparams.ctx,
-			bson.M{"userid": userId},
-			bson.D{
-				{"$set", bson.D{{"fiatbalance", payable}}},
-			},
-		)
-
-		// if the update fails
-		if err != nil {
-			log.Fatal(err)
-			return false
-		}
-
-	}
-}
-
-**/
