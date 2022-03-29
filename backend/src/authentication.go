@@ -198,7 +198,7 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	// there should be only 1 profile with the given username and email
 	if len(Profiles) == 1 {
 		fmt.Println("Username and password match an account in the db")
-		fmt.Println("Matched profile info", Profiles)
+		//fmt.Println("Matched profile info", Profiles)
 		jwtSecret = userPass
 
 		// creating the JWT
@@ -268,7 +268,7 @@ func isAuthorized(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := claims.Claims.(*JWTData)
-	fmt.Println("decoded data", data.CustomClaims)
+	//fmt.Println("decoded data", data.CustomClaims)
 
 	//userName := data.CustomClaims["username"]
 	//userEmail := data.CustomClaims["email"]

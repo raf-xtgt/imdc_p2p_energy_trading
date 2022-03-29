@@ -60,6 +60,7 @@ type MongoDatabase struct {
 	ProdForecast       *mongo.Collection
 	UserAccBalance     *mongo.Collection
 	Blockchain         *mongo.Collection
+	Transactions       *mongo.Collection
 }
 
 // Structure that will be sent as sign up response to frontend

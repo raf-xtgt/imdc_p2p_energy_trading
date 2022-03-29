@@ -15,12 +15,20 @@ export class BlockchainPageComponent implements OnInit {
 
   // uncomment this to re-create the genesis block
     // this.createGenesis();
+
+  this.updateBlockchain()
   }
 
 
   createGenesis(){
     this._config.createGenesisBlock().subscribe(data=>{
       console.log("made genesis block")
+    })
+  }
+
+  updateBlockchain (){
+    this._config.updateBlockchain().subscribe(data => {
+      console.log("Updated blockchain")
     })
   }
 
