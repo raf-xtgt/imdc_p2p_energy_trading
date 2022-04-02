@@ -1,0 +1,13 @@
+- after 30 mins of the DA is done, the transactions are stored in the database.
+- one validator mines and creates a block and that block is then stored in a temporary blockchain
+- the other validators generate the 
+
+
+
+to do now:
+- generate more blocks
+- find a specific folder to hold the blockchain
+- make a local copy of:
+    - AccountBalance
+    - blockchain
+    - latest index

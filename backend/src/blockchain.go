@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -73,8 +74,22 @@ func createGenesisBlock(w http.ResponseWriter, r *http.Request) {
 //get existing blocks
 func updateChain(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
+
+	// the default directory to store the blockchain
+	dirname, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("dirname", dirname)
+
+	// get the current blockchain from the central db
 	currentBlockchain := getCurrentBlockchain()
-	fmt.Println("Current blockchain", currentBlockchain)
+	// create the local file and get the full file path
+	fileDir := createLocalBlockchainFile(dirname)
+	// write to the local blockchain
+	writeLocalBlockchain(currentBlockchain, fileDir)
+
+	//fmt.Println("Current blockchain", currentBlockchain)
 
 	latestBlock := getLatestBlock()
 	fmt.Println("The latest block is", latestBlock)
