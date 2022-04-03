@@ -74,3 +74,30 @@ export class Graph{
 export class ProdForecastRequest {
     constructor(public userId: string, public date: string){}
 }
+
+export interface Bid {
+    sellerId:string,
+    optEnFromSeller:number,
+    optSellerReceivable:number,
+    sellerFiatBalance: number,
+    sellerEnergyBalance:number
+}
+
+export interface Transaction {
+    buyerId:string,
+    buyerPayable:number,
+    buyerEnReceivableFromAuction:number,
+    buyerEnReceivableFromTNB:number,
+    auctionBids:Bid[],
+    TNBReceivable:number,
+
+}
+
+export interface Block {
+    index:number,
+	data:Transaction[],
+	hash:string,       
+	prevHash: string, 
+	nonce:string,
+}
+

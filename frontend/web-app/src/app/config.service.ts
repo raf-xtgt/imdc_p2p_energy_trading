@@ -34,6 +34,7 @@ export class ConfigService {
   //blockchain urls
   private _createGenesis: string = this._configUrl+ 'CreateGenesisBlock'
   private _updateBlockchain: string = this._configUrl +'UpdateBlockchain'
+  private _getBlockchain: string = this._configUrl + 'GetBlockchain'
 
   TOKEN_KEY = 'token';
 
@@ -137,6 +138,11 @@ export class ConfigService {
     const body = JSON.stringify("Update Blockchain")
     return this.http.post(this._updateBlockchain, body)
 
+  }
+
+  getCurrentBlockchain(){
+    const body = JSON.stringify("Get Blockchain")
+    return this.http.post(this._getBlockchain, body)
   }
 
 }

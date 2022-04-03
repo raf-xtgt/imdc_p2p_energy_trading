@@ -1,6 +1,7 @@
 - after 30 mins of the DA is done, the transactions are stored in the database.
 - one validator mines and creates a block and that block is then stored in a temporary blockchain
-- the other validators generate the 
+- the other validators who are not the current logged in one are notified.
+- they use the transactions and use the nonce to generate a similar hash if matches the block is made permanent
 
 
 
@@ -11,3 +12,4 @@ to do now:
     - AccountBalance
     - blockchain
     - latest index
+

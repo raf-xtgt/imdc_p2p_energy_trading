@@ -27,6 +27,11 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatDividerModule} from '@angular/material/divider';
 // for dropdown menu
 import {MatMenuModule} from '@angular/material/menu';
+// for table
+import {MatTableModule} from '@angular/material/table';
+// for pagination
+import { MatPaginatorModule } from '@angular/material/paginator';
+
 
 
 // external components
@@ -87,7 +92,9 @@ import { BlockchainPageComponent } from './blockchain-page/blockchain-page.compo
     SweetAlert2Module.forRoot(),
     MatProgressSpinnerModule,
     MatDividerModule,
-    MatMenuModule
+    MatMenuModule,
+    MatTableModule,
+    MatPaginatorModule
 
   ],
   exports:[

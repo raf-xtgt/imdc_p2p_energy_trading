@@ -62,6 +62,7 @@ type MongoDatabase struct {
 	Blockchain         *mongo.Collection
 	Transactions       *mongo.Collection
 	LatestIndex        *mongo.Collection //collection to hold the latest index
+	Trigger            *mongo.Collection
 }
 
 // Structure that will be sent as sign up response to frontend
@@ -169,8 +170,8 @@ type Transaction struct {
 	AuctionBids                  []Bid   "json: auctionBids"
 	TNBReceivable                float64 "json: TNBReceivable"
 	Verified                     bool    "json:verified"
-	IsBlocked                    bool    "json:isBlocked"
 	TId                          string  "json: tId"
+	Checks                       int     "json: checks"
 }
 
 // structure of a bid made by seller in the auction
@@ -180,4 +181,12 @@ type Bid struct {
 	OptSellerReceivable float64 "json: optSellerReceivable"
 	SellerFiatBalance   float64 "json: sellerFiatBalance"
 	SellerEnergyBalance float64 "json: sellerEnergyBalance"
+}
+
+type Trigger struct {
+	NewBlockExists bool "json: newBlockExists"
+}
+
+type BlockchainResponse struct {
+	Blockchain []Block
 }

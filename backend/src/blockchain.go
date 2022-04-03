@@ -75,21 +75,14 @@ func createGenesisBlock(w http.ResponseWriter, r *http.Request) {
 func updateChain(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 
-	// the default directory to store the blockchain
-	dirname, err := os.UserHomeDir()
-	if err != nil {
-		log.Fatal(err)
+	// create a local copy first
+	createLocalCopies()
+
+	// if there is a new block then verify that first
+	trigger := checkForNewBlocks()
+	if trigger.NewBlockExists {
+		verifyCentralBlockchain()
 	}
-	fmt.Println("dirname", dirname)
-
-	// get the current blockchain from the central db
-	currentBlockchain := getCurrentBlockchain()
-	// create the local file and get the full file path
-	fileDir := createLocalBlockchainFile(dirname)
-	// write to the local blockchain
-	writeLocalBlockchain(currentBlockchain, fileDir)
-
-	//fmt.Println("Current blockchain", currentBlockchain)
 
 	latestBlock := getLatestBlock()
 	fmt.Println("The latest block is", latestBlock)
@@ -119,6 +112,27 @@ func updateChain(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// check if any new blocks are made by other validators by checking the "trigger" collection
+func checkForNewBlocks() Trigger {
+	// to prevent timeout
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	fmt.Println("yo")
+	cursor, err := db.Trigger.Find(mongoparams.ctx, bson.M{})
+	if err != nil {
+		fmt.Println("Failed to get trigger l:118 (blockchain.go)")
+	}
+
+	var newBlockExists []Trigger
+	if err = cursor.All(mongoparams.ctx, &newBlockExists); err != nil {
+		fmt.Println("Failed to write l:123 (blockchain.go)")
+		log.Fatal(err)
+	}
+	return newBlockExists[0]
+
+}
+
 func getCurrentBlockchain() []Block {
 	// to prevent timeout
 	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
@@ -140,6 +154,18 @@ func getCurrentBlockchain() []Block {
 	}
 
 	return blockchain
+}
+
+// funciton to send the current blockchain to the frontend
+func sendBlockchainToFrontend(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
+
+	var response BlockchainResponse
+	currentChain := getCurrentBlockchain()
+	response.Blockchain = currentChain
+
+	respondWithJSON(w, r, http.StatusCreated, response)
+	return
 }
 
 type LatestIndex struct {
@@ -240,9 +266,10 @@ func updateTransactionVerification(transaction Transaction) Transaction {
 		mongoparams.ctx,
 		bson.M{"tId": transaction.TId},
 		bson.D{
-			{"$set", bson.D{{"verified", true}}}, //FOR NOW
+			{"$set", bson.D{{"verified", true}}},
 		},
 	)
+	incrementChecks(transaction.TId)
 
 	// if the update fails
 	if err != nil {
@@ -250,7 +277,32 @@ func updateTransactionVerification(transaction Transaction) Transaction {
 		fmt.Println("Failed to update the transaction")
 	}
 	transaction.Verified = true
+
 	return transaction
+
+}
+
+// function to increment the number of validator checks in a transaction in the central db
+func incrementChecks(transactionId string) {
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	// increment checks
+	_, err := db.Transactions.UpdateOne(
+		mongoparams.ctx,
+		bson.M{"tId": transactionId},
+		bson.D{
+			{"$inc", bson.D{{"checks", 1}}},
+		},
+	)
+
+	// if the update fails
+	if err != nil {
+		log.Fatal(err)
+		fmt.Println("Failed to update the transaction checks")
+	}
+
+	fmt.Println("Validator successfully incremented checks")
 
 }
 
@@ -295,7 +347,7 @@ func generateBlock(oldBlock Block, blockType string, transactions []Transaction)
 // Given in the mycoralhealth website and from code given by Teoh
 func calculateHash(block Block) string {
 	transactioninString := stringifyTransaction(block.Data)
-	fmt.Println("Inside calculate hash")
+	//fmt.Println("Inside calculate hash")
 	record := strconv.Itoa(block.Index) +
 		block.PrevHash + block.Nonce + transactioninString
 
@@ -314,7 +366,7 @@ func isHashValid(hash string, difficulty int) bool {
 
 // Turn everything in Transaction Data into string to calculate the hash afterwards
 func stringifyTransaction(data []Transaction) string {
-	fmt.Println("Inside stringify function")
+	//fmt.Println("Inside stringify function")
 
 	var record string
 	for i := 0; i < len(data); i++ {
@@ -375,5 +427,83 @@ func updateLatestBlockIndex(index int) {
 	} else {
 		fmt.Println("Successfully updated the latest index")
 	}
+
+	// make a trigger that a new block has been made
+	setTrigger(true)
+
+	// create a local copy to include the new block
+	createLocalCopies()
+}
+
+// function to update the trigger collection
+func setTrigger(value bool) {
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	// set the isVerified to true
+	_, err := db.Trigger.UpdateOne(
+		mongoparams.ctx,
+		bson.M{},
+		bson.D{
+			{"$set", bson.D{{"newBlockExists", value}}},
+		},
+	)
+
+	// if the update fails
+	if err != nil {
+		log.Fatal(err)
+		fmt.Println("Failed to update the trigger")
+	} else {
+		fmt.Println("Successfully updated the trigger")
+	}
+}
+
+// function to get all the userAccounts
+func getAllAccs() []AccountBalance {
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	cursor, err := db.UserAccBalance.Find(mongoparams.ctx, bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var allUserAccs []AccountBalance
+	if err = cursor.All(mongoparams.ctx, &allUserAccs); err != nil {
+		log.Fatal(err)
+	}
+	return allUserAccs
+}
+
+// function to find the local directory to store the local blockchain and user account data
+func getHomeDir() string {
+	// the default directory to store the blockchain
+	dirname, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("dirname", dirname)
+	return dirname
+}
+
+// create a local copy of the blockchain and the user accounts as it exists in the central db as of now
+func createLocalCopies() {
+	// get the path to store the local copies
+	dirname := getHomeDir()
+
+	// get the current blockchain from the central db
+	currentBlockchain := getCurrentBlockchain()
+	// create the local file and get the full file path
+	fileDir := createLocalBlockchainFile(dirname)
+	// write to the local blockchain
+	writeLocalBlockchain(currentBlockchain, fileDir)
+	//readLocalBlockchain(fileDir)
+
+	// get the user accounts from the databse
+	allAccs := getAllAccs()
+	//create a local account file
+	accPath := createUserAccountCopy(dirname)
+	// write the local account copies
+	writeToUserLocalAcc(allAccs, accPath)
 
 }
