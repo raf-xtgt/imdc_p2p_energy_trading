@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ConfigService } from '../config.service';
+import { JWTService } from '../userAuth.service';
 import { Block } from '../classes';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -12,7 +13,8 @@ export class BlockchainPageComponent implements OnInit {
 
   displayedColumns: string[] = ['index', 'hash', 'nonce', 'prevHash']
   dataSource = new MatTableDataSource<Block>(blockData)
-  constructor(private _config:ConfigService) { }
+  constructor(private _config:ConfigService, private _jwtServ:JWTService) { }
+  isValidator:boolean = false;
 
   // add the paginator
   @ViewChild(MatPaginator) paginator: MatPaginator | any
@@ -21,8 +23,8 @@ export class BlockchainPageComponent implements OnInit {
 
   // uncomment this to re-create the genesis block
     // this.createGenesis();
+  this.getUserType()
 
-  this.updateBlockchain()
 
   }
 
@@ -59,6 +61,29 @@ export class BlockchainPageComponent implements OnInit {
       }
       this.dataSource = new MatTableDataSource<Block>(blockData)
       this.dataSource.paginator = this.paginator
+    })
+  }
+
+  getUserType(){
+    // check if the jwt is stored in local storage or not
+    this._jwtServ.verifyToken().subscribe(data => {
+      //console.log("Verified Token", data)
+      let response = JSON.parse(JSON.stringify(data))
+      //console.log(response.User)
+
+      if (data !=null){
+
+        if (response.User.Type == "validator"){
+          this.isValidator = true
+          // update the blockchain for validator
+          this.updateBlockchain()
+        }
+        else{
+          this.isValidator = false
+          // only get the blockchain for normal user
+          this.getBlockchain()
+        }
+      }
     })
   }
 

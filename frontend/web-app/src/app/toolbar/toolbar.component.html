@@ -29,7 +29,7 @@
         <!-- Toolbar when user is logged in -->
         <div *ngIf="isVerified">
           <a class="orderBtn" mat-button routerLink="order">New Order</a>
-          <a class="topBarBtns" mat-button>Blockchain</a>
+          <a class="topBarBtns" mat-button routerLink="blockchain">Blockchain</a>
           <a class="topBarBtns" mat-button routerLink="market">Market</a>
           <a class="topBarBtns" mat-button>About</a>
           <button mat-button [matMenuTriggerFor]="menu">Menu<mat-icon>keyboard_arrow_down</mat-icon></button>
@@ -40,7 +40,7 @@
               <a *ngIf="isAdmin" class="menuBtns" mat-menu-item>Manage Clerks</a>
               
               <!-- Menu items for validators -->
-              <a *ngIf="isValidator" class="menuBtns" mat-menu-item routerLink="manageBlockchain">Manage Blockchain</a>
+              <a *ngIf="isValidator" class="menuBtns" mat-menu-item routerLink="blockchain">Manage Blockchain</a>
               <a *ngIf="isValidator" class="menuBtns" mat-menu-item>Manage Transactions</a>
             </mat-menu>
           

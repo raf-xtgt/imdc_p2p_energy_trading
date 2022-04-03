@@ -24,7 +24,7 @@ const routes: Routes = [
   {path: 'market', component:MarketpageComponent},
   {path: 'bid', component:BidPageComponent},
   {path: 'manageValidators', component:ManageValidatorsComponent},
-  {path: 'manageBlockchain', component:BlockchainPageComponent}
+  {path: 'blockchain', component:BlockchainPageComponent}
 ];
 
 @NgModule({

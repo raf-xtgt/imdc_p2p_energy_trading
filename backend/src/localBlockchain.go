@@ -69,13 +69,9 @@ func readLocalBlockchain(filepath string) []Block {
 
 // the validators who did not produce the block will need to veirfy transactions and sign the block
 func verifyCentralBlockchain() bool {
-	homeDir := getHomeDir()
-	// get the local blockchain
-	blockchainFileDir := homeDir + "/" + LOCAL_BLOCKCHAIN
-	localBlockchain := readLocalBlockchain(blockchainFileDir)
 
-	latestLocalBlock := localBlockchain[len(localBlockchain)-1] // the last block is the latest and new block
-	blockTransactions := latestLocalBlock.Data
+	latestCentralBlock := getLatestBlock()
+	blockTransactions := latestCentralBlock.Data
 
 	for j := 0; j < len(blockTransactions); j++ {
 		transaction := blockTransactions[j]
@@ -89,7 +85,7 @@ func verifyCentralBlockchain() bool {
 			// if all validators have checked that the user has sufficient balance
 			if updatedTrn.Checks >= TOTAL_VALIDATORS {
 				// use the nonce of the latest block and check whether its hash matches or not
-				return checkBlock(latestLocalBlock)
+				return checkBlock(latestCentralBlock)
 			} else {
 				fmt.Println("Both validators have not verified the block")
 			}
@@ -144,10 +140,15 @@ func getTransaction(transactionId string) Transaction {
 }
 
 // function to let not currently logged in validators check whether the latest hash block matches to the one in the database or not
-func checkBlock(latestLocalBlock Block) bool {
+func checkBlock(latestCentralBlock Block) bool {
 
 	// get the latest block in the central database
-	latestCentralBlock := getLatestBlock()
+	homeDir := getHomeDir()
+	// get the local blockchain
+	blockchainFileDir := homeDir + "/" + LOCAL_BLOCKCHAIN
+	localBlockchain := readLocalBlockchain(blockchainFileDir)
+	latestLocalBlock := localBlockchain[len(localBlockchain)-1] // the last block is the latest and new block
+
 	nonce := latestCentralBlock.Nonce
 	latestLocalBlock.Nonce = nonce
 
