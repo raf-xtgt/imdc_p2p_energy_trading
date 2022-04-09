@@ -15,20 +15,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type OrderedBlocks []Block
-
-func (b OrderedBlocks) Len() int {
-	return len(b)
-}
-
-func (b OrderedBlocks) Less(i, j int) bool {
-	return b[i].Index < b[j].Index
-}
-
-func (b OrderedBlocks) Swap(i, j int) {
-	b[i], b[j] = b[j], b[i]
-}
-
 /** This script is run only to initialize the first few blocks **/
 const difficulty = 1
 const firstBlock = "Genesis"
@@ -87,6 +73,7 @@ func updateChain(w http.ResponseWriter, r *http.Request) {
 	latestBlock := getLatestBlock()
 	fmt.Println("The latest block is", latestBlock)
 
+	// get a list of unverified transactions
 	var newTransactionPool []Transaction = getTransactionPool()
 	//fmt.Println("The three transactions", newTransactionPool)
 	//validator1
@@ -118,7 +105,7 @@ func checkForNewBlocks() Trigger {
 	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
 	defer mongoparams.cancel()
 
-	fmt.Println("yo")
+	//fmt.Println("yo")
 	cursor, err := db.Trigger.Find(mongoparams.ctx, bson.M{})
 	if err != nil {
 		fmt.Println("Failed to get trigger l:118 (blockchain.go)")
@@ -402,9 +389,30 @@ func addBlock(newBlock Block) {
 	}
 	fmt.Println("Successfully added block", writeBlock.InsertedID)
 
+	// add the validator who made the block as one of the "validators" who checked the block
+	var blockMetadata BlockInfo
+	var blockIdStr string = fmt.Sprintf("%v", writeBlock.InsertedID)
+	blockMetadata.BlockId = blockIdStr[10 : len(blockIdStr)-2]
+	var validators []string
+	validators = append(validators, loggedInUser)
+	blockMetadata.Validators = validators
+	blockMetadata.Hash = newBlock.Hash
+
+	//add this block metadata in the db
+	writeBlockInfo, err := db.BlockInfo.InsertOne(mongoparams.ctx, blockMetadata)
+	if err != nil {
+		log.Fatal(err)
+		fmt.Println("failed to write block")
+		return
+	}
+	fmt.Println("Successfully added block metadata", writeBlockInfo.InsertedID)
+
+	// add the blockInfo(metadata) in the db
 	updateLatestBlockIndex(newBlock.Index)
 
 }
+
+//function to update the blockinfo. Here we are storing the number of validators who have checked the block)
 
 // increment the latest index to the value of the new blocks
 func updateLatestBlockIndex(index int) {
@@ -482,7 +490,7 @@ func getHomeDir() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("dirname", dirname)
+	//fmt.Println("dirname", dirname)
 	return dirname
 }
 
@@ -495,7 +503,7 @@ func createLocalCopies() {
 	currentBlockchain := getCurrentBlockchain()
 	// create the local file and get the full file path
 	fileDir := createLocalBlockchainFile(dirname)
-	// write to the local blockchain
+	// write the blockchain to the local file
 	writeLocalBlockchain(currentBlockchain, fileDir)
 	//readLocalBlockchain(fileDir)
 

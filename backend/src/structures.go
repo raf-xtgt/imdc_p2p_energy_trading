@@ -63,6 +63,13 @@ type MongoDatabase struct {
 	Transactions       *mongo.Collection
 	LatestIndex        *mongo.Collection //collection to hold the latest index
 	Trigger            *mongo.Collection
+	BlockInfo          *mongo.Collection // collection to hold the block Id and the number of validators who checked it
+}
+
+type BlockInfo struct {
+	BlockId    string   "json:blockId"
+	Validators []string "json:validators" // the list of validators who have checked the block
+	Hash       string   "json:hash"       //hash of thois block
 }
 
 // Structure that will be sent as sign up response to frontend

@@ -23,6 +23,7 @@ import (
 )
 
 var jwtSecret string = ""
+var loggedInUser string = ""
 
 // function to store a new user in the database when a signs up
 func addNewUser(w http.ResponseWriter, r *http.Request) {
@@ -302,6 +303,7 @@ func getAccountData(userId string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	loggedInUser = Profile[0].UserName
 
 	return json, nil
 }

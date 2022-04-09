@@ -50,7 +50,7 @@ func readLocalUserAccs(filepath string) []AccountBalance {
 
 	_ = json.Unmarshal([]byte(file), &localAccs)
 
-	fmt.Println("Local blockchain as read", localAccs)
+	//fmt.Println("Local user account balances as read", localAccs)
 	return localAccs
 
 }

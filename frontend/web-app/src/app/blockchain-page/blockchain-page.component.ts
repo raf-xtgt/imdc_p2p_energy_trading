@@ -4,6 +4,11 @@ import { JWTService } from '../userAuth.service';
 import { Block } from '../classes';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
+// for the loading
+import {ThemePalette} from '@angular/material/core';
+import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
+
+
 @Component({
   selector: 'app-blockchain-page',
   templateUrl: './blockchain-page.component.html',
@@ -15,6 +20,12 @@ export class BlockchainPageComponent implements OnInit {
   dataSource = new MatTableDataSource<Block>(blockData)
   constructor(private _config:ConfigService, private _jwtServ:JWTService) { }
   isValidator:boolean = false;
+  // loading before updated blockchain is available
+  public isLoading: boolean = true;
+  color: ThemePalette = 'primary';
+  mode: ProgressSpinnerMode = 'indeterminate';
+  value = 100;
+
 
   // add the paginator
   @ViewChild(MatPaginator) paginator: MatPaginator | any
@@ -59,9 +70,12 @@ export class BlockchainPageComponent implements OnInit {
         }
         blockData.push(data)
       }
+      
       this.dataSource = new MatTableDataSource<Block>(blockData)
       this.dataSource.paginator = this.paginator
+      
     })
+    this.isLoading=false
   }
 
   getUserType(){

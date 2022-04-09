@@ -75,6 +75,7 @@ func connectToDb() MongoDatabase {
 	db.Transactions = db.Cluster.Collection("transactions")
 	db.LatestIndex = db.Cluster.Collection("latestIndex")
 	db.Trigger = db.Cluster.Collection("trigger") // document holds boolean value when a new block is made
+	db.BlockInfo = db.Cluster.Collection("blockInfo")
 	return db
 }
 

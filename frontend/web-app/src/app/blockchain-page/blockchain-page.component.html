@@ -1,4 +1,15 @@
-<div class="mat-elevation-z8">
+<div *ngIf="isLoading" style="text-align: center;">
+  <h3>Retrieving updated blockchain...</h3>
+  <mat-progress-spinner
+  
+  diameter = "50"
+  [color]="color"
+  [mode]="mode"
+  [value]="value">
+</mat-progress-spinner>
+</div>
+<div *ngIf="!isLoading" class="mat-elevation-z8">
+  
     <table mat-table [dataSource]="dataSource">
   
       <!-- Position Column -->
@@ -39,5 +50,10 @@
                    showFirstLastButtons 
                    aria-label="Select page of periodic elements">
     </mat-paginator>
+
+
+
+
+    
   </div>
   

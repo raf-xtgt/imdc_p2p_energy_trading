@@ -34,10 +34,10 @@ func createLocalBlockchainFile(dirname string) string {
 			fmt.Println(err)
 
 		}
-		fmt.Println("File created successfully", filename)
+		//fmt.Println("File created successfully", filename)
 		defer file.Close()
 	} else {
-		fmt.Println("File already exists!", filename)
+		//fmt.Println("File already exists!", filename)
 
 	}
 
@@ -45,7 +45,7 @@ func createLocalBlockchainFile(dirname string) string {
 
 }
 
-// write to the blockchain in the file
+// write the blockchain in the file
 // we always write it so mo need to update. writing is updating itself
 func writeLocalBlockchain(data []Block, fileDir string) {
 	file, _ := json.MarshalIndent(data, "", " ")
@@ -72,22 +72,33 @@ func verifyCentralBlockchain() bool {
 
 	latestCentralBlock := getLatestBlock()
 	blockTransactions := latestCentralBlock.Data
-
+	var counter = 0
 	for j := 0; j < len(blockTransactions); j++ {
 		transaction := blockTransactions[j]
+
+		// if the transaction is verified according to local copy
 		if localTrnVerification(transaction) {
 			// increment validator check in the central database
 			incrementChecks(transaction.TId)
 
-			// get the recently incremented transaction from the database
-			updatedTrn := getTransaction(transaction.TId)
-
-			// if all validators have checked that the user has sufficient balance
-			if updatedTrn.Checks >= TOTAL_VALIDATORS {
+			// validator checks the block only when they finish verifying all the transactions
+			if counter == len(blockTransactions)-1 {
+				fmt.Println("All transactions in latest block are checked")
 				// use the nonce of the latest block and check whether its hash matches or not
-				return checkBlock(latestCentralBlock)
+				if checkBlock(latestCentralBlock) {
+					// make a trigger that no new block exists
+					//setTrigger(false)
+					// add the validator in the list of validators who checked the block in blockInfo collection.
+					updateCheckedValidators(latestCentralBlock.Hash)
+					return true
+				} else {
+					fmt.Println("Block hash doesn't matxh, gotta discard it")
+					return false
+					//discardBlock(latestCentralBlock)
+				}
+
 			} else {
-				fmt.Println("Both validators have not verified the block")
+				counter += 1
 			}
 
 		} else {
@@ -162,6 +173,67 @@ func checkBlock(latestCentralBlock Block) bool {
 	} else {
 		fmt.Println("Local and db hash did not match")
 		return false
+	}
+
+}
+
+//funciton to update the list of validators who checked the block with no repeat validators
+func updateCheckedValidators(hash string) {
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	cursor, err := db.BlockInfo.Find(mongoparams.ctx,
+		bson.M{"hash": hash})
+
+	if err != nil {
+		log.Fatal(err)
+		fmt.Println("Failed to retrieve block info :localBlockchain.go 199")
+	}
+
+	var blockData []BlockInfo
+	if err = cursor.All(mongoparams.ctx, &blockData); err != nil {
+		log.Fatal(err)
+		fmt.Println("Failed to write the block metadata :localBlockchain.go 205")
+	}
+
+	var found bool
+	data := blockData[0]
+	blockValidators := data.Validators
+	fmt.Println("The validators that checked", blockValidators)
+	for i := 0; i < len(blockValidators); i++ {
+		vId := blockValidators[i]
+		fmt.Println("Checked validator", vId, "  Logged in user", loggedInUser)
+		if loggedInUser == vId {
+			found = true
+		} else if i == len(blockValidators) {
+			// checked all values and not found validator
+			found = false
+			// then we add the validator
+			blockValidators = append(blockValidators, loggedInUser)
+		}
+	}
+
+	// if the current validator is not part of the list, then update the list
+	if !found {
+
+		_, err := db.BlockInfo.UpdateOne(
+			mongoparams.ctx,
+			bson.M{"hash": hash},
+			bson.D{
+				{"$push", bson.D{{"validators", loggedInUser}}},
+			},
+		)
+
+		// if the update fails
+		if err != nil {
+			log.Fatal(err)
+			fmt.Println("Failed to update the block metadata on successful block check")
+		} else {
+			fmt.Println("Successfully updated the block metadata")
+		}
+
+	} else {
+		fmt.Println("Current user checked the latest block ady")
 	}
 
 }
