@@ -72,40 +72,52 @@ func verifyCentralBlockchain() bool {
 
 	latestCentralBlock := getLatestBlock()
 	blockTransactions := latestCentralBlock.Data
-	var counter = 0
-	for j := 0; j < len(blockTransactions); j++ {
-		transaction := blockTransactions[j]
+	latestBlockMetadata := getBlockMetadata(latestCentralBlock.Hash)
 
-		// if the transaction is verified according to local copy
-		if localTrnVerification(transaction) {
-			// increment validator check in the central database
-			incrementChecks(transaction.TId)
+	// we only check if the latest block was not checked by all validators
+	// this means validators array in latestBlockMetadata would be less than the TOTAL_VALIDATORS
+	if len(latestBlockMetadata.Validators) < TOTAL_VALIDATORS {
+		var counter = 0
+		for j := 0; j < len(blockTransactions); j++ {
+			transaction := blockTransactions[j]
 
-			// validator checks the block only when they finish verifying all the transactions
-			if counter == len(blockTransactions)-1 {
-				fmt.Println("All transactions in latest block are checked")
-				// use the nonce of the latest block and check whether its hash matches or not
-				if checkBlock(latestCentralBlock) {
-					// make a trigger that no new block exists
-					//setTrigger(false)
-					// add the validator in the list of validators who checked the block in blockInfo collection.
-					updateCheckedValidators(latestCentralBlock.Hash)
-					return true
+			// if the transaction is verified according to local copy
+			if localTrnVerification(transaction) {
+				// increment validator check in the central database
+				incrementChecks(transaction.TId)
+
+				// validator checks the block only when they finish verifying all the transactions
+				if counter == len(blockTransactions)-1 {
+					fmt.Println("All transactions in latest block are checked")
+					// use the nonce of the latest block and check whether its hash matches or not
+					if checkBlock(latestCentralBlock) {
+						// make a trigger that no new block exists
+						//setTrigger(false)
+						// add the validator in the list of validators who checked the block in blockInfo collection.
+						updateCheckedValidators(latestCentralBlock.Hash)
+						return true
+					} else {
+						fmt.Println("Block hash doesn't matxh, gotta discard it")
+						return false
+						//discardBlock(latestCentralBlock)
+					}
+
 				} else {
-					fmt.Println("Block hash doesn't matxh, gotta discard it")
-					return false
-					//discardBlock(latestCentralBlock)
+					counter += 1
 				}
 
 			} else {
-				counter += 1
+				fmt.Println("Local transaction verification failed")
 			}
 
-		} else {
-			fmt.Println("Local transaction verification failed")
 		}
-
+	} else {
+		// no need to check since both validators have done so
+		fmt.Println("no need to check since both validators have done ")
+		setTrigger(false) // no new blocks to check so make it false
+		return true
 	}
+
 	return false
 
 }
@@ -236,4 +248,25 @@ func updateCheckedValidators(hash string) {
 		fmt.Println("Current user checked the latest block ady")
 	}
 
+}
+
+//function to get the metadata of the block given the hash of the block
+func getBlockMetadata(hash string) BlockInfo {
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	cursor, err := db.BlockInfo.Find(mongoparams.ctx,
+		bson.M{"hash": hash})
+
+	if err != nil {
+		log.Fatal(err)
+		fmt.Println("Failed to retrieve block info :localBlockchain.go 199")
+	}
+
+	var blockData []BlockInfo
+	if err = cursor.All(mongoparams.ctx, &blockData); err != nil {
+		log.Fatal(err)
+		fmt.Println("Failed to write the block metadata :localBlockchain.go 205")
+	}
+	return blockData[0]
 }
