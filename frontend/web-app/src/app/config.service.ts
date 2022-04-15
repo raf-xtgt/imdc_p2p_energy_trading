@@ -39,6 +39,9 @@ export class ConfigService {
   // url to get all user data
   private _getAllUsers: string = this._configUrl + 'GetAllUsers'
 
+  // url to make a clerk
+  private _makeClerk:string = this._configUrl + 'MakeClerk'
+
   TOKEN_KEY = 'token';
 
 
@@ -151,6 +154,12 @@ export class ConfigService {
   getAllUsers(){
     const body = JSON.stringify("Get All Users")
     return this.http.post(this._getAllUsers, body)
+  }
+
+  // convert a normal user to a clerk
+  convertToClerk(userId: string){
+    const body = JSON.stringify(userId)
+    return this.http.post(this._makeClerk, body)
   }
 
 }

@@ -6,6 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import {ThemePalette} from '@angular/material/core';
 import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
 import { PotentialClerks } from '../classes';
+import Swal from 'sweetalert2'
 
 @Component({
   selector: 'app-manage-clerks',
@@ -57,6 +58,25 @@ export class ManageClerksComponent implements OnInit {
   // convert the user into a clerk
   convertToClerk(userId :string){
     console.log("Id of user to be made into clerk", userId)
+    Swal.fire({
+      title: 'Confirm Clerk Conversion',
+      showDenyButton: false,
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      //denyButtonText: denyBtnTxt,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+
+        this._config.convertToClerk(userId).subscribe(data => {
+          Swal.fire('User successfully made into a clerk', '', 'success')  
+        })
+        
+      } else if (result.isDismissed) {
+        Swal.fire('Request Cancelled!', '', 'info')
+      
+      }
+    })
   }
 }
 
