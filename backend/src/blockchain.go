@@ -156,7 +156,8 @@ func sendBlockchainToFrontend(w http.ResponseWriter, r *http.Request) {
 }
 
 type LatestIndex struct {
-	Index int "json: index"
+	Index       int "json: index"
+	NewBlockNum int "json:newBlockNum"
 }
 
 // get the last mined block
@@ -397,6 +398,9 @@ func addBlock(newBlock Block) {
 	validators = append(validators, loggedInUser)
 	blockMetadata.Validators = validators
 	blockMetadata.Hash = newBlock.Hash
+	var clerks []string
+	clerks = append(clerks, "")
+	blockMetadata.Clerks = clerks
 
 	//add this block metadata in the db
 	writeBlockInfo, err := db.BlockInfo.InsertOne(mongoparams.ctx, blockMetadata)
@@ -419,7 +423,7 @@ func updateLatestBlockIndex(index int) {
 	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
 	defer mongoparams.cancel()
 
-	// set the isVerified to true
+	// set the new index
 	_, err := db.LatestIndex.UpdateOne(
 		mongoparams.ctx,
 		bson.M{},
@@ -434,6 +438,23 @@ func updateLatestBlockIndex(index int) {
 		fmt.Println("Failed to update the latest index")
 	} else {
 		fmt.Println("Successfully updated the latest index")
+	}
+
+	// increment the number of new blocks
+	_, err2 := db.LatestIndex.UpdateOne(
+		mongoparams.ctx,
+		bson.M{},
+		bson.D{
+			{"$inc", bson.D{{"newBlockNum", 1}}},
+		},
+	)
+
+	// if the update fails
+	if err2 != nil {
+		log.Fatal(err2)
+		fmt.Println("Failed to increment number of new blocks")
+	} else {
+		fmt.Println("Successfully updated the number of new blocks")
 	}
 
 	// make a trigger that a new block has been made

@@ -112,6 +112,7 @@ func listen() error {
 	mux.HandleFunc("/GetBlockchain", sendBlockchainToFrontend)
 	mux.HandleFunc("/GetAllUsers", getAllUsers)
 	mux.HandleFunc("/MakeClerk", convertToClerk)
+	mux.HandleFunc("/ClerkIntegrityCheck", integrityCheck)
 
 	handler := cors.Default().Handler(mux)
 	log.Fatal(http.ListenAndServe(":8080", handler))

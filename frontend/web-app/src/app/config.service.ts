@@ -52,8 +52,6 @@ export class ConfigService {
   // add a user to the database
   addNewUser(data: User): Observable<any> {
     const body = JSON.stringify(data)
-    //console.log(body)
-    //console.log(this._registerUrl)
     return this.http.post<User>(this._registerUrl, body)
   }
 

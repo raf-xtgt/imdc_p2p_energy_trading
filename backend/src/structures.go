@@ -69,7 +69,8 @@ type MongoDatabase struct {
 type BlockInfo struct {
 	BlockId    string   "json:blockId"
 	Validators []string "json:validators" // the list of validators who have checked the block
-	Hash       string   "json:hash"       //hash of thois block
+	Hash       string   "json:hash"       //hash of this block
+	Clerks     []string "json:clerks"     // list of clerks who have checked the block. Clerks will check after every five new blocks are added.
 }
 
 // Structure that will be sent as sign up response to frontend
@@ -196,4 +197,9 @@ type Trigger struct {
 
 type BlockchainResponse struct {
 	Blockchain []Block
+}
+
+// response sent to frontedn
+type IntegrityCheckResponse struct {
+	IntegrityBreached bool "json: integrityBreached"
 }

@@ -57,7 +57,7 @@ export class BlockchainPageComponent implements OnInit {
   // will invoke integrity check. The backend handles the five new block check
   initINTCheck(){
     this._config.initClerkINTChk().subscribe(data => {
-      console.log("Invoke integrity check")
+      console.log("Invoke integrity check", data)
       this.getBlockchain()
     })
   }
@@ -106,8 +106,8 @@ export class BlockchainPageComponent implements OnInit {
 
         else if (response.User.Type == "clerk"){
           // invoke integrity check
-          //this.initINTCheck()
-          this.getBlockchain()
+          this.initINTCheck()
+          //this.getBlockchain()
         }
         else{
           this.isValidator = false
