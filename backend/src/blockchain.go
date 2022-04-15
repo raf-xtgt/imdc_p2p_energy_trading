@@ -515,3 +515,35 @@ func createLocalCopies() {
 	writeToUserLocalAcc(allAccs, accPath)
 
 }
+
+// function to discard a block
+func discardBlock(latestCentralBlock Block) {
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	//  delete the block
+	result, err := db.Blockchain.DeleteOne(mongoparams.ctx, bson.M{"hash": latestCentralBlock.Hash})
+	if err != nil {
+		fmt.Println("Failed to discard the block blockchain.go ln:528")
+		log.Fatal(err)
+	}
+	fmt.Printf("Discarded block %v document(s)\n", result.DeletedCount)
+
+	// decrement the index to point to the block before the discarded one
+	_, err2 := db.LatestIndex.UpdateOne(
+		mongoparams.ctx,
+		bson.M{},
+		bson.D{
+			{"$inc", bson.D{{"index", -1}}},
+		},
+	)
+
+	// if the update fails
+	if err2 != nil {
+		log.Fatal(err2)
+		fmt.Println("Failed to update the transaction checks")
+	}
+
+	fmt.Println("Validator successfully incremented checks")
+
+}

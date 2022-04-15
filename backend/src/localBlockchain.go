@@ -104,8 +104,10 @@ func verifyCentralBlockchain() bool {
 							updateCheckedValidators(latestCentralBlock.Hash)
 							return true
 						} else {
-							// second check failse
+							// second check fails
 							fmt.Println("Second check failed")
+							// discard the block
+							discardBlock(latestCentralBlock)
 							return false
 						}
 
