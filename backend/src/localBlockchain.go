@@ -91,14 +91,24 @@ func verifyCentralBlockchain() bool {
 					fmt.Println("All transactions in latest block are checked")
 					// use the nonce of the latest block and check whether its hash matches or not
 					if checkBlock(latestCentralBlock) {
-						// make a trigger that no new block exists
-						//setTrigger(false)
 						// add the validator in the list of validators who checked the block in blockInfo collection.
 						updateCheckedValidators(latestCentralBlock.Hash)
 						return true
 					} else {
-						fmt.Println("Block hash doesn't matxh, gotta discard it")
-						return false
+						fmt.Println("Block hash doesn't match, then retry one more time and then discard if still no match")
+						// update the local copies of user account and blockchain file
+						createLocalCopies()
+						//now check again
+						if checkBlock(latestCentralBlock) {
+							// add the validator in the list of validators who checked the block in blockInfo collection.
+							updateCheckedValidators(latestCentralBlock.Hash)
+							return true
+						} else {
+							// second check failse
+							fmt.Println("Second check failed")
+							return false
+						}
+
 						//discardBlock(latestCentralBlock)
 					}
 
@@ -162,7 +172,7 @@ func getTransaction(transactionId string) Transaction {
 
 }
 
-// function to let not currently logged in validators check whether the latest hash block matches to the one in the database or not
+// function to let validators check whether the latest hash block matches the one in the database or not
 func checkBlock(latestCentralBlock Block) bool {
 
 	// get the latest block in the central database

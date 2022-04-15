@@ -61,7 +61,7 @@ func createGenesisBlock(w http.ResponseWriter, r *http.Request) {
 func updateChain(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 
-	// create a local copy first
+	// get the updated local copy of blockchain and user accountsfirst
 	createLocalCopies()
 
 	// if there is a new block then verify that first

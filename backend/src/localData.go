@@ -7,6 +7,13 @@ import (
 	"os"
 )
 
+/**
+This file has all the code to:
+- create a local user account file --> createUserAccountCopy
+- write the data to the local user account file  -->  writeToUserLocalAcc
+- read from the local user account  --> readLocalUserAccs
+**/
+
 const ACC_BALANCE_FILENAME = "userAccounts.json"
 
 // create a locally stored blockchain
