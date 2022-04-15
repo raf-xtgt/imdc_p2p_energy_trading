@@ -20,6 +20,7 @@ export class BlockchainPageComponent implements OnInit {
   dataSource = new MatTableDataSource<Block>(blockData)
   constructor(private _config:ConfigService, private _jwtServ:JWTService) { }
   isValidator:boolean = false;
+  isClerk :boolean = false;
   // loading before updated blockchain is available
   public isLoading: boolean = true;
   color: ThemePalette = 'primary';
@@ -49,6 +50,14 @@ export class BlockchainPageComponent implements OnInit {
   updateBlockchain (){
     this._config.updateBlockchain().subscribe(data => {
       console.log("Updated blockchain")
+      this.getBlockchain()
+    })
+  }
+
+  // will invoke integrity check. The backend handles the five new block check
+  initINTCheck(){
+    this._config.initClerkINTChk().subscribe(data => {
+      console.log("Invoke integrity check")
       this.getBlockchain()
     })
   }
@@ -85,7 +94,7 @@ export class BlockchainPageComponent implements OnInit {
     this._jwtServ.verifyToken().subscribe(data => {
       //console.log("Verified Token", data)
       let response = JSON.parse(JSON.stringify(data))
-      //console.log(response.User)
+      console.log(response.User)
 
       if (data !=null){
 
@@ -93,6 +102,12 @@ export class BlockchainPageComponent implements OnInit {
           this.isValidator = true
           // update the blockchain for validator
           this.updateBlockchain()
+        }
+
+        else if (response.User.Type == "clerk"){
+          // invoke integrity check
+          //this.initINTCheck()
+          this.getBlockchain()
         }
         else{
           this.isValidator = false

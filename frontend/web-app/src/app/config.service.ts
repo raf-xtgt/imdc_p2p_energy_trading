@@ -41,6 +41,7 @@ export class ConfigService {
 
   // url to make a clerk
   private _makeClerk:string = this._configUrl + 'MakeClerk'
+  private _clerkINTCheck :string = this._configUrl + 'ClerkIntegrityCheck'
 
   TOKEN_KEY = 'token';
 
@@ -160,6 +161,12 @@ export class ConfigService {
   convertToClerk(userId: string){
     const body = JSON.stringify(userId)
     return this.http.post(this._makeClerk, body)
+  }
+
+  // to invoke the clerk integrity check
+  initClerkINTChk(){
+    const body = JSON.stringify("Clerk integrity check")
+    return this.http.post(this._clerkINTCheck, body)
   }
 
 }
