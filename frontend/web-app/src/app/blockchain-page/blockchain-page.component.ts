@@ -54,6 +54,7 @@ export class BlockchainPageComponent implements OnInit {
   }
 
   getBlockchain(){
+    blockData = []
     this._config.getCurrentBlockchain().subscribe(data => {
       
       let response = JSON.parse(JSON.stringify(data))
@@ -71,6 +72,7 @@ export class BlockchainPageComponent implements OnInit {
         blockData.push(data)
       }
       
+      // instantiate list
       this.dataSource = new MatTableDataSource<Block>(blockData)
       this.dataSource.paginator = this.paginator
       
@@ -103,4 +105,4 @@ export class BlockchainPageComponent implements OnInit {
 
 }
 
-const blockData : Block[] = []
+let blockData : Block[] = []

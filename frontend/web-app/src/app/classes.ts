@@ -101,3 +101,10 @@ export interface Block {
 	nonce:string,
 }
 
+export interface PotentialClerks {
+    username:string,
+    userId:string,
+    email:string,
+    smartMeterNo:number
+    button1: string,
+}

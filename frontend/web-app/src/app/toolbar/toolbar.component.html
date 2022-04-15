@@ -37,11 +37,11 @@
 
               <!-- Menu items for admin -->
               <a *ngIf="isAdmin" class="menuBtns" mat-menu-item routerLink="manageValidators">Manage Validators</a>
-              <a *ngIf="isAdmin" class="menuBtns" mat-menu-item>Manage Clerks</a>
+              <a *ngIf="isAdmin" class="menuBtns" mat-menu-item routerLink="manageClerks">Manage Clerks</a>
               
               <!-- Menu items for validators -->
               <a *ngIf="isValidator" class="menuBtns" mat-menu-item routerLink="blockchain">Manage Blockchain</a>
-              <a *ngIf="isValidator" class="menuBtns" mat-menu-item>Manage Transactions</a>
+            
             </mat-menu>
           
           <a class="topBarBtns" mat-button><mat-icon>account_circle</mat-icon>{{username}}</a>

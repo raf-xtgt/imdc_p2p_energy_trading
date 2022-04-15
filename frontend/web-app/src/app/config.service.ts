@@ -36,6 +36,9 @@ export class ConfigService {
   private _updateBlockchain: string = this._configUrl +'UpdateBlockchain'
   private _getBlockchain: string = this._configUrl + 'GetBlockchain'
 
+  // url to get all user data
+  private _getAllUsers: string = this._configUrl + 'GetAllUsers'
+
   TOKEN_KEY = 'token';
 
 
@@ -143,6 +146,11 @@ export class ConfigService {
   getCurrentBlockchain(){
     const body = JSON.stringify("Get Blockchain")
     return this.http.post(this._getBlockchain, body)
+  }
+
+  getAllUsers(){
+    const body = JSON.stringify("Get All Users")
+    return this.http.post(this._getAllUsers, body)
   }
 
 }

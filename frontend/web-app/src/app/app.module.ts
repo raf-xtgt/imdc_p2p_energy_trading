@@ -50,6 +50,7 @@ import { BidPageComponent } from './bid-page/bid-page.component';
 import { TimerComponent } from './timer/timer.component';
 import { ManageValidatorsComponent } from './manage-validators/manage-validators.component';
 import { BlockchainPageComponent } from './blockchain-page/blockchain-page.component';
+import { ManageClerksComponent } from './manage-clerks/manage-clerks.component';
 
 @NgModule({
   declarations: [
@@ -69,6 +70,7 @@ import { BlockchainPageComponent } from './blockchain-page/blockchain-page.compo
     TimerComponent,
     ManageValidatorsComponent,
     BlockchainPageComponent,
+    ManageClerksComponent,
   ],
   imports: [
     BrowserModule,
