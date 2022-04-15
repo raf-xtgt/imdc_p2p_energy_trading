@@ -13,8 +13,9 @@ import (
 
 /**
 This file contains:
-- clerk validation
 - get all normal users who can be made into clerks
+- convert a normal user into a clerk
+- clerk validation
 **/
 
 // function to get all normal users who can be made into clerks
@@ -25,8 +26,7 @@ func getAllUsers(w http.ResponseWriter, r *http.Request) {
 	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
 	defer mongoparams.cancel()
 
-	// var response []User
-
+	// filter all normal users
 	cursor, err := db.Users.Find(mongoparams.ctx, bson.M{"type": "normal"})
 	if err != nil {
 		fmt.Println("Failed to get all users, clerks.go ::26")
@@ -41,6 +41,7 @@ func getAllUsers(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// convert a normal user into a clerk
 func convertToClerk(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 
