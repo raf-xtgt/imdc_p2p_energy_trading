@@ -48,7 +48,9 @@ def initMatchmaking(client):
         print("Transaction stored on database successfully")
     return "Success"
 
-
+"""
+Retrieve all the transactions that have not undergone the double auction.
+"""
 def getOrderData(client):
     cluster=client["IMDC-p2p-energy"]
     buyReqColl = cluster.buyRequests
