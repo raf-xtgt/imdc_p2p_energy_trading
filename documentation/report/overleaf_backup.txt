@@ -723,3 +723,6 @@ Biography text here.
 - How many transactions can be in a block?
 - How long to generate block?
 - Sys Implementation before Results or make part of Results
+
+Presentaiton
+Promises vs What we achieved
