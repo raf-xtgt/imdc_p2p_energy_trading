@@ -714,3 +714,12 @@ Biography text here.
 
 
 
+
+// results for blockchain
+
+- Emphasis on websites 
+- How blockchain is stored in database (central and distributed)
+- Profit gained by tnb and bidders
+- How many transactions can be in a block?
+- How long to generate block?
+- Sys Implementation before Results or make part of Results
