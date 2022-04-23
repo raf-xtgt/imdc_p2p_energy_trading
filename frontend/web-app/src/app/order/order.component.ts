@@ -141,11 +141,12 @@ export class OrderComponent implements OnInit {
   // function to the get the data for the buy energy forecast
   getForecastForBuying(){
     let dateToday = this.dateService.getCurrentDate()
-    console.log("data as sent in request", dateToday)
+    //console.log("data as sent in request", dateToday)
     this._config.getBuyEnergyForecast(dateToday).subscribe(data => {
-      console.log("data to plot graph when making buy order", data)
+      //console.log("data to plot graph when making buy order", data)
       if (data != null){
         let response = JSON.parse(JSON.stringify(data))
+        console.log("What graph data looks like", response)
         // prepare graph data for actual plot
         this.actual_x = response[0].Actual_X
         this.actual_y = response[0].Actual_Y

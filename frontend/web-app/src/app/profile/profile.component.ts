@@ -9,9 +9,14 @@ import { ConfigService } from '../config.service';
 })
 
 export class ProfileComponent implements OnInit {
-  TOKEN_KEY = 'token';
-  jwt = ''
+  
   constructor(private _config:ConfigService) { }
+
+  TOKEN_KEY = 'token';
+  public username :string = "";
+  public email :string = "";
+  public address :string = "";
+  public smartMetreNo :number = 0;
 
   ngOnInit(): void {
     this.verifyUserJWT()
@@ -21,6 +26,12 @@ export class ProfileComponent implements OnInit {
     //let token : string = localStorage.getItem("token")
     this._config.verifyToken().subscribe(data => {
       console.log("Verified Token", data)
+      let response = JSON.parse(JSON.stringify(data))
+      console.log(response)
+      this.username = response.User.UserName
+      this.email = response.User.Email
+      this.address = response.User.Address
+      this.smartMetreNo = response.User.SmartMeterNo
     })
   }
 

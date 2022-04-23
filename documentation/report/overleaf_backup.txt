@@ -717,7 +717,7 @@ Biography text here.
 
 // results for blockchain
 
-- Emphasis on websites 
+- Emphasis on website
 - How blockchain is stored in database (central and distributed)
 - Profit gained by tnb and bidders
 - How many transactions can be in a block?
