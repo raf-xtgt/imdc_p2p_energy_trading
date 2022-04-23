@@ -3,7 +3,11 @@ import { number } from "echarts";
 import { Injectable } from '@angular/core';
 
 export class User{
-    constructor (public username:string, public email:string, public password:string, public address:string, public smartMeterNo:number, public uId:string){}
+    constructor (public username:string, public email:string, public password:string, public address:string, public smartMeterNo:number, public uId:string, public type:string){}
+}
+
+export class Validator{
+    constructor (public username:string, public email:string, public password:string, public address:string, public uId:string, public type:string, public fullName:string, public ICNum:number){}
 }
 
 // class for jwt
@@ -69,4 +73,38 @@ export class Graph{
 // request sent to backend for requesting data for plotting energy production prediction graph for sellers that make a bid
 export class ProdForecastRequest {
     constructor(public userId: string, public date: string){}
+}
+
+export interface Bid {
+    sellerId:string,
+    optEnFromSeller:number,
+    optSellerReceivable:number,
+    sellerFiatBalance: number,
+    sellerEnergyBalance:number
+}
+
+export interface Transaction {
+    buyerId:string,
+    buyerPayable:number,
+    buyerEnReceivableFromAuction:number,
+    buyerEnReceivableFromTNB:number,
+    auctionBids:Bid[],
+    TNBReceivable:number,
+
+}
+
+export interface Block {
+    index:number,
+	data:Transaction[],
+	hash:string,       
+	prevHash: string, 
+	nonce:string,
+}
+
+export interface PotentialClerks {
+    username:string,
+    userId:string,
+    email:string,
+    smartMeterNo:number
+    button1: string,
 }

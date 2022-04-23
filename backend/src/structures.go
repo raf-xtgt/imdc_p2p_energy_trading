@@ -20,9 +20,26 @@ type User struct {
 	UserName     string `bson:"username"`
 	Email        string `bson:"email"`
 	Password     string `bson:"password"`
+	PublicKey    []byte `bson:publicKey`
+	PrivateKey   []byte `bson:privateKey`
 	Address      string `bson:"address"`
 	UId          string `bson:id`
 	SmartMeterNo int    `bson:"smartMeterNo"`
+	Type         string `bson:type` // normal, validator, clerk
+}
+
+// represents validator and one administrator
+type Validator struct {
+	UserName   string `bson:"username"`
+	Email      string `bson:"email"`
+	Password   string `bson:"password"`
+	PublicKey  []byte `bson:publicKey`
+	PrivateKey []byte `bson:privateKey`
+	Address    string `bson:"address"`
+	UId        string `bson:id`
+	Type       string `bson:type` // normal, validator, clerk
+	FullName   string `bson:"fullName"`
+	ICNum      int    `bson:identificationCardNo`
 }
 
 // structure to represent a user account balance
@@ -42,13 +59,26 @@ type MongoDatabase struct {
 	BuyOrderForecast   *mongo.Collection
 	ProdForecast       *mongo.Collection
 	UserAccBalance     *mongo.Collection
+	Blockchain         *mongo.Collection
+	Transactions       *mongo.Collection
+	LatestIndex        *mongo.Collection //collection to hold the latest index
+	Trigger            *mongo.Collection
+	BlockInfo          *mongo.Collection // collection to hold the block Id and the number of validators who checked it
+}
+
+type BlockInfo struct {
+	BlockId    string   "json:blockId"
+	Validators []string "json:validators" // the list of validators who have checked the block
+	Hash       string   "json:hash"       //hash of this block
+	Clerks     []string "json:clerks"     // list of clerks who have checked the block. Clerks will check after every five new blocks are added.
 }
 
 // Structure that will be sent as sign up response to frontend
 type SignUpResponse struct {
-	Email string
-	Res   bool
-	User  User
+	Email     string
+	Res       bool
+	User      User
+	Validator Validator
 }
 
 // JWT structure upon login
@@ -128,4 +158,48 @@ type BuyForecastResponse struct {
 type ProdForecastRequest struct {
 	UserId string "json: userId"
 	Date   string "json: date"
+}
+
+// structure of a single block
+type Block struct {
+	Index    int           "json: index"
+	Data     []Transaction "json: data"
+	Hash     string        "json: hash"
+	PrevHash string        "json: prevHash"
+	Nonce    string        "json: nonce"
+}
+
+// structure of a single transaction
+type Transaction struct {
+	BuyerId                      string  "json: buyerId"
+	BuyerPayable                 float64 "json: buyerPayable"
+	BuyerEnReceivableFromAuction float64 "json: buyerEnReceivableFromAuction"
+	BuyerEnReceivableFromTNB     float64 "json: buyerEnReceivableFromTNB"
+	AuctionBids                  []Bid   "json: auctionBids"
+	TNBReceivable                float64 "json: TNBReceivable"
+	Verified                     bool    "json:verified"
+	TId                          string  "json: tId"
+	Checks                       int     "json: checks"
+}
+
+// structure of a bid made by seller in the auction
+type Bid struct {
+	SellerId            string  "json: sellerId"
+	OptEnFromSeller     float64 "json: optEnFromSeller"
+	OptSellerReceivable float64 "json: optSellerReceivable"
+	SellerFiatBalance   float64 "json: sellerFiatBalance"
+	SellerEnergyBalance float64 "json: sellerEnergyBalance"
+}
+
+type Trigger struct {
+	NewBlockExists bool "json: newBlockExists"
+}
+
+type BlockchainResponse struct {
+	Blockchain []Block
+}
+
+// response sent to frontedn
+type IntegrityCheckResponse struct {
+	IntegrityBreached bool "json: integrityBreached"
 }

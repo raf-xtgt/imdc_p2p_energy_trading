@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 // The HttpClient service makes use of observables for all transactions. You must import the RxJS observable and operator symbols that appear in the example snippets.
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
-import { User, Token, HouseholdEnergyData, BuyEnergyRequest, ProdForecastRequest, SellEnergyRequest } from './classes';
+import { User, Token, HouseholdEnergyData, BuyEnergyRequest, ProdForecastRequest, SellEnergyRequest, Validator } from './classes';
 
 /** This file will allow the frontend to communicate with the backend
 * using Angular's HTTP Client
@@ -29,6 +29,19 @@ export class ConfigService {
   private _latestSellForecastURL: string = this._configUrl+ 'GetLatestSellForecast'
   private _closeBuyRequestURL:string = this._configUrl+'CloseBuyRequest'
   private _runDoubleAuction: string = this._configUrl + 'RunDoubleAuction'
+  private _addValidator:string = this._configUrl + 'AddValidator'
+
+  //blockchain urls
+  private _createGenesis: string = this._configUrl+ 'CreateGenesisBlock'
+  private _updateBlockchain: string = this._configUrl +'UpdateBlockchain'
+  private _getBlockchain: string = this._configUrl + 'GetBlockchain'
+
+  // url to get all user data
+  private _getAllUsers: string = this._configUrl + 'GetAllUsers'
+
+  // url to make a clerk
+  private _makeClerk:string = this._configUrl + 'MakeClerk'
+  private _clerkINTCheck :string = this._configUrl + 'ClerkIntegrityCheck'
 
   TOKEN_KEY = 'token';
 
@@ -39,9 +52,12 @@ export class ConfigService {
   // add a user to the database
   addNewUser(data: User): Observable<any> {
     const body = JSON.stringify(data)
-    //console.log(body)
-    //console.log(this._registerUrl)
     return this.http.post<User>(this._registerUrl, body)
+  }
+
+  addNewValidator(data:Validator) :Observable<any>{
+    const body = JSON.stringify(data)
+    return this.http.post<Validator>(this._addValidator, body)  
   }
 
   // authenticate a user when they want to login  
@@ -116,6 +132,39 @@ export class ConfigService {
   runDoubleAuction(){
     const body = JSON.stringify("RUN DOUBLE AUCTION")
     return this.http.post(this._runDoubleAuction, body)
+  }
+
+  createGenesisBlock(){
+    const body = JSON.stringify("Genesis")
+    return this.http.post(this._createGenesis, body)
+  }
+
+  updateBlockchain(){
+    const body = JSON.stringify("Update Blockchain")
+    return this.http.post(this._updateBlockchain, body)
+
+  }
+
+  getCurrentBlockchain(){
+    const body = JSON.stringify("Get Blockchain")
+    return this.http.post(this._getBlockchain, body)
+  }
+
+  getAllUsers(){
+    const body = JSON.stringify("Get All Users")
+    return this.http.post(this._getAllUsers, body)
+  }
+
+  // convert a normal user to a clerk
+  convertToClerk(userId: string){
+    const body = JSON.stringify(userId)
+    return this.http.post(this._makeClerk, body)
+  }
+
+  // to invoke the clerk integrity check
+  initClerkINTChk(){
+    const body = JSON.stringify("Clerk integrity check")
+    return this.http.post(this._clerkINTCheck, body)
   }
 
 }

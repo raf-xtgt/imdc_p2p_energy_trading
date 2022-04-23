@@ -13,6 +13,7 @@ import (
 	"github.com/joho/godotenv"
 
 	// To connect to mongodb
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -54,8 +55,8 @@ func main() {
 	mongoparams.cancel = cancel
 	mongoparams.client = client
 	connectToDb()
-	log.Fatal(listen())
 
+	log.Fatal(listen())
 }
 
 func connectToDb() MongoDatabase {
@@ -70,6 +71,11 @@ func connectToDb() MongoDatabase {
 	db.BuyOrderForecast = db.Cluster.Collection("buyOrderForecast")
 	db.ProdForecast = db.Cluster.Collection("energy_forecast")
 	db.UserAccBalance = db.Cluster.Collection("accountBalance")
+	db.Blockchain = db.Cluster.Collection("blockchain")
+	db.Transactions = db.Cluster.Collection("transactions")
+	db.LatestIndex = db.Cluster.Collection("latestIndex")
+	db.Trigger = db.Cluster.Collection("trigger") // document holds boolean value when a new block is made
+	db.BlockInfo = db.Cluster.Collection("blockInfo")
 	return db
 }
 
@@ -100,6 +106,13 @@ func listen() error {
 	mux.HandleFunc("/GetLatestSellForecast", getLatestSellForecast)
 	mux.HandleFunc("/CloseBuyRequest", closeBuyRequest)
 	mux.HandleFunc("/RunDoubleAuction", runDoubleAuction)
+	mux.HandleFunc("/AddValidator", addValidator)
+	mux.HandleFunc("/CreateGenesisBlock", createGenesisBlock)
+	mux.HandleFunc("/UpdateBlockchain", updateChain)
+	mux.HandleFunc("/GetBlockchain", sendBlockchainToFrontend)
+	mux.HandleFunc("/GetAllUsers", getAllUsers)
+	mux.HandleFunc("/MakeClerk", convertToClerk)
+	mux.HandleFunc("/ClerkIntegrityCheck", integrityCheck)
 
 	handler := cors.Default().Handler(mux)
 	log.Fatal(http.ListenAndServe(":8080", handler))

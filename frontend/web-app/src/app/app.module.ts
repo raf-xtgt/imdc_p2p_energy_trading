@@ -25,6 +25,13 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 // for the loading screen
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatDividerModule} from '@angular/material/divider';
+// for dropdown menu
+import {MatMenuModule} from '@angular/material/menu';
+// for table
+import {MatTableModule} from '@angular/material/table';
+// for pagination
+import { MatPaginatorModule } from '@angular/material/paginator';
+
 
 
 // external components
@@ -41,6 +48,9 @@ import { LineGraphComponent } from './line-graph/line-graph.component';
 import { HouseholdPriceGraphComponent } from './household-price-graph/household-price-graph.component';
 import { BidPageComponent } from './bid-page/bid-page.component';
 import { TimerComponent } from './timer/timer.component';
+import { ManageValidatorsComponent } from './manage-validators/manage-validators.component';
+import { BlockchainPageComponent } from './blockchain-page/blockchain-page.component';
+import { ManageClerksComponent } from './manage-clerks/manage-clerks.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +68,9 @@ import { TimerComponent } from './timer/timer.component';
     HouseholdPriceGraphComponent,
     BidPageComponent,
     TimerComponent,
+    ManageValidatorsComponent,
+    BlockchainPageComponent,
+    ManageClerksComponent,
   ],
   imports: [
     BrowserModule,
@@ -80,7 +93,10 @@ import { TimerComponent } from './timer/timer.component';
     ChartsModule,
     SweetAlert2Module.forRoot(),
     MatProgressSpinnerModule,
-    MatDividerModule
+    MatDividerModule,
+    MatMenuModule,
+    MatTableModule,
+    MatPaginatorModule
 
   ],
   exports:[

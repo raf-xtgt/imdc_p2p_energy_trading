@@ -2,14 +2,16 @@ import numpy as np # linear algebra
 from datetime import datetime
 import random
 
-def initDoubleAuction(client):
-    data = getBidData(client)
+def initDoubleAuction(client, biddings):
+    data = [biddings]
     auctionData = prepareAuctionData(data, client)
     #print(auctionData)
-    for i in auctionData:
-        print(i)
-    print('\n')
-    auction = doubleAuction(auctionData)
+    # for i in auctionData:
+    #     print(i)
+    # print('\n')
+    auctionOutput = doubleAuction(auctionData)
+    return auctionOutput
+
 
 def prepareAuctionData(data, client):
     """
@@ -93,22 +95,10 @@ def doubleAuction(auctionData):
     for data in auctionData:
         # optimal energy allocation for buyer and seller
         opt_en = optimalAllocation(data)
-        # buyer_payable = opt_en['buyerOptEn'] * pricing 
-        # seller_receivable = opt_en['sellerOptEn'] *pricing
-        # tnbReceivable = buyer_payable - seller_receivable
-
-        # final_output = {
-        #     "optBuyerEnergy": opt_en['buyerOptEn'],
-        #     "buyerPayable": buyer_payable,
-        #     "optSellerEnergy": opt_en['sellerOptEn'],
-        #     'sellerReceivable': seller_receivable,
-        #     'TNBReceivable': tnbReceivable
-        # }
-
         print("Optimal allocation", opt_en)
         print("\n")
     
-    return
+    return opt_en
 
 
 
@@ -201,6 +191,10 @@ def optimalAllocation(data):
         'buyerEnReceivableFromTNB': buyerOriginalDemand - buyerEnReceivable,
         'auctionBids': auction_bids, 
         'TNBReceivable': TNBReceivable,
+        'verified': False, # whether the buyer has the required fiat amount for the transaction
+        'chained':False, # whether the transaction is part of a block or not
+        'tId': "", # id of the transaction in the database
+        'checks': 0 # number of validators who have checked the transaction
         #'TNBReceivableFromBuyerDirect': (buyerOriginalDemand - buyerEnReceivable)*0.20,
     }
     return output

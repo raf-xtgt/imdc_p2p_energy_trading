@@ -13,6 +13,9 @@ export class ToolbarComponent implements OnInit {
 
   constructor(private _jwtServ:JWTService, private router: Router) { }
   isVerified :boolean = false;
+  isAdmin :boolean = false;
+  isValidator :boolean = false;
+  isClerk :boolean = false;
   username :string = ""
 
   ngOnInit(): void {
@@ -20,10 +23,17 @@ export class ToolbarComponent implements OnInit {
       this._jwtServ.verifyToken().subscribe(data => {
         //console.log("Verified Token", data)
         let response = JSON.parse(JSON.stringify(data))
-        //console.log(response.User)
+        console.log(response.User)
+
         if (data !=null){
           this.username = response.User.UserName
           this.isLoggedIn()
+          if (response.User.Type == "admin"){
+            this.isAdmin = true
+          }
+          if (response.User.Type == "validator"){
+            this.isValidator = true
+          }
         }
       }) 
   }

@@ -1,0 +1,106 @@
+<div  style="width:100%; height:100%; background-color: #EBEDEC; ">
+
+
+    <div style="height:100%;width:100%; background-color:#EBEDEC;">
+        <mat-card style="width: 80%; margin: auto;">
+            <mat-card-content>
+                <div style="width:100%">
+                    <h1>Add Validator</h1>
+                    <form (ngSubmit)="addValidator()" #validatorForm="ngForm">
+                        
+                        <div class="form-group">
+                            <label for="fullName">Fullname</label>
+                            <input type="text" class="form-control" id="username"
+                                   required
+                                   [(ngModel)]="model.fullName" name="fullName"
+                                   #fullName="ngModel"
+                                   autocomplete="off">
+                            <div [hidden]="fullName.valid || fullName.pristine"
+                                 class="alert alert-danger">
+                              Fullname is required
+                            </div>
+                          </div>
+                        
+                        <div class="form-group">
+                          <label for="username">Username</label>
+                          <input type="text" class="form-control" id="username"
+                                 required
+                                 [(ngModel)]="model.username" name="username"
+                                 #username="ngModel"
+                                 autocomplete="off">
+                          <div [hidden]="username.valid || username.pristine"
+                               class="alert alert-danger">
+                            Username is required
+                          </div>
+                        </div>
+                
+                
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email"
+                                   required
+                                   [(ngModel)]="model.email" name="email"
+                                   #email="ngModel" autocomplete="off">
+                            <div [hidden]="email.valid || email.pristine"
+                                 class="alert alert-danger">
+                              Email is required
+                            </div>
+                          </div>
+              
+                          <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password"
+                                   required
+                                   [(ngModel)]="model.password" name="password"
+                                   #password="ngModel" autocomplete="off">
+                            <div [hidden]="password.valid || password.pristine"
+                                 class="alert alert-danger">
+                             Password is required
+                            </div>
+                          </div>
+                
+                          <div class="form-group">
+                            <label for="address">Address</label>
+                            <input type="text" class="form-control" id="address"
+                                   required
+                                   [(ngModel)]="model.address" name="address"
+                                   #address="ngModel"
+                                   autocomplete="off">
+                            <div [hidden]="address.valid || address.pristine"
+                                 class="alert alert-danger">
+                              Address is required
+                            </div>
+                          </div>
+                
+                          <div class="form-group">
+                            <label for="ICNum">IC Number</label>
+                            <input type="number" class="form-control" id="ICNum"
+                                   required
+                                   [(ngModel)]="model.ICNum" name="ICNum"
+                                   #ICNum="ngModel"
+                                   autocomplete="off">
+                            <div [hidden]="ICNum.valid || ICNum.pristine"
+                                 class="alert alert-danger">
+                              IC Number is required
+                            </div>
+                          </div>
+                
+                        <button type="submit" class="btn btn-success" [disabled]="!validatorForm.form.valid" >Add</button>
+                       
+                  
+                  
+                      </form>
+
+                </div>
+                
+
+            </mat-card-content>
+            
+            
+        </mat-card>
+    
+    </div>
+
+
+
+</div>

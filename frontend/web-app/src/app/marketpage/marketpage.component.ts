@@ -73,13 +73,14 @@ export class MarketpageComponent implements OnInit {
               this.noClosedBuyRequests = false
             }
           }
+          // when request is not closed
           else{
             let timer = new TimerComponent()
             let remainingTime = timer.getTimeDiff(reqArr[i])
             let timeArr = remainingTime.split(' Min')
             let timeMin = parseInt(timeArr[0])
             console.log("Minutes elapsed", timeMin)
-            if (timeMin>=30){
+            if (timeMin>=2){
               //close the request
               this._config.closeBuyRequest(reqArr[i].ReqId).subscribe(data => {
                 console.log("buy request closed", data)

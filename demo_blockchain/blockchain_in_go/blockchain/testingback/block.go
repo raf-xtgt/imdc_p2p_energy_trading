@@ -173,6 +173,17 @@ func isHashValid(hash string, difficulty int) bool {
 }
 
 // Create a genesis block
+/**
+type Block struct {
+	Index      int
+	Data       []TransactionData
+	Hash       string
+	PrevHash   string
+	Difficulty int
+	Nonce      string
+	LeaderID   int
+}
+**/
 func createGenesisBlock() Block {
 	genesisTransactionData := TransactionData{}
 	genesisTransactionData = TransactionData{"0", 0, 0, 0, 0}

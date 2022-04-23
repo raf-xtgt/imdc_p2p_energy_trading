@@ -4,13 +4,17 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 
+	"crypto/rand"
+	"crypto/rsa"
 	"crypto/sha256" //crypto library to hash the data
+	"crypto/x509"
 
 	// to create the secret(private) key for jwt token
 
@@ -19,6 +23,7 @@ import (
 )
 
 var jwtSecret string = ""
+var loggedInUser string = ""
 
 // function to store a new user in the database when a signs up
 func addNewUser(w http.ResponseWriter, r *http.Request) {
@@ -43,10 +48,39 @@ func addNewUser(w http.ResponseWriter, r *http.Request) {
 
 	// validate user
 	if checkUsernameAndPass(newUser.UserName, newUser.Email) {
+
 		// hash user password
 		userPass := newUser.Password
 		newUser.Password = hashPassword(userPass)
 
+		// generate private and public key for user
+		bitSize := 4096
+
+		// Generate RSA private key.
+		privateKey, err := rsa.GenerateKey(rand.Reader, bitSize)
+		if err != nil {
+			fmt.Println("Yo: Error generating keys", err.Error)
+			panic(err)
+		}
+
+		// add the public key for the user
+		pub := privateKey.Public()
+		pubPEM := pem.EncodeToMemory(
+			&pem.Block{
+				Type:  "RSA PUBLIC KEY",
+				Bytes: x509.MarshalPKCS1PublicKey(pub.(*rsa.PublicKey)),
+			},
+		)
+		newUser.PublicKey = pubPEM
+
+		// Encode private key to PKCS#1 ASN.1 PEM.
+		privatePEM := pem.EncodeToMemory(
+			&pem.Block{
+				Type:  "RSA PRIVATE KEY",
+				Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
+			},
+		)
+		newUser.PrivateKey = privatePEM
 		//write user info to the users collection
 		writeUser, err := db.Users.InsertOne(mongoparams.ctx, newUser)
 		if err != nil {
@@ -165,7 +199,7 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	// there should be only 1 profile with the given username and email
 	if len(Profiles) == 1 {
 		fmt.Println("Username and password match an account in the db")
-		fmt.Println("Matched profile info", Profiles)
+		//fmt.Println("Matched profile info", Profiles)
 		jwtSecret = userPass
 
 		// creating the JWT
@@ -235,7 +269,7 @@ func isAuthorized(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := claims.Claims.(*JWTData)
-	fmt.Println("decoded data", data.CustomClaims)
+	//fmt.Println("decoded data", data.CustomClaims)
 
 	//userName := data.CustomClaims["username"]
 	//userEmail := data.CustomClaims["email"]
@@ -269,6 +303,7 @@ func getAccountData(userId string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	loggedInUser = Profile[0].UserName
 
 	return json, nil
 }

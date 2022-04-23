@@ -183,9 +183,7 @@ def connectToDb():
     else:
         print("Running matchmaking")
         initMatchmaking(client)
-        print("Running double auction")
-        initDoubleAuction(client)
-        return
+        return 
 
     # Get sample data
     forecast = energyForecast()
