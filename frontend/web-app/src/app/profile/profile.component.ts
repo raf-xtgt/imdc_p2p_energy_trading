@@ -17,9 +17,11 @@ export class ProfileComponent implements OnInit {
   public email :string = "";
   public address :string = "";
   public smartMetreNo :number = 0;
+  public _userId :string = "";
 
-  ngOnInit(): void {
-    this.verifyUserJWT()
+  async ngOnInit(): Promise<void> {
+    await this.verifyUserJWT()
+    
   }
 
   verifyUserJWT(){
@@ -32,6 +34,15 @@ export class ProfileComponent implements OnInit {
       this.email = response.User.Email
       this.address = response.User.Address
       this.smartMetreNo = response.User.SmartMeterNo
+      this._userId = response.User.UId
+      console.log(this._userId)
+      this.getUserIncomeData()
+    })
+  }
+
+  getUserIncomeData(){
+    this._config.getUserIncome(this._userId).subscribe(data => {
+      console.log("Response from backend", data)
     })
   }
 

@@ -43,6 +43,9 @@ export class ConfigService {
   private _makeClerk:string = this._configUrl + 'MakeClerk'
   private _clerkINTCheck :string = this._configUrl + 'ClerkIntegrityCheck'
 
+  // to get profits
+  private _getUserIncome :string = this._configUrl + 'GetUserIncome'
+
   TOKEN_KEY = 'token';
 
 
@@ -165,6 +168,14 @@ export class ConfigService {
   initClerkINTChk(){
     const body = JSON.stringify("Clerk integrity check")
     return this.http.post(this._clerkINTCheck, body)
+  }
+
+  // to get user profits
+  getUserIncome(userId:string){
+    const body = JSON.stringify(userId)
+    console.log(body)
+    return this.http.post(this._getUserIncome, body)
+
   }
 
 }
