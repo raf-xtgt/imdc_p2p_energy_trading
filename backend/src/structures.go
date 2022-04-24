@@ -203,3 +203,11 @@ type BlockchainResponse struct {
 type IntegrityCheckResponse struct {
 	IntegrityBreached bool "json: integrityBreached"
 }
+
+// response to send user income data
+type Income struct {
+	Receivable  []float64 "json: receivable" // amount of money the seller is going to receive
+	EnergySold  []float64 "json: energySold" // amount of energy sold by this seller for the receivable
+	Payable     []float64 "json:payable"     // amount of money this user paid for the energy
+	BlockHashes []string  "json: blockHash"  // id of transaction on which the bid was made
+}

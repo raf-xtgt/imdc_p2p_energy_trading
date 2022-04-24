@@ -62,7 +62,7 @@ func updateChain(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 
 	// get the updated local copy of blockchain and user accountsfirst
-	createLocalCopies()
+	//createLocalCopies()
 
 	// if there is a new block then verify that first
 	trigger := checkForNewBlocks()

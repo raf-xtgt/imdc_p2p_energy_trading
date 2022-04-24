@@ -169,8 +169,8 @@ def optimalAllocation(data):
 
         selected_seller_info = {
             'sellerId': seller_id,
-            'optimalEnFromSeller': opt_seller_en,
-            'optimalSellerReceivable':opt_seller_en*pricing,
+            'optEnFromSeller': opt_seller_en,
+            'optSellerReceivable':opt_seller_en*pricing,
             'sellerFiatBalance': seller_fiat_balance,
             'sellerEnergyBalance': seller_energy_balance
         }
@@ -182,7 +182,7 @@ def optimalAllocation(data):
 
     total_seller_rec = 0    # total seller receivable
     for obj in auction_bids:
-        total_seller_rec += obj['optimalSellerReceivable']
+        total_seller_rec += obj['optSellerReceivable']
     TNBReceivable = buyerOriginalPayable - total_seller_rec
     output = {
         'buyerId': buyer_id,
