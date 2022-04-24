@@ -24,9 +24,11 @@ export class ProfileComponent implements OnInit {
   public _userId :string = "";
 
 
-  // buy forecast graph
+  // income graph
   public hash :string[] = []
   public fiatReceived :number[] = []
+  public totalIncome :number = 0
+  public totalEnSold :number = 0
   public energySold :number[] = []
 
   public graphData :GraphData[] = []
@@ -106,7 +108,21 @@ export class ProfileComponent implements OnInit {
       this.xAxis = plot.x[0] // use the timestamps that includes the prediction
       console.log(plot)
 
+      // calculate totals
+      this.totalIncome = this.summation(this.fiatReceived)
+      this.totalEnSold = this.summation(this.energySold)
+
+
     })
+  }
+
+  summation(arr: number[]): number {
+    let summation :number = 0
+    for (let i=0 ; i<arr.length; i++){
+      summation += arr[i]
+    }
+    return summation
+
   }
 
 }
