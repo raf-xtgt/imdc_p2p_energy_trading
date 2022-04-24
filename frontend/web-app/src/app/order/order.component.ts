@@ -165,7 +165,7 @@ export class OrderComponent implements OnInit {
         let plot = makeGraph.drawGraph()        
         this.chartData = plot.y
         this.xAxis = plot.x[1] // use the timestamps that includes the prediction
-
+        console.log(plot)
         // get the card data
         this.currentConsumption = this.actual_y[this.actual_y.length-1] // last point is the current one
         this.prediction =  (response[0].Current_Pred).toFixed(2) 

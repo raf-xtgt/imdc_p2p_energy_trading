@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 // import the custom http service module
 import { ConfigService } from '../config.service';
+import {GraphData} from '../classes';
+import { ChartDataSets } from 'chart.js';
+import { Label } from 'ng2-charts';
+import { GraphService } from '../graph.service';
 
 @Component({
   selector: 'app-profile',
@@ -18,6 +22,36 @@ export class ProfileComponent implements OnInit {
   public address :string = "";
   public smartMetreNo :number = 0;
   public _userId :string = "";
+
+
+  // buy forecast graph
+  public hash :string[] = []
+  public fiatReceived :number[] = []
+  public energySold :number[] = []
+
+  public graphData :GraphData[] = []
+  // y and x axis
+  public chartData: ChartDataSets[] = [{data:[], label:'Income chart'}];
+  public xAxis: Label[] = []; 
+  
+  public barChartOptions = {
+    responsive: true,
+  };
+  public chartColors: any[] = [
+    {
+        borderColor:"#2793FF",
+        backgroundColor: "#B9DCFF",
+        fill:false
+    },
+
+    // predicted
+    {
+      borderColor: "#FF6347",
+      backgroundColor: "#B22222",
+      fill:false
+  },
+  
+  ];
 
   async ngOnInit(): Promise<void> {
     await this.verifyUserJWT()
@@ -42,7 +76,36 @@ export class ProfileComponent implements OnInit {
 
   getUserIncomeData(){
     this._config.getUserIncome(this._userId).subscribe(data => {
-      console.log("Response from backend", data)
+      
+      let response = JSON.parse(JSON.stringify(data))
+      console.log("Response from backend", response)
+      //let incomeInfo = response.Receivable
+   
+      //this.hash = response.BlockHashes
+      for (let x=0; x<response.BlockHashes.length; x++){
+        let str = "Block"+(x+1)
+        this.hash.push(str)
+      }
+      this.fiatReceived = response.Receivable
+      this.energySold = response.EnergySold
+      console.log(this.energySold)
+
+      // income graph data
+      let incomeGraphData: GraphData = new GraphData(this.fiatReceived, this.hash, "Income")
+      this.graphData.push(incomeGraphData)
+      
+      // energy graph data
+      let energyGraphData: GraphData = new GraphData(this.energySold, this.hash, "Energy Amount Traded")
+      this.graphData.push(energyGraphData)
+
+      // draw the graph
+      let makeGraph = new GraphService()
+      makeGraph.data = this.graphData
+      let plot = makeGraph.drawGraph()        
+      this.chartData = plot.y
+      this.xAxis = plot.x[0] // use the timestamps that includes the prediction
+      console.log(plot)
+
     })
   }
 

@@ -12,7 +12,19 @@
     
     </div>
             
-    
+    <!-- Show chart when loading is done -->
+    <div > 
+        <h1>Comparison of Energy Consumption(kWh)</h1>
+        <canvas baseChart width="500" height="120"
+            [datasets]="chartData"
+            [labels]="xAxis"
+            [options]="barChartOptions"
+            [legend]="true"
+            [chartType]="'bar'"
+            [colors]="chartColors"
+            >
+        </canvas>
+    </div>
 
 
     
