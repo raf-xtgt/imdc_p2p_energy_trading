@@ -180,6 +180,7 @@ type Transaction struct {
 	Verified                     bool    "json:verified"
 	TId                          string  "json: tId"
 	Checks                       int     "json: checks"
+	Date                         string  "json: date"
 }
 
 // structure of a bid made by seller in the auction
@@ -210,4 +211,5 @@ type Income struct {
 	EnergySold  []float64 "json: energySold" // amount of energy sold by this seller for the receivable
 	Payable     []float64 "json:payable"     // amount of money this user paid for the energy
 	BlockHashes []string  "json: blockHash"  // id of transaction on which the bid was made
+	Dates       []string  "json: dates"
 }

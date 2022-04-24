@@ -33,6 +33,7 @@ func getUserIncomeData(w http.ResponseWriter, r *http.Request) {
 	//fmt.Println(transaction)
 	var receivables []float64
 	var soldEnergy []float64
+	var dates []string
 	var tIds []string
 	for i := 1; i < len(blockchain); i++ {
 		// transactions in the block
@@ -48,6 +49,7 @@ func getUserIncomeData(w http.ResponseWriter, r *http.Request) {
 
 			// get this transaction
 			transaction := getTransaction(trnId)
+			trnDate := transaction.Date
 
 			trnBids := transaction.AuctionBids
 			//fmt.Println(trnBids)
@@ -62,6 +64,7 @@ func getUserIncomeData(w http.ResponseWriter, r *http.Request) {
 					fmt.Println("Bids that seller is in", bidInfo)
 					totalReceivable += bidInfo.OptSellerReceivable
 					totalEnSales += bidInfo.OptEnFromSeller
+					dates = append(dates, trnDate)
 					//receivables = append(receivables, bidInfo.OptSellerReceivable)
 					//soldEnergy = append(soldEnergy, bidInfo.OptEnFromSeller)
 					// tIds = append(tIds, hash)
@@ -82,6 +85,7 @@ func getUserIncomeData(w http.ResponseWriter, r *http.Request) {
 	response.Receivable = receivables
 	response.EnergySold = soldEnergy
 	response.BlockHashes = tIds
+	response.Dates = dates
 	//response = append(response, income)
 
 	respondWithJSON(w, r, http.StatusCreated, response)

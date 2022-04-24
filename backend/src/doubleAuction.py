@@ -184,6 +184,7 @@ def optimalAllocation(data):
     for obj in auction_bids:
         total_seller_rec += obj['optSellerReceivable']
     TNBReceivable = buyerOriginalPayable - total_seller_rec
+    date = getDateString()
     output = {
         'buyerId': buyer_id,
         'buyerPayable': buyerOriginalPayable,
@@ -194,8 +195,9 @@ def optimalAllocation(data):
         'verified': False, # whether the buyer has the required fiat amount for the transaction
         'chained':False, # whether the transaction is part of a block or not
         'tId': "", # id of the transaction in the database
-        'checks': 0 # number of validators who have checked the transaction
+        'checks': 0, # number of validators who have checked the transaction
         #'TNBReceivableFromBuyerDirect': (buyerOriginalDemand - buyerEnReceivable)*0.20,
+        'date': date,
     }
     return output
 
@@ -207,4 +209,10 @@ def getBidData(client):
     # get the data without the '_id:Object(..)' part
     selectedSellers = list(collection.find({},{"_id":0}))
     return selectedSellers
+
+
+
+def getDateString():
+    now = datetime.now()
+    return str(now.strftime('%d-%m-%Y')) 
 

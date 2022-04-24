@@ -26,6 +26,7 @@ export class ProfileComponent implements OnInit {
 
   // income graph
   public hash :string[] = []
+  public dates :string[] = []
   public fiatReceived :number[] = []
   public totalIncome :number = 0
   public totalEnSold :number = 0
@@ -82,22 +83,48 @@ export class ProfileComponent implements OnInit {
       let response = JSON.parse(JSON.stringify(data))
       console.log("Response from backend", response)
       //let incomeInfo = response.Receivable
-   
-      //this.hash = response.BlockHashes
-      for (let x=0; x<response.BlockHashes.length; x++){
-        let str = "Block"+(x+1)
-        this.hash.push(str)
+
+
+      let allDates: string[] = response.Dates
+      let fiatRec: string[] = response.Dates
+      let seen :string[] = []
+      
+      let newFiatReceivables :number[]= []
+      let newEnTrade :number[] = []
+      for (let i=0; i<response.Dates.length; i++){
+        let current = response.Dates[i]
+        let newFiatVal = response.Receivable[i]
+        let newEnVal = response.EnergySold[i]
+        if ( (this.seenDate(current, seen)) == false ){
+          seen.push(current)
+          
+          for (let j = i+1; j<response.Dates.length; j++){
+            let next = response.Dates[j]
+            if (current == next){
+              newFiatVal +=  response.Receivable[j]
+              newEnVal += response.EnergySold[j]
+            }
+
+            if (j==response.Dates.length-1){
+              newFiatReceivables.push(newFiatVal)
+              newEnTrade.push(newEnVal)
+            } 
+
+          }
+          
+        }
       }
-      this.fiatReceived = response.Receivable
-      this.energySold = response.EnergySold
-      console.log(this.energySold)
+      console.log(newFiatReceivables)
+      console.log(newEnTrade)
+      console.log(seen)
+   
 
       // income graph data
-      let incomeGraphData: GraphData = new GraphData(this.fiatReceived, this.hash, "Income")
+      let incomeGraphData: GraphData = new GraphData(newFiatReceivables, seen, "Income")
       this.graphData.push(incomeGraphData)
       
       // energy graph data
-      let energyGraphData: GraphData = new GraphData(this.energySold, this.hash, "Energy Amount Traded")
+      let energyGraphData: GraphData = new GraphData(newEnTrade, seen, "Energy Amount Traded")
       this.graphData.push(energyGraphData)
 
       // draw the graph
@@ -106,7 +133,7 @@ export class ProfileComponent implements OnInit {
       let plot = makeGraph.drawGraph()        
       this.chartData = plot.y
       this.xAxis = plot.x[0] // use the timestamps that includes the prediction
-      console.log(plot)
+      //console.log(plot)
 
       // calculate totals
       this.totalIncome = this.summation(this.fiatReceived)
@@ -123,6 +150,17 @@ export class ProfileComponent implements OnInit {
     }
     return summation
 
+  }
+
+  // to check whether a date exists in a list or not
+  seenDate(date:string, allDates:string[]): boolean{
+    for (let k=0; k<allDates.length; k++){
+      if (allDates[k] == date){
+        return true
+        break
+        }
+    }
+    return false
   }
 
 }

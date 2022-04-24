@@ -723,6 +723,8 @@ Biography text here.
 - How many transactions can be in a block?
 - How long to generate block?
 - Sys Implementation before Results or make part of Results
+- Include time in bar chart
+- Transaction per second --> how long it takes to mine a block??
 
 Presentaiton
 Promises vs What we achieved
