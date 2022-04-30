@@ -143,8 +143,8 @@ export class ProfileComponent implements OnInit {
       //console.log(plot)
 
       // calculate totals
-      this.totalIncome = this.summation(this.fiatReceived)
-      this.totalEnSold = this.summation(this.energySold)
+      this.totalIncome = this.summation(newFiatReceivables)
+      this.totalEnSold = this.summation(newEnTrade)
 
 
     })
@@ -176,8 +176,8 @@ export class ProfileComponent implements OnInit {
       //console.log(plot)
 
       // calculate totals
-      this.totalIncome = this.summation(this.fiatReceived)
-      this.totalEnSold = this.summation(this.energySold)
+      this.totalIncome = this.summation(response.Receivable)
+      this.totalEnSold = this.summation(response.EnergySold)
 
 
     })
