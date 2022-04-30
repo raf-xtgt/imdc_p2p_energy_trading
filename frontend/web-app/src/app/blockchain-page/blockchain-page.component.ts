@@ -7,6 +7,8 @@ import { MatPaginator } from '@angular/material/paginator';
 // for the loading
 import {ThemePalette} from '@angular/material/core';
 import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
+import {MatDialog} from '@angular/material/dialog';
+import Swal from 'sweetalert2'
 
 
 @Component({
@@ -18,7 +20,8 @@ export class BlockchainPageComponent implements OnInit {
 
   displayedColumns: string[] = ['index', 'hash', 'nonce', 'prevHash']
   dataSource = new MatTableDataSource<Block>(blockData)
-  constructor(private _config:ConfigService, private _jwtServ:JWTService) { }
+  
+  constructor(private _config:ConfigService, private _jwtServ:JWTService, public dialog: MatDialog) { }
   isValidator:boolean = false;
   isClerk :boolean = false;
   // loading before updated blockchain is available
@@ -27,6 +30,8 @@ export class BlockchainPageComponent implements OnInit {
   mode: ProgressSpinnerMode = 'indeterminate';
   value = 100;
 
+  
+  public blockInfo :any = [] // to hold information for all the blocks
 
   // add the paginator
   @ViewChild(MatPaginator) paginator: MatPaginator | any
@@ -70,13 +75,13 @@ export class BlockchainPageComponent implements OnInit {
       console.log("current blockchain", response.Blockchain)
       for (let i=0; i<response.Blockchain.length; i++){
         let block = response.Blockchain[i]
+        this.blockInfo.push(block)
         let data :Block = {
           index: block.Index,
           data:block.Data,
           hash:block.Hash,
           nonce:block.Nonce,
-          prevHash:block.PrevHash
-
+          prevHash:block.PrevHash,
         }
         blockData.push(data)
       }
@@ -118,6 +123,56 @@ export class BlockchainPageComponent implements OnInit {
     })
   }
 
+  // to show the transaction data when the info button is clicked
+  showBlockData(blockHash :string){
+
+
+    //console.log(blockHash)
+    let selectedBlock // to hold the data of the selected block
+    for (let i=0; i<this.blockInfo.length; i++){
+      let block = this.blockInfo[i]
+      if (block.Hash == blockHash){
+        selectedBlock = block.Data
+      }
+    }
+  
+    //console.log(selectedBlock)
+    let buyerId, totalEnTraded, totalFiat, tnbIncome, sellers 
+
+    // the string that will be shown on html
+    let htmlStr = ""
+    for (let j=0; j<selectedBlock.length; j++){
+      let info = selectedBlock[j]
+      //console.log(info)
+      buyerId = info.BuyerId
+      totalEnTraded = info.BuyerEnReceivableFromAuction + info.BuyerEnReceivableFromTNB
+      totalFiat = info.BuyerPayable // total money in this transaction
+      tnbIncome = info.TNBReceivable
+      sellers = info.AuctionBids
+      
+      htmlStr += "<br><b>Buyer:</b> "+buyerId+"\n<br>"
+      htmlStr += "<b>Total Energy Traded:</b> "+totalEnTraded.toFixed(2)+" kWH\n<br>"
+      htmlStr += "<b>Total Fiat Traded:</b> RM "+totalFiat.toFixed(2)+"\n<br>"
+      htmlStr += "<b>TNB Income:</b> RM  "+tnbIncome.toFixed(2)+"\n<br>"
+    }
+
+
+
+    // the modal
+    Swal.fire({
+      title: 'Block Info<br>Hash:'+blockHash,
+      icon: 'info',
+      html: htmlStr,
+      showCloseButton: true,
+      
+    })
+
+  }
+
+
 }
 
 let blockData : Block[] = []
+
+
+export class DialogContentExampleDialog {}

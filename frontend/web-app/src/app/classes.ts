@@ -99,6 +99,7 @@ export interface Block {
 	hash:string,       
 	prevHash: string, 
 	nonce:string,
+    //info:string,
 }
 
 export interface PotentialClerks {
