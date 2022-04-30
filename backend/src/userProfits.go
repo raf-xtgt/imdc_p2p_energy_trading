@@ -4,8 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func getUserIncomeData(w http.ResponseWriter, r *http.Request) {
@@ -89,4 +92,81 @@ func getUserIncomeData(w http.ResponseWriter, r *http.Request) {
 	//response = append(response, income)
 
 	respondWithJSON(w, r, http.StatusCreated, response)
+}
+
+func getTNBIncomeData(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
+	var response Income
+
+	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer mongoparams.cancel()
+
+	// get all transactions
+	cursor, err := db.Transactions.Find(mongoparams.ctx, bson.M{})
+	if err != nil {
+		log.Fatal(err)
+		fmt.Println("Failed to load all transactions from db")
+	}
+
+	var trns []Transaction
+	if err = cursor.All(mongoparams.ctx, &trns); err != nil {
+		log.Fatal(err)
+		fmt.Println("Failed to load transactions in list")
+	}
+
+	// get a list of all unique dates
+	var dates []string // list of all transaction dates
+	for i := 0; i < len(trns); i++ {
+		transaction := trns[i]
+		if seenDate(transaction.Date, dates) {
+
+		} else {
+			dates = append(dates, transaction.Date)
+		}
+	}
+
+	//fmt.Println("all unique dates", dates)
+
+	// loop through transactions and sum the income and sales
+	var receivables []float64
+	var soldEnergy []float64
+
+	for i := 0; i < len(dates); i++ {
+		currDate := dates[i]
+		// we want the total for every date
+		totalReceivable := 0.0
+		totalEnSales := 0.0
+		for j := 0; j < len(trns); j++ {
+			transaction := trns[j]
+			if transaction.Date == currDate {
+				totalReceivable += transaction.TNBReceivable
+				totalEnSales += transaction.BuyerEnReceivableFromTNB
+
+			}
+		}
+		receivables = append(receivables, totalReceivable)
+		soldEnergy = append(soldEnergy, totalEnSales)
+
+	}
+	// after looping through all transactions in the block where the seller was potentially present
+	//var income Income
+	response.Receivable = receivables
+	response.EnergySold = soldEnergy
+	response.Dates = dates
+	//response = append(response, income)
+
+	respondWithJSON(w, r, http.StatusCreated, response)
+
+}
+
+// to check whether the list has the current date or not
+func seenDate(date string, allDates []string) bool {
+	for j := 0; j < len(allDates); j++ {
+
+		if allDates[j] == date {
+			return true
+		}
+
+	}
+	return false
 }

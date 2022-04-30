@@ -42,9 +42,12 @@ export class ConfigService {
   // url to make a clerk
   private _makeClerk:string = this._configUrl + 'MakeClerk'
   private _clerkINTCheck :string = this._configUrl + 'ClerkIntegrityCheck'
-
-  // to get profits
+ 
+  // to get profits for normal users
   private _getUserIncome :string = this._configUrl + 'GetUserIncome'
+
+  // to get profits for tnb
+  private _getTNBProfit :string = this._configUrl + 'GetTNBIncome'
 
   TOKEN_KEY = 'token';
 
@@ -176,6 +179,11 @@ export class ConfigService {
     console.log(body)
     return this.http.post(this._getUserIncome, body)
 
+  }
+
+  getTNBIncome(){
+    const body = JSON.stringify("tnbIncome")
+    return this.http.post(this._getTNBProfit, body)
   }
 
 }

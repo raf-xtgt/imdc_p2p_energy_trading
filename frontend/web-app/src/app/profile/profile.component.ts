@@ -73,10 +73,18 @@ export class ProfileComponent implements OnInit {
       this.smartMetreNo = response.User.SmartMeterNo
       this._userId = response.User.UId
       console.log(this._userId)
-      this.getUserIncomeData()
+      if (this.username == 'tnb'){
+        console.log("show income for tnb")
+        this.getTNBIncomeData()
+      }
+      else{
+        this.getUserIncomeData()
+      }
+      
     })
   }
 
+  // to get the income for normal users
   getUserIncomeData(){
     this._config.getUserIncome(this._userId).subscribe(data => {
       
@@ -117,7 +125,6 @@ export class ProfileComponent implements OnInit {
       console.log(newFiatReceivables)
       console.log(newEnTrade)
       console.log(seen)
-   
 
       // income graph data
       let incomeGraphData: GraphData = new GraphData(newFiatReceivables, seen, "Income")
@@ -125,6 +132,39 @@ export class ProfileComponent implements OnInit {
       
       // energy graph data
       let energyGraphData: GraphData = new GraphData(newEnTrade, seen, "Energy Amount Traded")
+      this.graphData.push(energyGraphData)
+
+      // draw the graph
+      let makeGraph = new GraphService()
+      makeGraph.data = this.graphData
+      let plot = makeGraph.drawGraph()        
+      this.chartData = plot.y
+      this.xAxis = plot.x[0] // use the timestamps that includes the prediction
+      //console.log(plot)
+
+      // calculate totals
+      this.totalIncome = this.summation(this.fiatReceived)
+      this.totalEnSold = this.summation(this.energySold)
+
+
+    })
+  }
+
+
+  // to get the income for tnb
+  getTNBIncomeData(){
+    this._config.getTNBIncome().subscribe(data => {
+      
+      let response = JSON.parse(JSON.stringify(data))
+      console.log("Response from backend", response)
+      //let incomeInfo = response.Receivable
+
+      // income graph data
+      let incomeGraphData: GraphData = new GraphData(response.Receivable, response.Dates, "Income")
+      this.graphData.push(incomeGraphData)
+      
+      // energy graph data
+      let energyGraphData: GraphData = new GraphData(response.EnergySold, response.Dates, "Energy Sold")
       this.graphData.push(energyGraphData)
 
       // draw the graph

@@ -114,6 +114,7 @@ func listen() error {
 	mux.HandleFunc("/MakeClerk", convertToClerk)
 	mux.HandleFunc("/ClerkIntegrityCheck", integrityCheck)
 	mux.HandleFunc("/GetUserIncome", getUserIncomeData)
+	mux.HandleFunc("/GetTNBIncome", getTNBIncomeData)
 
 	handler := cors.Default().Handler(mux)
 	log.Fatal(http.ListenAndServe(":8080", handler))
