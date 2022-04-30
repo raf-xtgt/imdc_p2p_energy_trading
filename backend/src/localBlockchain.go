@@ -69,74 +69,85 @@ func readLocalBlockchain(filepath string) []Block {
 
 // the validators who did not produce the block will need to veirfy transactions and sign the block
 func verifyCentralBlockchain() bool {
+	fmt.Println("inside verify central blockchain")
+	currentChain := getCurrentBlockchain()
+	//fmt.Println("length of current chain", len(currentChain))
 
-	latestCentralBlock := getLatestBlock()
-	blockTransactions := latestCentralBlock.Data
-	latestBlockMetadata := getBlockMetadata(latestCentralBlock.Hash)
+	// loop through blockchain but skip the genesis block
+	for z := 1; z < len(currentChain); z++ {
+		latestCentralBlock := currentChain[z]
+		fmt.Println("\nBlock under check", latestCentralBlock)
+		blockTransactions := latestCentralBlock.Data
+		latestBlockMetadata := getBlockMetadata(latestCentralBlock.Hash)
 
-	// we only check if the latest block was not checked by all validators
-	// this means validators array in latestBlockMetadata would be less than the TOTAL_VALIDATORS
-	if len(latestBlockMetadata.Validators) < TOTAL_VALIDATORS {
-		var counter = 0
-		for j := 0; j < len(blockTransactions); j++ {
-			transaction := blockTransactions[j]
+		// we only check if the latest block was not checked by all validators
+		// this means validators array in latestBlockMetadata would be less than the TOTAL_VALIDATORS
+		if len(latestBlockMetadata.Validators) < TOTAL_VALIDATORS {
+			var counter = 0
+			for j := 0; j < len(blockTransactions); j++ {
+				//fmt.Println("Inside block transactions")
+				transaction := blockTransactions[j]
 
-			// if the transaction is verified according to local copy
-			if localTrnVerification(transaction) {
-				// increment validator check in the central database
-				incrementChecks(transaction.TId)
+				// if the transaction is verified according to local copy
+				if localTrnVerification(transaction) {
+					// increment validator check in the central database
+					incrementChecks(transaction.TId)
 
-				// validator checks the block only when they finish verifying all the transactions
-				if counter == len(blockTransactions)-1 {
-					fmt.Println("All transactions in latest block are checked")
-					// use the nonce of the latest block and check whether its hash matches or not
-					if checkBlock(latestCentralBlock) {
-						// add the validator in the list of validators who checked the block in blockInfo collection.
-						updateCheckedValidators(latestCentralBlock.Hash)
-						return true
-					} else {
-						fmt.Println("Block hash doesn't match, then retry one more time and then discard if still no match")
-						// update the local copies of user account and blockchain file
-						createLocalCopies()
-						//now check again
+					// validator checks the block only when they finish verifying all the transactions
+					if counter == len(blockTransactions)-1 {
+						fmt.Println("All transactions in latest block are checked")
+						// use the nonce of the latest block and check whether its hash matches or not
 						if checkBlock(latestCentralBlock) {
 							// add the validator in the list of validators who checked the block in blockInfo collection.
 							updateCheckedValidators(latestCentralBlock.Hash)
-							return true
-						} else {
-							// second check fails
-							fmt.Println("Second check failed")
-							// discard the block
-							discardBlock(latestCentralBlock)
-							return false
+							//return true
 						}
+						// nonsense
+						// } else {
+						// 	fmt.Println("Block hash doesn't match, then retry one more time and then discard if still no match")
+						// 	// update the local copies of user account and blockchain file
+						// 	createLocalCopies()
+						// 	return false
+						// 	// //now check again
+						// 	// if checkBlock(latestCentralBlock) {
+						// 	// 	// add the validator in the list of validators who checked the block in blockInfo collection.
+						// 	// 	updateCheckedValidators(latestCentralBlock.Hash)
+						// 	// 	//return true
+						// 	// } else {
+						// 	// 	// second check fails
+						// 	// 	fmt.Println("Second check failed")
+						// 	// 	// discard the block
+						// 	// 	//discardBlock(latestCentralBlock)
+						// 	// 	//return false
+						// 	// }
 
-						//discardBlock(latestCentralBlock)
+						// 	// //discardBlock(latestCentralBlock)
+						// }
+
+					} else {
+						counter += 1
 					}
 
 				} else {
-					counter += 1
+					fmt.Println("Local transaction verification failed")
 				}
 
-			} else {
-				fmt.Println("Local transaction verification failed")
 			}
-
+		} else {
+			// no need to check since both validators have done so
+			fmt.Println("no need to check since both validators have done ")
+			//setTrigger(false) // no new blocks to check so make it false
+			//return true
 		}
-	} else {
-		// no need to check since both validators have done so
-		fmt.Println("no need to check since both validators have done ")
-		setTrigger(false) // no new blocks to check so make it false
-		return true
 	}
 
-	return false
+	return true
 
 }
 
 // other not currently logged in validators check whether user has sufficient balance or not
 func localTrnVerification(transaction Transaction) bool {
-	fmt.Println("Inside Local transaction verification")
+	//fmt.Println("Inside Local transaction verification")
 	homeDir := getHomeDir()
 	// get the local user balances
 	userBalanceFileDir := homeDir + "/" + ACC_BALANCE_FILENAME
@@ -182,22 +193,37 @@ func checkBlock(latestCentralBlock Block) bool {
 	// get the local blockchain
 	blockchainFileDir := homeDir + "/" + LOCAL_BLOCKCHAIN
 	localBlockchain := readLocalBlockchain(blockchainFileDir)
-	latestLocalBlock := localBlockchain[len(localBlockchain)-1] // the last block is the latest and new block
 
-	nonce := latestCentralBlock.Nonce
-	latestLocalBlock.Nonce = nonce
+	// loop through the local blockchain
+	for i := 0; i < len(localBlockchain); i++ {
+		localBlock := localBlockchain[i]
+		// find the db block in the local copy
 
-	// assign the nonce of the central blockchain to the local one and conpare the hashses
-	hash := calculateHash(latestLocalBlock)
+		if localBlock.Hash == latestCentralBlock.Hash {
+			fmt.Println("Match found\n")
 
-	// local block's hash matches with the central one
-	if hash == latestCentralBlock.Hash {
-		fmt.Println("Local and db hash matched")
-		return true
-	} else {
-		fmt.Println("Local and db hash did not match")
-		return false
+			// use the nonce of the db block and hash the local block and compare this hash with the db one
+			//nonce := latestCentralBlock.Nonce
+			//localBlock.Nonce = nonce
+
+			fmt.Println("Local block with db nonce\n", localBlock)
+			// assign the nonce of the central blockchain to the local one and conpare the hashses
+			hash := calculateHash(localBlock)
+			fmt.Println("Hash of local one", hash)
+			fmt.Println("Hash from db", latestCentralBlock.Hash)
+
+			// local block's hash matches with the central one
+			if hash == latestCentralBlock.Hash {
+				fmt.Println("Local and db hash matched")
+				return true
+			}
+		} else {
+			fmt.Println("Match not found")
+		}
 	}
+
+	fmt.Println("Local and db hash did not match")
+	return false
 
 }
 

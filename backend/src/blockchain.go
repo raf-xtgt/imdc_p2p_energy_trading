@@ -62,13 +62,14 @@ func updateChain(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 
 	// get the updated local copy of blockchain and user accountsfirst
-	//createLocalCopies()
+	createLocalCopies()
 
 	// if there is a new block then verify that first
-	trigger := checkForNewBlocks()
-	if trigger.NewBlockExists {
-		verifyCentralBlockchain()
-	}
+	verifyCentralBlockchain()
+	// trigger := checkForNewBlocks()
+	// if trigger.NewBlockExists {
+	// 	verifyCentralBlockchain()
+	// }
 
 	latestBlock := getLatestBlock()
 	fmt.Println("The latest block is", latestBlock)
@@ -428,7 +429,7 @@ func updateLatestBlockIndex(index int) {
 		mongoparams.ctx,
 		bson.M{},
 		bson.D{
-			{"$set", bson.D{{"index", index}}},
+			{"$inc", bson.D{{"index", 1}}},
 		},
 	)
 
