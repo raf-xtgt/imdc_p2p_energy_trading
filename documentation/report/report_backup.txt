@@ -1,0 +1,331 @@
+
+
+\documentclass[journal, twocolumn]{IEEEtran}
+% \documentclass[journal, twocolumn]{article}
+% \usepackage[utf8]{inputenc}
+
+
+\usepackage{lipsum}% http://ctan.org/pkg/lipsum
+\usepackage{multicol}% http://ctan.org/pkg/multicols
+\usepackage{graphicx}% http://ctan.org/pkg/graphicx
+\usepackage{hyperref}
+
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+
+\begin{document}
+
+% paper title
+\title{Peer-to-Peer Optimal Solar Energy Trading using Proof-of-Authority Blockchain}
+
+% author names
+\author{
+Mohammad Rafaquat Alam,
+Teoh Jing Yang}
+
+\markboth{Innovate Malaysia Design Competition 2022}{Innovate Malaysia Design Competition 2022}
+
+
+
+% If you want to put a publisher's ID mark on the page you can do it like
+% this:
+%\IEEEpubid{0000--0000/00\$00.00~\copyright~2015 IEEE}
+% Remember, if you use this you must call \IEEEpubidadjcol in the second
+% column for its text to clear the IEEEpubid mark.
+
+
+
+% use for special paper notices
+%\IEEEspecialpapernotice{(Invited Paper)}
+
+
+% Abstract section start
+\IEEEtitleabstractindextext{%
+\begin{abstract}
+With Malaysia's growing populations and improved lifestyles, the demand for energy would only increase posing new challenges and problems to the energy sector. This project proposes a peer-to-peer web-based solar energy trading platform using Blockchain technology. The aim of this project is to optimize energy usage by homes, such that those that require higher amounts, can trade energy instead of paying higher bills whilst also providing a second income stream for prosumers through production of renewable solar energy. The back end of the platform is built using the Golang, while the Angular framework is used for the front end. Energy forecasting and double auction mechanism is used for optimal energy allocation and they are written in Python. Moreover, the platform uses the MongoDB NoSQL cloud database to securely and reliably store data.
+\end{abstract}
+% Abstract section end
+
+% Note that keywords are not normally used for peerreview papers.
+\begin{IEEEkeywords}
+Solar Energy, Energy Forecasting, Double Auction, Blockchain, Frontend and Backend.
+\end{IEEEkeywords}}
+
+% make the title area
+\maketitle
+\IEEEdisplaynontitleabstractindextext
+% Abstract section end
+
+
+
+\section{Introduction}
+
+\IEEEPARstart{A}{s} more people get access to electricity with rising number of appliances and electrical devices in households, it is only fair that the energy consumption for the average person throughout history has been increasing steadily [1], [2]. Grids in Malaysia are controlled by Tenaga Nasional Berhad (TNB), with electricity flowing through main transmission lines that go from the generators all the way to distribution lines which in turn forward energy to industrial, commercial, or residential areas. It is in no doubt that as this demand and consumption for energy keeps increasing, at one point these transmission lines would have to be upgraded [3]. This would take a huge amount of time, resources and money, and if nothing is done the transmission lines will be extremely congested which is already starting to happen now during peak hours.
+
+Another downfall of the energy sector, in some countries, according to consumers would be houses with solar panels, do not utilize the generated surplus energy to its full potential. They do not benefit in any way from the surplus energy they generated as all of it is dissipated to the grid for free [4]. This reduces overall morale for the general public as there is no incentive from the extra energy they produce thus demotivating them to use any kind of renewable energy generation in their house.
+
+We combat the aforementioned problems with our P2P Energy trading Blockchain web application that guarantees prosumers some reward by trading the renewable energy they produced. Our solution is a Proof-Of-Authority Distributed Ledger web based trading platform which uses Machine Learning to predict prosumer energy consumed and produced and then use that prediction to calculate the Optimal Energy that can be allocated to the prosumer(buyer) from another prosumer(bidder). So prosumers can trade surplus energy they generated on the market, while consumers are able to buy it without needing to get electricity from the mains, resultion the overall demand and stress on the transmission lines to be reduced [4], [5]. Consequently, infrastructure upgrade costs and resources can be invested in other projects as this upgrade will not be necessary as before. Furthermore, an incentive is now created for residential people to own solar panels so they can start selling on the P2P platform, thus increasing the usage of renewable energy leading to a cleaner and greener environment.
+
+
+\section{Methods}
+\subsection{Energy Forecasting}
+
+% Figure 1
+% The energy consumption image start
+\begin{wrapfigure}{\textwidth}
+    \includegraphics[width=1\linewidth]{report_energy_consumption_forecast.png}
+    \caption{Fig. 1. Prosumer(buyer) energy consumption forecast for the next 30 minutes}
+    \label{fig:energy consumption forecast}
+\end{wrapfigure}
+% The energy consumption image end
+
+
+% Figure 2
+% The energy production image start
+\begin{wrapfigure}{\textwidth}
+    \includegraphics[width=1\linewidth]{report_energy_production_forecast.png}
+    \caption{Fig. 2. Prosumer(bidder) energy production forecast for the next 30 minutes}
+    \label{fig:energy production forecast}
+\end{wrapfigure}
+% The energy production image end
+
+\subsubsection{Why Energy Forecasting}
+For our implemented web application, we are assuming that the solar energy a prosumer generates is stored in a battery and the energy balance is stored in a smart metre in their homes. Using this stream of data from the smart metre, we forecast the amount of energy consumed as well as produced for a given day. By predicting the energy consumption, we can limit the prosumer to a max energy value that they can make an order for. This ensures, that no prosumer orders extremely large energy amount that even the grid cannot produce. Predicting the energy production, allows us to limit the prosumer to a max energy value that they can use to make a bid on an energy request. This ensures, that no prosumer makes a bid that exceeds the max amount they are expected to produce.
+
+\subsubsection{How Energy Forecasting is done}
+The energy forecasting uses the Machine Learning technique of Triple Exponential Smoothing [10] with Additive Trend and Seasonality where we use the latest two data points for seasonal period [9]. The training also includes Trend Damping to prevent the rise of unrealistic trends and thereby account for Seasonal Irregularity [10]. Once training is done using all the data points upto the current time of the day, a prediction is generated for energy consumption/production for the next 30 minutes from the current time. This is the maximum energy forecast for consumption or production depending on what feature the prosumer is making use of. If the prosumer wants to make an order, they are shown their forecast graph for energy consumption as in Figure 1. If the prosumer wants to make a bid on an energy request, they are shown their forecast graph for energy they can produce as shonw in Figure 2. 
+
+
+
+\subsection{Optimal Energy Allocation}
+\subsubsection{Social Welfare Maximisation (SWM)}
+The SWM problem is the objective function that we hope to maximise to fulfill the energy request of prosumers by maximising the energy supply from bidders whilst considering the cost to generate the energy. The amount of energy that would satisfy a prosumer(buyer) based on their smart metre data and energy consumption forecast is defined by the satisfaction function in [6] as: 
+ \begin{equation}
+ U_{i}(E_{i}^{n}) = w_{i}[\ln( n{\sum_{j=1}^{J}} (e_{ij}^{n} - e_{i}^{n, min}) +1 )]
+\end{equation}
+where \begin{math}E^{n}\end{math} is the satisfactory energy receviable for prosumer, \begin{math}w_{i}\end{math} is the battery charging willingness, \begin{math}n\end{math} is the battery charging efficiency, \begin{math}J\end{math} is the total number of bids on the request,  \begin{math}e_{ij}^{n}\end{math} is the energy the prosumer(buyer) can receive from the bidder as per the prosumer's consumption forecast. Next we need to consider the cost incurred for the bidding prosumer when they trade the energy they produced as per the production forecast. The cost function is given in [6] as:
+
+\begin{equation}
+ L_{i}(S_{j}^{n}) = c_{1}{\sum_{i=1}^{I}(s_{j}^{n})^2} + c_{2}{\sum_{i=1}^{I}(s_{ji}^{n})} 
+\end{equation}
+where \begin{math}S^{n}\end{math} is the energy that bidder can provide, \begin{math}I\end{math} is the request made by the prosumer, \begin{math}c_{1} \end{math} and \begin{math}c_{2}\end{math} are cost factors for the bidder, \begin{math}s_{j}^{n}\end{math} is the energy the bidder can produce as per their forecast, \begin{math}s_{ji}^{n}\end{math} is the energy the bidder wants to trade with the buyer from the total produced. Now that we know how much energy would satisfy the prosumer as shown in Eq. (1) and the cost the bidder has to bear to produce and trade energy as in Eq. (2), we can determine the objective function for SWM as:
+\begin{equation}
+SWM : \max_{E_{n}, S_{n}} {\sum_{i=1}^{I}U_{i}(E_{i}^{n})} - {\sum_{j=1}^{J}L_{j}(S_{j}^{n})}
+\end{equation}
+
+\begin{equation}
+
+% Constraints image start
+\begin{wrapfigure}{\textwidth}
+\centering
+    \includegraphics[width=0.6\linewidth]{constraints.png}
+    \label{fig:double auction mechanism}
+\end{wrapfigure}
+% Constraints image end
+\end{equation}
+
+\subsubsection{Optimal Allocation Problem (OAP)}
+The OAP, ensures no one prosumer can out bid everyone else, meaning all bidders are guaranteed to receive fiat reward as long as they bid on the request. Moreover TNB, as the grid providers, are also guaranteed to receive a reward since the system is designed to use their infrastructure to distribute the energy. The OAP is defined in [6] as :
+ \begin{equation}
+OAP : \max_{E^n, S^n}{\sum_{i=1}^{I}\sum_{j=1}^{J}}[b_{ij}^{n}{\ln}{e_{ij}^{n}} - p_{ji}^{n}s_{ji}^{n}]
+\end{equation}
+where \begin{math}b_{ij}^{n}\end{math} is the price the bidder wants from the prosumer, \begin{math}p_{ji}^{n}\end{math} is the price the prosumer is willing to pay to bidder,
+
+Both ‘OAP’ and ‘SWM’ have same subject to constraints as described in Eq. (4). Hence we carry out constraint relaxation through Lagrangian method [6] to find the local maximum [10]. So, energy receivable by a buyer, \begin{math} e_{ij}^{n} \end{math} and energy tradable by a bidder, \begin{math} s_{ji}^{n} \end{math}, after applying Lagrangian method is:
+% Optimal energy receivable equation start
+\begin{equation}
+    e_{ij}^{n} = \frac{b_{ij}^{n}[ ( n\sum_{j=1}^{J} e_{ij}^{n} - e_{i}^{n, \min} ) +1 ]  }{n w_{i}}
+\end{equation}
+% Optimal energy receivable equation end
+where \begin{math}e_{i}^{n, \min}\end{math} is the fixed minimum energy for a buyer, and:
+% Optimal energy tradable equation start
+\begin{equation}
+    s_{ji}^{n} = 2c_{1}s_{ji}^{n} + c_{2}
+\end{equation}
+% Optimal energy tradable equation end
+where, \begin{math}c_{1} \end{math} and \begin{math} c_{2}\end{math} are cost factors for the bidder.
+
+\subsubsection{Double Auction Mechanism (DAM)}
+The Double Auction Mechanism (DAM) solves the OAP via Lagrange method. As shown in Figure. 3, The web app runs the DAM every 30 minutes where it takes all closed requests, loops through them, applying Eq. (6). and Eq. (7). on each bid. The Langrange scales down the bid energy amount by 10 to 15\% on average to prevent one bidder to always dominate. This also reduces the amount payable by prosumer to each bidder. The prosumer however, still pays the full price of the energy request they made. So, once all the bidders are considered, the system checks whether the total energy demand made by the prosumer in the request is satisfied or not. If demand is satisfied, the remaining fiat amount that is not received by any bidder is transferred to TNB. If demand is not satisfied the surplus energy is taken from TNB. The rate of energy is capped at RM 0.20 per kWH $_{-}^{+} 20\%$ for all bidders as well as TNB. So, all bidders and TNB receive fiat currency as reward and buyer only pays for the amount of energy they need which is always fulfilled.
+% Figure 3
+% The double auction image start
+\begin{wrapfigure}{\textwidth}
+    % \includegraphics[width=100mm,scale=0.5]{doubleAuction.png}
+    % \includegraphics[width=0.5\textwidth]{doubleAuction.png}
+    \includegraphics[width=1.1\linewidth, scale=1.2]{doubleAuction.png}
+    \caption{\newline Fig. 3 Flowchart for double auction with demand and supply response}
+    \label{fig:double auction mechanism}
+\end{wrapfigure}
+
+% The double auction image end
+\subsection{Blockchain}
+As shown in Fig.4, the blockchain uses a Proof of Authority (PoA) consensus mechanism. 
+
+% Figure 4
+% The blockchain image start
+\begin{figure*}[thpb]
+    \centering
+    \includegraphics[width=15cm, height=7.5cm]{blockchain_pipeline.png}
+    % \includegraphics[width=\textwidth, height=250px]{blockchain_pipeline.png}
+    \label{fig:blockchain}
+\end{figure*}
+% The blockchain image end
+
+\subsubsection{Roles in the Blockchain}
+Only validators are given the authority to mine new blocks and add them to the blockchain. We also have a new kind of users called clerks who are there for validator security and accountability checks. This is to ensure that validators do not conspire to work against public interest and if validator accounts are compromised, then clerks can help recover the system.
+
+\begin{itemize}
+\item \emph{Validator}: A validator can verify transactions, mine new blocks, add and discard blocks. Since we are using a Proof of Authority consensus mechanism, the validators undergo a rigorous registration process where they need to reveal their identities. Their reputation is at stake which means if they go against the interest of the normal users, then their status as validators will be revoked and made known to the greater community. 
+
+\item \emph{Clerk}: Clerks provide an additional layer of integrity check on the blockchain to ensure that validators do not conspire against the community. After the addition of every new block, they receive an updated local copy of the blockchain and user accounts. They will use their local copies to check whether the nonce of the last block from the central blockchain provides the same hash when they use it on the transactions in the last block in their local blockchain copy. If the match does not happen for more than 50\% of the clerks, then an integrity check is triggered. Unlike validators, any normal node can be made a clerk and they do not need to be rigorously identified. Clerks also provide the benefit of recovering the blockchain in case a validator account is compromised.
+\end{itemize}
+
+
+
+\subsubsection{Blockchain pipeline}
+
+\begin{itemize}
+    \item \emph{Signing Smart Contracts}: After the double auction is run every 30 minutes, the new pool of transactions are broadcasted over the network to all the validators. The validator who receives the transaction pool first, will verify each transaction where they check whether the buyer has sufficient balance or not. If so, then that transaction is marked as verified and made part of a temporary block. If a buyer does not have the required balance then the transaction is marked invalid. Once all the transactions have been checked, and added to the temporary block, it is then broadcasted to all the remaining validators. These validators use their local copy of user accounts to verify each transaction in the temporary block. They then use the nonce of the temporary block to hash the transactions from the latest block in their local blockchain. If this hash matches with that of the temporary block for all validators, then the temporary one is made permanent and added to the central blockchain. The last validator who checks the hash finalizes the smart contract.
+    
+\item \emph{Discarding Blocks}: If there is a validator who does not find a match for the hash, then their local copies of user accounts and blockchain is updated. Then the check is done again. If the hash fails to match a second time, then that block is discarded. The non-match signifies that a transaction was manipulated in the central blockchain and so the block permanent discarding is justified.
+
+\item \emph{Integrity Check}: After the formation of 5 new blocks, an integrity check is triggered where the clerks verify each transaction in the latest permanent block in the central blockchain. They use their local copy of user accounts to verify each transaction in the latest block. Then use the nonce of the latest block from central blockchain to hash the transactions from the latest block in their local blockchain. If this hash matches that in the central blockchain for more than 50 percent of the clerks, then there is no issue but if the match is less than 50 percent, then an integrity check is issued. This goes through the local blockchain copy of each validator and compares the hash of the latest block. The validator(s) whose hash has a mismatch is then flagged. In this case the validator access may be revoked. This guarantees that validators do not work against public interest. \end{itemize}
+
+\section{Results}
+\subsection{Energy Trading As A Source Of Income}
+As mentioned earlier, the double auction mechanism in the web application ensures that all bidders can make some fiat income as long as they make a bid. This serves as an incentive for more people to invest in equipment to generate electricity using solar panels. The income chart is  accessible from the user profile page as shown in Fig. 5. The chart shows the total income and energy traded for the days in which the user made a bid offer.    
+\newline
+% Figure 5 normal user profit
+\begin{wrapfigure}{\textwidth}
+\centering
+    \includegraphics[width=1\linewidth]{normal_user_income.png}
+    \caption{\newline Fig. 5. Income that users can generate by bidding on the application}
+    \label{fig: user income}
+\end{wrapfigure}
+
+Since we are using the grid infrastructure provided by TNB, the application ensures that they receive some fiat reward for their participation in the energy trading. The income chart for TNB is shown in Fig. 6. The TNB account is a validator account. No matter what bids are made on an energy request, TNB always provides a fraction of the energy demand and hence this income is always guaranteed. If there are no bids on an energy request, then the full demand is fulfilled by TNB. In such a case they receive the full price of the energy.  
+% Figure 6 tnb profit
+\begin{wrapfigure}{\textwidth}
+\centering
+    \includegraphics[width=1\linewidth]{tnb_income.png}
+    \caption{\newline Fig. 6. Income that TNB can make}
+    \label{fig: TNB income}
+\end{wrapfigure}
+
+
+% section that talks about blockchain on frontend and backend of the app
+\subsection{Blockchain Management}
+The blockchain exists in two formats. One of them is the centralised one, stored in the database and the other is a local copy stored in the validators and clerks' device.
+\subsubsection{Blockchain on the frontend of web application}
+ As shown in Fig. 7, the central blockchain is available to all users from the "blockchain" page of the web application. The index, hash, nonce and the previous hash is shown for each block. In addition to these, when the info icon is clicked, users can see some general information regarding the transactions in each block: the buyers, total energy and fiat traded and the income TNB generates from this transaction. This is shown in Fig. 8.
+
+
+
+\begin{wrapfigure}{\textwidth}
+\centering
+    \includegraphics[width=1.0\linewidth]{web_app_blockchain_2.png}
+    \caption{\newline Fig. 7. Index, Hash, Block Info Icon, Previous Hash and Nonce are displayed on the frontend}
+    \label{fig:transaction info}
+\end{wrapfigure}
+% Blockchain in the web-app end
+
+% Block info start
+\begin{wrapfigure}{\textwidth}
+\centering
+    \includegraphics[width=0.7\linewidth]{transaction_info.png}
+    \caption{\newline Fig. 8. Transaction information in the block}
+    \label{fig:transaction info}
+\end{wrapfigure}
+% Block info end
+
+\subsubsection{Blockchain on the backend of web application}
+As mentioned before, the backend stores the blockchain in a central database as shown in Fig. 9. This is used as the primary blockchain throughout the system. The frontend uses the data available in this blockchain. 
+
+
+% The blockchain in the central database start
+\begin{wrapfigure}{\textwidth}
+\centering
+    \includegraphics[width=1.0\linewidth]{db_blockchain.png}
+    \caption{\newline Fig. 9. Blockchain as stored in the central database}
+    \label{fig:transaction info}
+\end{wrapfigure}
+% The blockchain in the central database end
+
+Validators and clerks also store a local copy of the blockchain in their device, in a .JSON file. A snippet of the local copy is shown in Fig. 10. As discussed before, the application uses the local copy to verify transactions and check the hash in the central database before finalizing the blocks. The app always updates the local copy using the central one when the verification and integrity checks are done. This means there is no chance for clerks and validators to edit the local copy and manipulate the central blockchain.
+
+% The local copy of blockchain start
+\begin{wrapfigure}{\textwidth}
+\centering
+    \includegraphics[width=1.0\linewidth]{local_blockchain.png}
+    \caption{\newline Fig. 10. The third block stored in the local blockchain file on user device}
+    \label{fig:transaction info}
+\end{wrapfigure}
+% The local copy of blockchain end
+
+\subsection{Application Performance}
+\subsubsection{Web Application Stress Testing}
+\subsubsection{Transactions Per Second}
+% \lipsum[2-4]
+\section{Discussion}
+% \lipsum[2-4]
+\subsection{To discuss the current issues with the system}
+
+\section{System Implementation}
+\subsection{Technology Stack}
+As promised in the project proposal, the frontend of the web application is written in Angular 13. Since this version of Angular uses Typescript programming language, the middleware services that let the frontend communicate with the backend is also written in Typescript. The middleware services use http POST request to inform the backend code which module needs to be run to fulfill a request. The backend is written in Go programming language. This language is chosen due to its speed, easy syntax and its increasing popularity as a server side language. The backend code listens for requests from the frontend on dedicated http ports. Based on the frontend request, it will run the required code module. Finally, Python programming language libraries are used for the Energy Forecasting. The libraries include numpy for complex calculations, matplotlib to produce the chart and its data, pandas for data processing and statmodels for its ExponentialSmoothing library.  
+\subsection{Source Code}
+The web application over a period of 6 months from December 2021 to May 2022. The code is made available at: \url{https://gitlab.com/mohammad_rafaquat_alam/imdc_p2p_energy_trading} If there are issues in accessing the repository please kindly email:md.rafaquatalam98@gmail.com. A demonstration video is made available at this link to showcase the usage of the web application.
+
+
+\section{Conclusion}
+% \lipsum[2-4]
+
+\section{Acknowledgement}
+% The conclusion goes here.
+
+\begin{thebibliography}{1}
+
+\bibitem{IEEEhowto:kopka}
+G. "U.S. energy facts explained - consumption and production - U.S. Energy Information
+Administration (EIA)", Eia.gov, 2021.
+
+\bibitem{IEEEhowto:kopka}
+H. Ritchie and M. Roser, "Energy", Our World in Data, 2021.
+
+\bibitem{IEEEhowto:kopka}
+"Outline of Malaysia's electricity system - Power Engineering International", Power
+Engineering International, 2021.
+
+\bibitem{IEEEhowto:kopka}
+J. Yang, A. Paudel, H. B. Gooi, and H. D. Nguyen, “A proof-of-stake public blockchain
+based pricing scheme for peer-to-peer energy trading,” Applied Energy, vol. 298, p. 117154,
+2021.
+\bibitem{IEEEhowto:kopka}
+S. Aggarwal and N. Kumar, “A consortium blockchain-based energy trading for demand
+response management in vehicle-to-grid,” IEEE Transactions on Vehicular Technology, vol.
+70, no. 9, pp. 9480–9494, 2021.
+
+
+\bibitem{IEEEhowto:kopka}
+The consortium paper 
+
+\bibitem{IEEEhowto:kopka}
+The demand and supply one by Dr. Tan
+
+\bibitem{IEEEhowto:kopka}
+Proof of Authority
+
+\bibitem{IEEEhowto:kopka}
+Time-series Forecasting - Complete Tutorial (indian guy)
+
+\bibitem{IEEEhowto:kopka}
+A Gentle Introduction to Exponential Smoothing for Time Series Forecasting in Python
+
+\bibitem{IEEEhowto:kopka}
+A Gentle Introduction To Method Of Lagrange Multipliers
+\end{thebibliography}
+
+
+\end{document}
