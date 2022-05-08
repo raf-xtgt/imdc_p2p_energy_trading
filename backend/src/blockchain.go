@@ -512,7 +512,7 @@ func getHomeDir() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	//fmt.Println("dirname", dirname)
+	fmt.Println("dirname", dirname)
 	return dirname
 }
 

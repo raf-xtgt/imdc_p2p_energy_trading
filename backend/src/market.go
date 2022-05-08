@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -71,6 +72,29 @@ func addUniqueBuyReqId(buyerId string, reqTime string, uniqueId string) bool {
 			{"$set", bson.D{{"reqid", unId}}},
 		},
 	)
+
+	// for testing
+	// get the path to store the local copies
+
+	file, err := os.OpenFile("/home/rafaquat/buyer_ids.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+
+	if err != nil {
+		fmt.Println("Could not open example.txt")
+
+	}
+
+	defer file.Close()
+
+	_, err2 := file.WriteString(unId + "\r\n")
+
+	if err2 != nil {
+		fmt.Println("Could not write text to example.txt")
+
+	} else {
+		fmt.Println("Operation successful! Text has been appended to example.txt")
+	}
+
+	////////////////
 
 	// if the update fails
 	if err != nil {
@@ -206,3 +230,5 @@ func closeBuyRequest(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, r, http.StatusCreated, "Request Close Successful")
 	return
 }
+
+/// for testing
