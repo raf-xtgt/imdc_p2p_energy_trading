@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -109,6 +110,7 @@ func addUniqueBuyReqId(buyerId string, reqTime string, uniqueId string) bool {
 
 // function to get the energy requests
 func getEnergyRequests(w http.ResponseWriter, r *http.Request) {
+	runLa()
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -239,3 +241,15 @@ func closeBuyRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 /// for testing
+func runLa() {
+	///////////////////////////////
+	// bruh
+	currentBlockchain := getCurrentBlockchain()
+	latestLocalBlock := currentBlockchain[12]
+	fileDir := "/home/rafaquat/trn_sizes/trn_100.json"
+	file, _ := json.MarshalIndent(latestLocalBlock, "", " ")
+
+	_ = ioutil.WriteFile(fileDir, file, 0644)
+	fmt.Println("Testing meeehh")
+
+}
