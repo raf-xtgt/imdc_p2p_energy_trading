@@ -311,6 +311,13 @@ func generateBlock(oldBlock Block, blockType string, transactions []Transaction)
 	}
 
 	fmt.Println("New block", newBlock)
+
+	// time how long it takes to mine
+	loc, _ := time.LoadLocation("UTC")
+	startTime := time.Now().In(loc)
+	timeStr := startTime.String()
+	fmt.Println("Start time before mining starts", timeStr)
+
 	// This one is the mining algorithm to find the nonce that suits the hash requirement (how many 0)
 	// Given in mycoralhealth website
 	for i := 0; ; i++ {
@@ -330,6 +337,11 @@ func generateBlock(oldBlock Block, blockType string, transactions []Transaction)
 
 	}
 
+	// end time
+
+	endTime := time.Now().In(loc)
+	endTimeStr := endTime.String()
+	fmt.Println("End time when mining stops", endTimeStr)
 }
 
 // To calculate the hash of a block
