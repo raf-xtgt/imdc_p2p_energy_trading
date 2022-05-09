@@ -103,17 +103,17 @@ func updateChain(w http.ResponseWriter, r *http.Request) {
 // check if any new blocks are made by other validators by checking the "trigger" collection
 func checkForNewBlocks() Trigger {
 	// to prevent timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	//fmt.Println("yo")
-	cursor, err := db.Trigger.Find(mongoparams.ctx, bson.M{})
+	cursor, err := db.Trigger.Find(ctx, bson.M{})
 	if err != nil {
 		fmt.Println("Failed to get trigger l:118 (blockchain.go)")
 	}
 
 	var newBlockExists []Trigger
-	if err = cursor.All(mongoparams.ctx, &newBlockExists); err != nil {
+	if err = cursor.All(ctx, &newBlockExists); err != nil {
 		fmt.Println("Failed to write l:123 (blockchain.go)")
 		log.Fatal(err)
 	}
@@ -123,20 +123,20 @@ func checkForNewBlocks() Trigger {
 
 func getCurrentBlockchain() []Block {
 	// to prevent timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// get all the blocks from the database
 
-	//cursor, err := db.Blockchain.Find(mongoparams.ctx, bson.M{})
-	cursor, err := db.Blockchain.Find(mongoparams.ctx, bson.M{})
+	//cursor, err := db.Blockchain.Find(ctx, bson.M{})
+	cursor, err := db.Blockchain.Find(ctx, bson.M{})
 	if err != nil {
 		log.Fatal(err)
 		fmt.Println("Failed to load blockchain from db")
 	}
 
 	var blockchain []Block
-	if err = cursor.All(mongoparams.ctx, &blockchain); err != nil {
+	if err = cursor.All(ctx, &blockchain); err != nil {
 		log.Fatal(err)
 		fmt.Println("Failed to load blockchain in list")
 	}
@@ -165,26 +165,26 @@ type LatestIndex struct {
 func getLatestBlock() Block {
 	// first get latest index
 
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// get the latest index. The collection always has only one document
-	cursor, err := db.LatestIndex.Find(mongoparams.ctx, bson.M{})
+	cursor, err := db.LatestIndex.Find(ctx, bson.M{})
 	if err != nil {
 		log.Fatal(err)
 	}
 	var latestIndex []LatestIndex
-	if err = cursor.All(mongoparams.ctx, &latestIndex); err != nil {
+	if err = cursor.All(ctx, &latestIndex); err != nil {
 		log.Fatal(err)
 	}
 
 	// find the block with the latest index
-	cursor2, err := db.Blockchain.Find(mongoparams.ctx, bson.M{"index": latestIndex[0].Index})
+	cursor2, err := db.Blockchain.Find(ctx, bson.M{"index": latestIndex[0].Index})
 	if err != nil {
 		log.Fatal(err)
 	}
 	var latestBlock []Block
-	if err = cursor2.All(mongoparams.ctx, &latestBlock); err != nil {
+	if err = cursor2.All(ctx, &latestBlock); err != nil {
 		log.Fatal(err)
 	}
 
@@ -195,17 +195,17 @@ func getLatestBlock() Block {
 // get a pool of transactions from database
 func getTransactionPool() []Transaction {
 	// to prevent timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// get the transactions that have not been verified yet
-	cursor, err := db.Transactions.Find(mongoparams.ctx, bson.M{"verified": false})
+	cursor, err := db.Transactions.Find(ctx, bson.M{"verified": false})
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var transactions []Transaction
-	if err = cursor.All(mongoparams.ctx, &transactions); err != nil {
+	if err = cursor.All(ctx, &transactions); err != nil {
 		log.Fatal(err)
 	}
 
@@ -217,11 +217,11 @@ func getTransactionPool() []Transaction {
 // to verify whether the buyer of the transaction has sufficient balance or not
 func verifyTransaction(transaction Transaction) bool {
 	// to prevent timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// find the relevant data
-	cursor, err := db.UserAccBalance.Find(mongoparams.ctx, bson.M{"userid": transaction.BuyerId})
+	cursor, err := db.UserAccBalance.Find(ctx, bson.M{"userid": transaction.BuyerId})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -229,7 +229,7 @@ func verifyTransaction(transaction Transaction) bool {
 	// fmt.Println("The transaction is", transaction)
 
 	var userAccount []AccountBalance
-	if err = cursor.All(mongoparams.ctx, &userAccount); err != nil {
+	if err = cursor.All(ctx, &userAccount); err != nil {
 		log.Fatal(err)
 		fmt.Println("User Account not found")
 		return false
@@ -247,12 +247,12 @@ func verifyTransaction(transaction Transaction) bool {
 
 // set isverified to true in db
 func updateTransactionVerification(transaction Transaction) Transaction {
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// set the isVerified to true
 	_, err := db.Transactions.UpdateOne(
-		mongoparams.ctx,
+		ctx,
 		bson.M{"tId": transaction.TId},
 		bson.D{
 			{"$set", bson.D{{"verified", true}}},
@@ -273,12 +273,12 @@ func updateTransactionVerification(transaction Transaction) Transaction {
 
 // function to increment the number of validator checks in a transaction in the central db
 func incrementChecks(transactionId string) {
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// increment checks
 	_, err := db.Transactions.UpdateOne(
-		mongoparams.ctx,
+		ctx,
 		bson.M{"tId": transactionId},
 		bson.D{
 			{"$inc", bson.D{{"checks", 1}}},
@@ -393,9 +393,9 @@ func stringifyTransaction(data []Transaction) string {
 
 // add the block to the database
 func addBlock(newBlock Block) {
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
-	writeBlock, err := db.Blockchain.InsertOne(mongoparams.ctx, newBlock)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	writeBlock, err := db.Blockchain.InsertOne(ctx, newBlock)
 	if err != nil {
 		log.Fatal(err)
 		fmt.Println("failed to write block")
@@ -416,7 +416,7 @@ func addBlock(newBlock Block) {
 	blockMetadata.Clerks = clerks
 
 	//add this block metadata in the db
-	writeBlockInfo, err := db.BlockInfo.InsertOne(mongoparams.ctx, blockMetadata)
+	writeBlockInfo, err := db.BlockInfo.InsertOne(ctx, blockMetadata)
 	if err != nil {
 		log.Fatal(err)
 		fmt.Println("failed to write block")
@@ -433,12 +433,12 @@ func addBlock(newBlock Block) {
 
 // increment the latest index to the value of the new blocks
 func updateLatestBlockIndex(index int) {
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// set the new index
 	_, err := db.LatestIndex.UpdateOne(
-		mongoparams.ctx,
+		ctx,
 		bson.M{},
 		bson.D{
 			{"$inc", bson.D{{"index", 1}}},
@@ -455,7 +455,7 @@ func updateLatestBlockIndex(index int) {
 
 	// increment the number of new blocks
 	_, err2 := db.LatestIndex.UpdateOne(
-		mongoparams.ctx,
+		ctx,
 		bson.M{},
 		bson.D{
 			{"$inc", bson.D{{"newBlockNum", 1}}},
@@ -479,12 +479,12 @@ func updateLatestBlockIndex(index int) {
 
 // function to update the trigger collection
 func setTrigger(value bool) {
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// set the isVerified to true
 	_, err := db.Trigger.UpdateOne(
-		mongoparams.ctx,
+		ctx,
 		bson.M{},
 		bson.D{
 			{"$set", bson.D{{"newBlockExists", value}}},
@@ -502,16 +502,16 @@ func setTrigger(value bool) {
 
 // function to get all the userAccounts
 func getAllAccs() []AccountBalance {
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-	cursor, err := db.UserAccBalance.Find(mongoparams.ctx, bson.M{})
+	cursor, err := db.UserAccBalance.Find(ctx, bson.M{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var allUserAccs []AccountBalance
-	if err = cursor.All(mongoparams.ctx, &allUserAccs); err != nil {
+	if err = cursor.All(ctx, &allUserAccs); err != nil {
 		log.Fatal(err)
 	}
 	return allUserAccs
@@ -552,11 +552,11 @@ func createLocalCopies() {
 
 // function to discard a block
 func discardBlock(latestCentralBlock Block) {
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	//  delete the block
-	result, err := db.Blockchain.DeleteOne(mongoparams.ctx, bson.M{"hash": latestCentralBlock.Hash})
+	result, err := db.Blockchain.DeleteOne(ctx, bson.M{"hash": latestCentralBlock.Hash})
 	if err != nil {
 		fmt.Println("Failed to discard the block blockchain.go ln:528")
 		log.Fatal(err)
@@ -565,7 +565,7 @@ func discardBlock(latestCentralBlock Block) {
 
 	// decrement the index to point to the block before the discarded one
 	_, err2 := db.LatestIndex.UpdateOne(
-		mongoparams.ctx,
+		ctx,
 		bson.M{},
 		bson.D{
 			{"$inc", bson.D{{"index", -1}}},

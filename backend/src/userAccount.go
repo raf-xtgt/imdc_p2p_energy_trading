@@ -14,8 +14,8 @@ ASSUMPTION 2: We assume already in sync with some financial institution
 **/
 func createUserAccount(userId string) {
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	var balance AccountBalance
 	balance.UserId = userId
 	// add dummy data
@@ -23,7 +23,7 @@ func createUserAccount(userId string) {
 	balance.EnergyBalance = 800
 
 	//write the balance in the database info to the users collection
-	writeData, err := db.UserAccBalance.InsertOne(mongoparams.ctx, balance)
+	writeData, err := db.UserAccBalance.InsertOne(ctx, balance)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -29,9 +29,6 @@ func runBuyEnergyForecast(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	fmt.Println("This is the user id for forecasting from frontend", userId)
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
-
 	// executing the python script from golang
 	cmd := exec.Command("python", "energyForecast.py", "global", "consm")
 	cmd.Stdout = os.Stdout
@@ -61,18 +58,18 @@ func getLatestBuyForecast(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	fmt.Println("This is the date for getting buy forecast data from frontend", dateStr)
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// find data
-	cursor, err := db.BuyOrderForecast.Find(mongoparams.ctx, bson.M{"date": dateStr})
+	cursor, err := db.BuyOrderForecast.Find(ctx, bson.M{"date": dateStr})
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// put the data in forecast response
 	var buyOrderForecastResponse []BuyForecastResponse
-	if err = cursor.All(mongoparams.ctx, &buyOrderForecastResponse); err != nil {
+	if err = cursor.All(ctx, &buyOrderForecastResponse); err != nil {
 		fmt.Println("Got error here")
 		log.Fatal(err)
 	}
@@ -96,8 +93,6 @@ func runSellEnergyForecast(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	fmt.Println("This is the user id for forecasting from frontend", userId)
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
 
 	// executing the python script from golang
 	cmd := exec.Command("python", "energyForecast.py", userId, "prod")
@@ -128,18 +123,18 @@ func getLatestSellForecast(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	fmt.Println("This is the date for getting selling forecast data from frontend", request)
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// find data
-	cursor, err := db.ProdForecast.Find(mongoparams.ctx, bson.M{"date": request.Date, "userId": request.UserId})
+	cursor, err := db.ProdForecast.Find(ctx, bson.M{"date": request.Date, "userId": request.UserId})
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// put the data in forecast response
 	var productionForecastResponse []BuyForecastResponse
-	if err = cursor.All(mongoparams.ctx, &productionForecastResponse); err != nil {
+	if err = cursor.All(ctx, &productionForecastResponse); err != nil {
 		fmt.Println("Got error here")
 		log.Fatal(err)
 	}
@@ -163,8 +158,6 @@ func runDoubleAuction(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	fmt.Println("Backend server invoking double auction")
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
 
 	// executing the python script from golang
 	cmd := exec.Command("python", "energyForecast.py", "global", "optm")

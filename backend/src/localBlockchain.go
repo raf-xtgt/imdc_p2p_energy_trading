@@ -167,17 +167,17 @@ func localTrnVerification(transaction Transaction) bool {
 
 //function to get a specific transaction from the central database
 func getTransaction(transactionId string) Transaction {
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-	cursor, err := db.Transactions.Find(mongoparams.ctx, bson.M{"tId": transactionId})
+	cursor, err := db.Transactions.Find(ctx, bson.M{"tId": transactionId})
 	if err != nil {
 		log.Fatal(err)
 		fmt.Println("Failed to get the transaction data from db")
 	}
 
 	var transaction []Transaction
-	if err = cursor.All(mongoparams.ctx, &transaction); err != nil {
+	if err = cursor.All(ctx, &transaction); err != nil {
 		fmt.Println("Failed to write the transaction l:139 (localBlockchain.go)")
 		log.Fatal(err)
 	}
@@ -229,10 +229,10 @@ func checkBlock(latestCentralBlock Block) bool {
 
 //funciton to update the list of validators who checked the block with no repeat validators
 func updateCheckedValidators(hash string) {
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-	cursor, err := db.BlockInfo.Find(mongoparams.ctx,
+	cursor, err := db.BlockInfo.Find(ctx,
 		bson.M{"hash": hash})
 
 	if err != nil {
@@ -241,7 +241,7 @@ func updateCheckedValidators(hash string) {
 	}
 
 	var blockData []BlockInfo
-	if err = cursor.All(mongoparams.ctx, &blockData); err != nil {
+	if err = cursor.All(ctx, &blockData); err != nil {
 		log.Fatal(err)
 		fmt.Println("Failed to write the block metadata :localBlockchain.go 205")
 	}
@@ -267,7 +267,7 @@ func updateCheckedValidators(hash string) {
 	if !found {
 
 		_, err := db.BlockInfo.UpdateOne(
-			mongoparams.ctx,
+			ctx,
 			bson.M{"hash": hash},
 			bson.D{
 				{"$push", bson.D{{"validators", loggedInUser}}},
@@ -290,10 +290,10 @@ func updateCheckedValidators(hash string) {
 
 //function to get the metadata of the block given the hash of the block
 func getBlockMetadata(hash string) BlockInfo {
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-	cursor, err := db.BlockInfo.Find(mongoparams.ctx,
+	cursor, err := db.BlockInfo.Find(ctx,
 		bson.M{"hash": hash})
 
 	if err != nil {
@@ -302,7 +302,7 @@ func getBlockMetadata(hash string) BlockInfo {
 	}
 
 	var blockData []BlockInfo
-	if err = cursor.All(mongoparams.ctx, &blockData); err != nil {
+	if err = cursor.All(ctx, &blockData); err != nil {
 		log.Fatal(err)
 		fmt.Println("Failed to write the block metadata :localBlockchain.go 205")
 	}

@@ -26,17 +26,17 @@ func getAllUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// filter all normal users
-	cursor, err := db.Users.Find(mongoparams.ctx, bson.M{"type": "normal"})
+	cursor, err := db.Users.Find(ctx, bson.M{"type": "normal"})
 	if err != nil {
 		fmt.Println("Failed to get all users, clerks.go ::26")
 		log.Fatal(err)
 	}
 	var profiles []User
-	if err = cursor.All(mongoparams.ctx, &profiles); err != nil {
+	if err = cursor.All(ctx, &profiles); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("List of all users", len(profiles))
@@ -49,8 +49,8 @@ func convertToClerk(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	var userId string
 	// get the data from json body
@@ -65,12 +65,10 @@ func convertToClerk(w http.ResponseWriter, r *http.Request) {
 
 	//fmt.Println("UserId as received from frontend", userId)
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
 
 	// update the type to clerk that matches the user id
 	_, err := db.Users.UpdateOne(
-		mongoparams.ctx,
+		ctx,
 		bson.M{"uId": userId},
 		bson.D{
 			{"$set", bson.D{{"type", "clerk"}}},
@@ -155,10 +153,10 @@ func integrityCheck(w http.ResponseWriter, r *http.Request) {
 
 // function to update the list of clerks who checked the block with no repeat clerks
 func updateCheckedClerks(hash string) {
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-	cursor, err := db.BlockInfo.Find(mongoparams.ctx,
+	cursor, err := db.BlockInfo.Find(ctx,
 		bson.M{"hash": hash})
 
 	if err != nil {
@@ -167,7 +165,7 @@ func updateCheckedClerks(hash string) {
 	}
 
 	var blockData []BlockInfo
-	if err = cursor.All(mongoparams.ctx, &blockData); err != nil {
+	if err = cursor.All(ctx, &blockData); err != nil {
 		log.Fatal(err)
 		fmt.Println("Failed to write the block metadata :localBlockchain.go 205")
 	}
@@ -193,7 +191,7 @@ func updateCheckedClerks(hash string) {
 	if !found {
 
 		_, err := db.BlockInfo.UpdateOne(
-			mongoparams.ctx,
+			ctx,
 			bson.M{"hash": hash},
 			bson.D{
 				{"$push", bson.D{{"clerks", loggedInUser}}},
@@ -216,16 +214,16 @@ func updateCheckedClerks(hash string) {
 
 //function to check for 5 new blocks
 func newFiveBlocksExist() bool {
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// get the latest index. The collection always has only one document
-	cursor, err := db.LatestIndex.Find(mongoparams.ctx, bson.M{})
+	cursor, err := db.LatestIndex.Find(ctx, bson.M{})
 	if err != nil {
 		log.Fatal(err)
 	}
 	var latestIndex []LatestIndex
-	if err = cursor.All(mongoparams.ctx, &latestIndex); err != nil {
+	if err = cursor.All(ctx, &latestIndex); err != nil {
 		log.Fatal(err)
 	}
 

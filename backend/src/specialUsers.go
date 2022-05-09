@@ -32,8 +32,8 @@ func addValidator(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// validate user
 	if checkUsernameAndPass(newValidator.UserName, newValidator.Email) {
@@ -71,7 +71,7 @@ func addValidator(w http.ResponseWriter, r *http.Request) {
 		)
 		newValidator.PrivateKey = privatePEM
 		//write user info to the users collection
-		writeUser, err := db.Users.InsertOne(mongoparams.ctx, newValidator)
+		writeUser, err := db.Users.InsertOne(ctx, newValidator)
 		if err != nil {
 			log.Fatal(err)
 		}

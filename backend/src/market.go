@@ -31,8 +31,8 @@ func addBuyRequest(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	//write user info to the users collection\
 	loc, _ := time.LoadLocation("UTC")
@@ -41,7 +41,7 @@ func addBuyRequest(w http.ResponseWriter, r *http.Request) {
 	//fmt.Println("ZONE : ", loc, " Time : ", now) // UTC
 	newRequest.ReqTime = now.String()
 	newRequest.Auctioned = false
-	writeRequest, err := db.EnergyBuyRequests.InsertOne(mongoparams.ctx, newRequest)
+	writeRequest, err := db.EnergyBuyRequests.InsertOne(ctx, newRequest)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,9 +64,12 @@ func addUniqueBuyReqId(buyerId string, reqTime string, uniqueId string) bool {
 	fmt.Println(uniqueId)
 	fmt.Println(unId)
 
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	// update the document that matches the buyerid and time of order
 	_, err := db.EnergyBuyRequests.UpdateOne(
-		mongoparams.ctx,
+		ctx,
 		bson.M{"buyerid": buyerId, "reqtime": reqTime},
 		bson.D{
 			{"$set", bson.D{{"reqid", unId}}},
@@ -144,8 +147,8 @@ func addSellRequest(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	//write user info to the users collection\
 	loc, _ := time.LoadLocation("UTC")
@@ -153,7 +156,7 @@ func addSellRequest(w http.ResponseWriter, r *http.Request) {
 	//requestTime := now
 	//fmt.Println("ZONE : ", loc, " Time : ", now) // UTC
 	newRequest.ReqTime = now.String()
-	writeRequest, err := db.EnergySellRequests.InsertOne(mongoparams.ctx, newRequest)
+	writeRequest, err := db.EnergySellRequests.InsertOne(ctx, newRequest)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -176,9 +179,13 @@ func addUniqueSellReqId(buyerId string, reqTime string, uniqueId string) bool {
 	fmt.Println(uniqueId)
 	fmt.Println(unId)
 
+	// to prevent backend to timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	// update the document that matches the buyerid and time of order
 	_, err := db.EnergySellRequests.UpdateOne(
-		mongoparams.ctx,
+		ctx,
 		bson.M{"sellerid": buyerId, "reqtime": reqTime},
 		bson.D{
 			{"$set", bson.D{{"sellreqid", unId}}},
@@ -209,12 +216,12 @@ func closeBuyRequest(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// update the document that matches the buyerid and time of order
 	_, err := db.EnergyBuyRequests.UpdateOne(
-		mongoparams.ctx,
+		ctx,
 		bson.M{"reqid": reqId},
 		bson.D{
 			{"$set", bson.D{{"requestclosed", true}}},

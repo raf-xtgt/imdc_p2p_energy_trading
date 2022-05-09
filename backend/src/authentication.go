@@ -43,8 +43,8 @@ func addNewUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// validate user
 	if checkUsernameAndPass(newUser.UserName, newUser.Email) {
@@ -82,7 +82,7 @@ func addNewUser(w http.ResponseWriter, r *http.Request) {
 		)
 		newUser.PrivateKey = privatePEM
 		//write user info to the users collection
-		writeUser, err := db.Users.InsertOne(mongoparams.ctx, newUser)
+		writeUser, err := db.Users.InsertOne(ctx, newUser)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -112,10 +112,11 @@ func addUniqueUserId(username string, email string, uniqueId string) bool {
 	//uniqueId = unId
 	fmt.Println(uniqueId)
 	fmt.Println(unId)
-
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	// update the document that matches the username and email
 	_, err := db.Users.UpdateOne(
-		mongoparams.ctx,
+		ctx,
 		bson.M{"username": username, "email": email},
 		bson.D{
 			{"$set", bson.D{{"uId", unId}}},
@@ -179,20 +180,20 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	//fmt.Println("This is the data from frontend", NewUser)
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// hash the password entered by user
 	userPass := newUser.Password
 	hashedPass := hashPassword(userPass) // if passwords match, then the hash should be the same
 
-	cursor, err := db.Users.Find(mongoparams.ctx, bson.M{"username": newUser.UserName, "password": hashedPass})
+	cursor, err := db.Users.Find(ctx, bson.M{"username": newUser.UserName, "password": hashedPass})
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var Profiles []User
-	if err = cursor.All(mongoparams.ctx, &Profiles); err != nil {
+	if err = cursor.All(ctx, &Profiles); err != nil {
 		log.Fatal(err)
 	}
 
@@ -284,16 +285,16 @@ func isAuthorized(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAccountData(userId string) ([]byte, error) {
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-	cursor, err := db.Users.Find(mongoparams.ctx, bson.M{"uId": userId})
+	cursor, err := db.Users.Find(ctx, bson.M{"uId": userId})
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var Profile []User
-	if err = cursor.All(mongoparams.ctx, &Profile); err != nil {
+	if err = cursor.All(ctx, &Profile); err != nil {
 		log.Fatal(err)
 	}
 

@@ -27,8 +27,6 @@ func getUserIncomeData(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	fmt.Println("This is the user id for getting income data", userId)
 	// to prevent backend to timeout
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
 
 	// get the current blockchain
 	blockchain := getCurrentBlockchain()
@@ -98,18 +96,18 @@ func getTNBIncomeData(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 	var response Income
 
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// get all transactions
-	cursor, err := db.Transactions.Find(mongoparams.ctx, bson.M{})
+	cursor, err := db.Transactions.Find(ctx, bson.M{})
 	if err != nil {
 		log.Fatal(err)
 		fmt.Println("Failed to load all transactions from db")
 	}
 
 	var trns []Transaction
-	if err = cursor.All(mongoparams.ctx, &trns); err != nil {
+	if err = cursor.All(ctx, &trns); err != nil {
 		log.Fatal(err)
 		fmt.Println("Failed to load transactions in list")
 	}

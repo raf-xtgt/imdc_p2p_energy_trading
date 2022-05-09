@@ -27,13 +27,13 @@ func createEnergyData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	mongoparams.ctx, mongoparams.cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer mongoparams.cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	var energyData EnergyPriceData = generateHouseholdEnergyPriceData()
 	//write user info to the users collection
 	if checkRepeatedDataEntry(fromFrontend.DateStr) {
-		writeData, err := db.EnergyPriceHouse.InsertOne(mongoparams.ctx, energyData)
+		writeData, err := db.EnergyPriceHouse.InsertOne(ctx, energyData)
 		if err != nil {
 			fmt.Println(err)
 		}
