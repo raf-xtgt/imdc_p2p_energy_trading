@@ -329,3 +329,11 @@ A Gentle Introduction To Method Of Lagrange Multipliers
 
 
 \end{document}
+
+
+
+
+
+
+\subsection{Technology Stack}
+As promised in the project proposal, the frontend of the web application is written in Angular 13. Since this version of Angular uses Typescript programming language, the middleware services that let the frontend communicate with the backend is also written in Typescript. The middleware services use http POST request to inform the backend code which module needs to be run to fulfill a request. The backend is written in Go programming language. This language is chosen due to its speed, easy syntax and its increasing popularity as a server side language. The backend code listens for requests from the frontend on dedicated http ports. Based on the frontend request, it will run the required code module. Finally, Python programming language libraries are used for the Energy Forecasting. The libraries include numpy for complex calculations, matplotlib to produce the chart and its data, pandas for data processing and statmodels for its ExponentialSmoothing library.  
