@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -77,29 +76,6 @@ func addUniqueBuyReqId(buyerId string, reqTime string, uniqueId string) bool {
 		},
 	)
 
-	// for testing
-	// get the path to store the local copies
-
-	file, err := os.OpenFile("/home/rafaquat/buyer_ids.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-
-	if err != nil {
-		fmt.Println("Could not open example.txt")
-
-	}
-
-	defer file.Close()
-
-	_, err2 := file.WriteString(unId + "\r\n")
-
-	if err2 != nil {
-		fmt.Println("Could not write text to example.txt")
-
-	} else {
-		fmt.Println("Operation successful! Text has been appended to example.txt")
-	}
-
-	////////////////
-
 	// if the update fails
 	if err != nil {
 		log.Fatal(err)
@@ -110,7 +86,7 @@ func addUniqueBuyReqId(buyerId string, reqTime string, uniqueId string) bool {
 
 // function to get the energy requests
 func getEnergyRequests(w http.ResponseWriter, r *http.Request) {
-	runLa()
+	//runLa()
 	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
