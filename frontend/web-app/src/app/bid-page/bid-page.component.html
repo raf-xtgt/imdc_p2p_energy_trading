@@ -4,10 +4,10 @@
         <mat-card>
             <mat-card-content>
                 <div style="width: 100%;">
-                    Date:
+                    Date: {{currentDate}}
                 </div>
-                <div>Consumption: kWh at  MYT</div>
-                <div>Forecast: kWh at MYT </div>   
+                <div>Production: {{currentProduction}}kWh at {{currentTime}} MYT</div>
+                <div>Forecast: {{(prediction).toFixed(2)}}kWh at {{predictionTime}} MYT </div>   
                 <h4 style="text-align: left;">Time Remaining: 20:30</h4>
     
             </mat-card-content>
@@ -78,9 +78,9 @@
                                 <h3>Your account details</h3>
                                 <mat-divider></mat-divider>
                                 <mat-list-item role="listitem"><h4 style="text-align: left;">username</h4></mat-list-item>
-                                <mat-list-item role="listitem"><h4 style="text-align: left;">Current Fiat: RM </h4></mat-list-item>
-                                <mat-list-item role="listitem"><h4 style="text-align: left;">Current Energy Balance: kWh</h4></mat-list-item>
-                                <mat-list-item role="listitem"><h4 style="text-align: left;">Completed Transactions: </h4></mat-list-item>
+                                <mat-list-item role="listitem"><h4 style="text-align: left;">Current Fiat: RM3456  </h4></mat-list-item>
+                                <mat-list-item role="listitem"><h4 style="text-align: left;">Current Energy Balance: 456kWh</h4></mat-list-item>
+                                <mat-list-item role="listitem"><h4 style="text-align: left;">Completed Transactions: 104</h4></mat-list-item>
                                 <mat-list-item role="listitem"><h5 style="text-align: left; color:rgba(255, 0, 0, 0.719);">Your account will be charged only after the transaction is completed</h5></mat-list-item>
                             </mat-list>
                         </div>

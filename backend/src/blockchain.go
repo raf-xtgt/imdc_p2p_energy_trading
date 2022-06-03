@@ -65,11 +65,11 @@ func updateChain(w http.ResponseWriter, r *http.Request) {
 	createLocalCopies()
 
 	// if there is a new block then verify that first
-	verifyCentralBlockchain()
-	// trigger := checkForNewBlocks()
-	// if trigger.NewBlockExists {
-	// 	verifyCentralBlockchain()
-	// }
+	//verifyCentralBlockchain()
+	trigger := checkForNewBlocks()
+	if trigger.NewBlockExists {
+		verifyCentralBlockchain()
+	}
 
 	latestBlock := getLatestBlock()
 	fmt.Println("The latest block is", latestBlock)

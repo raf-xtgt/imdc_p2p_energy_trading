@@ -17,7 +17,7 @@ npm install -g @angular/cli
 ng add @angular/material
 ```
 
-### Install Node.js following the instructions [here] (hhtps://phoenixnsp.com/kb/install-node-js-npm-on-windows)
+###  [Install Node.js following the instructions] (hhtps://phoenixnsp.com/kb/install-node-js-npm-on-windows)
 
 ### Install Node.js Package Manager
 ```
@@ -50,3 +50,7 @@ Open browser port
 ```
 localhost:4200
 ```
+
+### Project Demonstration
+[![Project Demo] (http://img.youtube.com/vi/8qXSCftU9V8)](https://youtu.be/8qXSCftU9V8)
+
