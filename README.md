@@ -52,5 +52,5 @@ localhost:4200
 ```
 
 ### Project Demonstration
-[![Project Demo](http://img.youtube.com/vi/8qXSCftU9V8)](https://www.youtube.com/watch?v=8qXSCftU9V8)
+[![Project Demo](http://img.youtube.com/vi/8qXSCftU9V8/Demo_Thumbnail.png)](https://www.youtube.com/watch?v=8qXSCftU9V8)
 
