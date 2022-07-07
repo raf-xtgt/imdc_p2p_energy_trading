@@ -29,9 +29,10 @@ export class HouseholdPriceGraphComponent implements OnInit {
 
   public chartColors: any[] = [
     {
-      borderColor:"#2793FF",
-      backgroundColor: "#B9DCFF",
-      fill:true
+      //borderColor:"#2793FF",
+      borderColor:"#df8879",
+      backgroundColor: "#b30000",
+      fill:false
     }];
     ngOnInit(): void {
         
@@ -66,7 +67,7 @@ export class HouseholdPriceGraphComponent implements OnInit {
 
   drawGraph():ChartDataSets[]{
     let lineChartData: ChartDataSets[] = [
-      { data: this.model.data, label: 'Household energy price(kWh)' },
+      { data: this.model.data, label: 'Household energy price per kWh in RM' },
     ];
     return lineChartData
   }
