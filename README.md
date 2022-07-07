@@ -17,6 +17,11 @@ npm install -g @angular/cli
 ng add @angular/material
 ```
 
+### Install Bootstrap to assist in UI development
+```
+npm install bootstrap
+```
+
 ###  [Install Node.js following the instructions](https://phoenixnsp.com/kb/install-node-js-npm-on-windows)
 
 ### Install Node.js Package Manager
