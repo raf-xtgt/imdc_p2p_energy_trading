@@ -107,20 +107,41 @@
                 
             </div>
 
+
+               <!-- Energy Pricing header -->
             <div class="row no-gutter"  style=" background-color: #EBEDEC; padding-top: 20px;">
                 <div class="col-md-12"> 
                     <div class="col-md-12" style="margin:auto; text-align: center;">
                         <h2 style="color:rgb(55,52,50); font-size:40px; font-weight:500 ">Energy Pricing</h2>
-                        <h3 style="font-size: 20px; color: #5B667C">Pricing from last 24 hours</h3>
-
-                        
+                        <h3 style="font-size: 20px; color: #5B667C">Pricing from last 24 hours</h3>                        
                     </div>
                 </div>
             </div>
 
+            <!-- Energy prcing graph -->
             <div class="row no-gutter" style=" background-color: #EBEDEC;">
                 <div class="col-md-12"> 
                     <app-household-price-graph></app-household-price-graph>
+                </div>
+            </div>
+
+
+
+               <!-- Market header -->
+               <div class="row no-gutter"  style=" background-color: #EBEDEC; padding-top: 20px;">
+                <div class="col-md-12"> 
+                    <div class="col-md-12" style="margin:auto; text-align: center;">
+                        <h2 style="color:rgb(55,52,50); font-size:40px; font-weight:500 ">Trading Market</h2>
+                        <h3 style="font-size: 20px; color: #5B667C">All open requests will be closed every 30 minutes</h3>                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market requests -->
+            <div class="row no-gutter" style=" background-color: #EBEDEC;">
+                <div class="col-md-12" style="margin-bottom: auto; margin-right:auto;"> 
+                    <app-marketpage></app-marketpage>
+                    
                 </div>
             </div>
 
@@ -134,9 +155,7 @@
     
     
     
-    <div style="margin-bottom: auto; margin-right:auto;">
-        <app-marketpage></app-marketpage>
-    </div>
+    
     
 </div>
 
