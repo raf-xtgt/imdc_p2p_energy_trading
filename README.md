@@ -42,7 +42,7 @@ go run *.go
 cd frontend/web-app/
 ```
 ```
-ng server
+ng serve
 ```
 
 Open browser port
