@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { JWTService } from '../userAuth.service';
 // import the custom http service module
 import { ConfigService } from '../config.service';
+// for routing to a page
+import {Router} from '@angular/router';
+
 
 @Component({
   selector: 'app-homepage',
@@ -11,12 +14,14 @@ import { ConfigService } from '../config.service';
 export class HomepageComponent implements OnInit {
 
   private isRefreshed :boolean = false;
-  constructor(private _jwtServ:JWTService, private _config:ConfigService) { }
+  constructor(private _jwtServ:JWTService, private _config:ConfigService, private router: Router) { }
+  private isAuth:boolean = false // to check whether the user is logged in or not
   
    ngOnInit(): void {
       this._jwtServ.verifyToken().subscribe(data => {
         if (data != null){
           console.log("Verified Token", data)
+          this.isAuth = true
           this.refreshPage()
         }
       })
@@ -31,6 +36,17 @@ export class HomepageComponent implements OnInit {
       localStorage.removeItem('refreshed') 
     }
 
+  }
+
+  // redirect user to market page
+  redirectToMarket():void{
+    if (this.isAuth){
+      this.router.navigateByUrl('/market');
+    }
+    else{
+      this.router.navigateByUrl('/login')
+    }
+    
   }
 
 }
