@@ -109,3 +109,20 @@ export interface PotentialClerks {
     smartMeterNo:number
     button1: string,
 }
+
+export interface closedRequests{
+    buyer:string,
+    energyAmount:number, 
+    fiatAmount:number,
+    reqId: string,
+    remTime:number|string
+}
+
+export interface openRequests{
+    buyer:string,
+    energyAmount:number, 
+    fiatAmount:number,
+    reqId: string,
+    remTime:number|string,
+    bidBtn: string
+}

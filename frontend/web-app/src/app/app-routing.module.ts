@@ -13,6 +13,7 @@ import { BidPageComponent } from './bid-page/bid-page.component';
 import { ManageValidatorsComponent } from './manage-validators/manage-validators.component';
 import { BlockchainPageComponent } from './blockchain-page/blockchain-page.component';
 import { ManageClerksComponent } from './manage-clerks/manage-clerks.component';
+import { NewMarketPageComponent } from './new-market-page/new-market-page.component';
 
 const routes: Routes = [
   // when url is loaded, the user lands on the homepage
@@ -22,7 +23,7 @@ const routes: Routes = [
   {path: 'register', component:SignupComponent},
   {path: 'profile', component:ProfileComponent},
   {path: 'order', component:OrderComponent},
-  {path: 'market', component:MarketpageComponent},
+  {path: 'market', component:NewMarketPageComponent},
   {path: 'bid', component:BidPageComponent},
   {path: 'manageValidators', component:ManageValidatorsComponent},
   {path: 'blockchain', component:BlockchainPageComponent},
