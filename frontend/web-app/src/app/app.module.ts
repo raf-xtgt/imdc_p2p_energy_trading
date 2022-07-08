@@ -53,6 +53,7 @@ import { ManageValidatorsComponent } from './manage-validators/manage-validators
 import { BlockchainPageComponent } from './blockchain-page/blockchain-page.component';
 import { ManageClerksComponent } from './manage-clerks/manage-clerks.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
+import { NewMarketPageComponent } from './new-market-page/new-market-page.component';
 
 @NgModule({
   declarations: [
@@ -74,6 +75,7 @@ import { ProfilePageComponent } from './profile-page/profile-page.component';
     BlockchainPageComponent,
     ManageClerksComponent,
     ProfilePageComponent,
+    NewMarketPageComponent,
   ],
   imports: [
     BrowserModule,
