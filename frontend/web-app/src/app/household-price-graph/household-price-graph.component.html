@@ -1,4 +1,15 @@
-<div style="display: block; background-color: #EBEDEC;">
+ <!-- Energy Pricing header -->
+ <div class="row no-gutter"  style=" background-color: #EBEDEC; padding-top: 20px;">
+  <div class="col-md-12"> 
+      <div class="col-md-12" style="margin:auto; text-align: center;">
+          <h2 style="color:rgb(55,52,50); font-size:40px; font-weight:500 ">Energy Pricing           <img class="images" src="../../assets/EnergyPricing.png" style="height: 10%; width: 10%; display: inline-flex; opacity: 0.9;">
+          </h2>
+          <h3 style="font-size: 20px; color: #5B667C">Pricing from last 24 hours</h3>                        
+      </div>
+  
+  </div>
+  <div style="display: block; background-color: #EBEDEC;">
+  
     <canvas baseChart width="500" height="120"
       [datasets]="chartData"
       [labels]="timeStamps"
@@ -9,3 +20,4 @@
     >
     </canvas>
   </div>
+</div>
