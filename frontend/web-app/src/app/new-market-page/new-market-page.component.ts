@@ -143,9 +143,9 @@ export class NewMarketPageComponent implements OnInit {
     this.router.navigateByUrl('/bid');
   }
 
-  bid(request: BuyEnergyRequest){
+  bid(request: openRequests){
     // check if bidder is a different user or not
-    let buyerIdArr = request.buyerId.split('\n')
+    let buyerIdArr = request.buyer.split('\n')
     let buyerId = buyerIdArr[1]
     if (buyerId == this._loggedInUserId){
       Swal.fire({
@@ -155,8 +155,10 @@ export class NewMarketPageComponent implements OnInit {
       })
     }
     else{
+      let requestToSend = new BuyEnergyRequest(buyerId, request.energyAmount, request.fiatAmount, false, request.reqId, request.remTime)
+
       //send the request to the bidpage that is listening on the msg
-      this.reqData.changeMessage(request)
+      this.reqData.changeMessage(requestToSend)
       this.router.navigateByUrl('/bid');
     }
   }

@@ -123,6 +123,6 @@ export interface openRequests{
     energyAmount:number, 
     fiatAmount:number,
     reqId: string,
-    remTime:number|string,
-    bidBtn: string
+    remTime:string,
+    bidBtn:string
 }
