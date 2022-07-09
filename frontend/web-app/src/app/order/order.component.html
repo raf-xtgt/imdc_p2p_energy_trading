@@ -3,6 +3,15 @@
 
     <div class="container-fluid">
 
+        <!-- Buy order header -->
+        <div class="row no-gutter">
+            <div class="col-md-12"  style="margin:auto; text-align: center;">
+                <h1 style="font-size: 46px; font-weight:500; color:#2D323B">Order Energy
+                    <img class="images" src="../../assets/BuyOrder.png" style="height: 10%; width: 10%; display: inline-flex; opacity: 0.9;">                        
+                </h1>
+            </div>
+        </div>
+
         <!-- Date and Consumption forecast -->
         <div class="row no-gutter">
             <div class="col-md-12">
@@ -41,7 +50,7 @@
 
                     <!-- Show chart when loading is done -->
                     <div *ngIf="!isLoading" style="padding: 5px;"> 
-                        <h1 style="font-size: 46px; font-weight:500; color:#2D323B">Comparison of Energy Consumption(kWh)</h1>
+                        <h1 style="font-size: 20px; color: #5B667C;">Comparison of Energy Consumption(kWh)</h1>
                         <canvas baseChart width="500" height="120"
                             [datasets]="chartData"
                             [labels]="xAxis"
@@ -59,7 +68,7 @@
 
         <!-- Buy energy form inside a card -->
         <div class="row no-gutter">
-            <div class="col-md-12" style="text-align: center;">
+            <div class="col-md-12" style="text-align: center; background-color:#EBEDEC;">
                 <div style="height:100%;width:100%; background-color:#EBEDEC;">
                     <mat-card style="width: 80%; margin: auto;"> 
                         <mat-card-content>
