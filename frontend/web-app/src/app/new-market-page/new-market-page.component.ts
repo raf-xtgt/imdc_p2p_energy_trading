@@ -65,7 +65,7 @@ export class NewMarketPageComponent implements OnInit {
   }
 
   
-  getBuyRequests(){
+  async getBuyRequests(){
     this._config.getBuyRequests().subscribe(data => {
       //console.log("Buy requests data for market page", data)
       let response = JSON.parse(JSON.stringify(data))
@@ -88,12 +88,10 @@ export class NewMarketPageComponent implements OnInit {
               remTime: "Closed"
             }
             allClosedRequests.push(closedRequest)
-            // instantiate pagination list
-            this.closesRequestDataSource = new MatTableDataSource<closedRequests>(allClosedRequests)
-            this.closesRequestDataSource.paginator = this.closedReqPaginator
             if (allClosedRequests.length>0){
               this.noClosedBuyRequests = false
             }
+            
           }
 
           // when request is not closed
@@ -103,7 +101,7 @@ export class NewMarketPageComponent implements OnInit {
             let timeArr = remainingTime.split(' Min')
             let timeMin = parseInt(timeArr[0])
             console.log("Minutes elapsed", timeMin)
-            if (timeMin>=300){
+            if (timeMin>=30){
               //close the request
               this._config.closeBuyRequest(reqArr[i].ReqId).subscribe(data => {
                 console.log("buy request closed", data)
@@ -125,16 +123,28 @@ export class NewMarketPageComponent implements OnInit {
               bidBtn:''
             }
             allOpenRequests.push(openRequest)
-            this.openRequestDataSource = new MatTableDataSource<openRequests>(allOpenRequests)
-            this.openRequestDataSource.paginator = this.openedReqPaginator
             if (allOpenRequests.length>0){
               this.noOpenBuyRequests = false
             }
+            
           }
+
+          if (i==reqArr.length-1){
+
+            // instantiate pagination list for closed requests
+            this.closesRequestDataSource = new MatTableDataSource<closedRequests>(allClosedRequests)
+            this.closesRequestDataSource.paginator = this.closedReqPaginator
+            
+            // instantiate pogination list for open requests
+            this.openRequestDataSource = new MatTableDataSource<openRequests>(allOpenRequests)
+            this.openRequestDataSource.paginator = this.openedReqPaginator
+          }
+
           
         })
         
     }
+
     })
   }
 
