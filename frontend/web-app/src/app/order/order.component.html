@@ -1,118 +1,146 @@
 <div  style="width:100%; height:100%; background-color: #EBEDEC; ">
-    <div style="margin: auto; width:50%;">
-        <mat-card>
-            <mat-card-content>
-                <div style="width: 100%;">
-                    Date: {{currentDate}}
+
+
+    <div class="container-fluid">
+
+        <!-- Date and Consumption forecast -->
+        <div class="row no-gutter">
+            <div class="col-md-12">
+                <div style="margin: auto; width:50%; padding: 5px;">
+                    <mat-card>
+                        <mat-card-content>
+                            <div style="width: 100%;">
+                                Date: {{currentDate}}
+                            </div>
+                            <div>Consumption: {{currentConsumption}}kWh at {{currentTime}} MYT</div>
+                            <div>Forecast: {{prediction}}kWh at {{predictionTime}} MYT </div>           
+                        </mat-card-content>
+                    </mat-card>
+                
                 </div>
-                <div>Consumption: {{currentConsumption}}kWh at {{currentTime}} MYT</div>
-                <div>Forecast: {{prediction}}kWh at {{predictionTime}} MYT </div>           
-            </mat-card-content>
-        </mat-card>
+            </div>
+        </div>   
+
+        <!-- Consumption forecasting graph -->
+        <div class="row no-gutter">
+            <div class="col-md-12" style="text-align: center;">
+                <!-- Buy amount prediction graph goes here  -->
+                <div style="display: block;width: 100%;">
+                    <!-- Loading for order card form -->
+                    <div *ngIf="isLoading" style="text-align: center;">
+                        <h3>Loading charts...</h3>
+                        <mat-progress-spinner
+                        
+                            diameter = "50"
+                            [color]="color"
+                            [mode]="mode"
+                            [value]="value">
+                        </mat-progress-spinner>
+                    </div>
+
+
+                    <!-- Show chart when loading is done -->
+                    <div *ngIf="!isLoading" style="padding: 5px;"> 
+                        <h1 style="font-size: 46px; font-weight:500; color:#2D323B">Comparison of Energy Consumption(kWh)</h1>
+                        <canvas baseChart width="500" height="120"
+                            [datasets]="chartData"
+                            [labels]="xAxis"
+                            [options]="lineChartOptions"
+                            [legend]="true"
+                            [chartType]="'line'"
+                            [colors]="chartColors"
+                            >
+                        </canvas>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Buy energy form inside a card -->
+        <div class="row no-gutter">
+            <div class="col-md-12" style="text-align: center;">
+                <div style="height:100%;width:100%; background-color:#EBEDEC;">
+                    <mat-card style="width: 80%; margin: auto;"> 
+                        <mat-card-content>
+                            <!-- Loading for order card form -->
+                            <div *ngIf="isLoading" style="text-align: center;">
+                                <h3>Loading ...</h3>
+                                <mat-progress-spinner
+                                
+                                diameter = "50"
+                                [color]="color"
+                                [mode]="mode"
+                                [value]="value"
+                                
+                                ></mat-progress-spinner>
+                            </div>
+                
+                            <div *ngIf="!isLoading" style="width: 100%;"> 
+                                <h1>Buy Energy Form</h1>
+                                <h4>Make an order for buying energy by simply providing the energy and fiat amount</h4>
+                
+                                <mat-grid-list cols="3" rowHeight="150px">
+                                    <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
+                                        <!-- User details -->
+                                        
+                                        <mat-list role="list">
+                                           
+                                            <mat-list-item role="listitem"><h4 style="text-align: left;">{{username}}</h4></mat-list-item>
+                                            <mat-list-item role="listitem"><h4 style="text-align: left;">Current Fiat: RM {{currentFiat}}</h4></mat-list-item>
+                                            <mat-list-item role="listitem"><h4 style="text-align: left;">Current Energy Balance:{{currentEnergy}}kWh</h4></mat-list-item>
+                                            <mat-list-item role="listitem"><h4 style="text-align: left;">Completed Transactions: {{completedTran}}</h4></mat-list-item>
+                                            <mat-list-item role="listitem"><h5 style="text-align: left; color:rgba(255, 0, 0, 0.719);">Your account will be charged only after the transaction is completed</h5></mat-list-item>
+                                        </mat-list>    
+                                    </mat-grid-tile>
+                
+                                    <mat-grid-tile [colspan]=2 [rowspan]=2>
+                                     
+                                    <form (ngSubmit)="createBuyRequest()" #buyOrderForm="ngForm">
+                                        <div class="form-group">
+                                            <label for="energyAmount">Enter Required Amount of Energy(kWh)</label>
+                                            <input  type="number" class="form-control"
+                                            [(ngModel)] = 'energyInput' id="energyAmount" name="energyInput"
+                                            placeholder={{prediction}}
+                                            required autocomplete="off">
+                                        </div>
+                
+                                        <div>
+                                            <mat-list role="list">
+                                                <mat-list-item role="listitem"><h4 style="text-align: left;">Max amount that can be ordered: {{prediction}} kWh</h4></mat-list-item>
+                                                <mat-list-item role="listitem"><h4 style="text-align: left;">Average price per kWh: RM {{currentAvgPrice.toFixed(3)}}</h4></mat-list-item>
+                                                <mat-list-item role="listitem"><h4 style="text-align: left;" >To Pay: RM {{(energyInput * currentAvgPrice).toFixed(3)}} </h4></mat-list-item>
+                                            </mat-list>
+                                            
+                                        </div>
+                                        <div>
+                                            <button type="submit" class="btn btn-success" [disabled]="!buyOrderForm.form.valid" >Buy</button>
+                                        </div>
+                                        
+                
+                                    </form>
+                                    </mat-grid-tile>
+                                </mat-grid-list>
+                
+                
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>    
+            </div>
+        </div>
+
+
+
+    
     
     </div>
-            
-    
-     <!-- Buy amount prediction graph goes here  -->
-     <div style="display: block;width: 100%;">
-        <!-- Loading for order card form -->
-        <div *ngIf="isLoading" style="text-align: center;">
-            <h3>Loading charts...</h3>
-            <mat-progress-spinner
-            
-            diameter = "50"
-            [color]="color"
-            [mode]="mode"
-            [value]="value"
-            
-            ></mat-progress-spinner>
-        </div>
-
-
-        <!-- Show chart when loading is done -->
-        <div *ngIf="!isLoading"> 
-            <h1>Comparison of Energy Consumption(kWh)</h1>
-            <canvas baseChart width="500" height="120"
-                [datasets]="chartData"
-                [labels]="xAxis"
-                [options]="lineChartOptions"
-                [legend]="true"
-                [chartType]="'line'"
-                [colors]="chartColors"
-                >
-            </canvas>
-        </div>
-        
-      </div>
 
     
-    <hr>
-    <div style="height:100%;width:100%; background-color:#EBEDEC;">
-        <mat-card style="width: 80%; margin: auto;"> 
-            <mat-card-content>
-                <!-- Loading for order card form -->
-                <div *ngIf="isLoading" style="text-align: center;">
-                    <h3>Loading ...</h3>
-                    <mat-progress-spinner
-                    
-                    diameter = "50"
-                    [color]="color"
-                    [mode]="mode"
-                    [value]="value"
-                    
-                    ></mat-progress-spinner>
-                </div>
     
-                <div *ngIf="!isLoading" style="width: 100%;"> 
-                    <h1>Buy Energy Form</h1>
-                    <h4>Make an order for buying energy by simply providing the energy and fiat amount</h4>
-    
-                    <mat-grid-list cols="3" rowHeight="150px">
-                        <mat-grid-tile class="userDetailsTile" [colspan]=1 [rowspan]=2>
-                            <!-- User details -->
-                            
-                            <mat-list role="list">
-                               
-                                <mat-list-item role="listitem"><h4 style="text-align: left;">{{username}}</h4></mat-list-item>
-                                <mat-list-item role="listitem"><h4 style="text-align: left;">Current Fiat: RM {{currentFiat}}</h4></mat-list-item>
-                                <mat-list-item role="listitem"><h4 style="text-align: left;">Current Energy Balance:{{currentEnergy}}kWh</h4></mat-list-item>
-                                <mat-list-item role="listitem"><h4 style="text-align: left;">Completed Transactions: {{completedTran}}</h4></mat-list-item>
-                                <mat-list-item role="listitem"><h5 style="text-align: left; color:rgba(255, 0, 0, 0.719);">Your account will be charged only after the transaction is completed</h5></mat-list-item>
-                            </mat-list>    
-                        </mat-grid-tile>
-    
-                        <mat-grid-tile [colspan]=2 [rowspan]=2>
-                         
-                        <form (ngSubmit)="createBuyRequest()" #buyOrderForm="ngForm">
-                            <div class="form-group">
-                                <label for="energyAmount">Enter Required Amount of Energy(kWh)</label>
-                                <input  type="number" class="form-control"
-                                [(ngModel)] = 'energyInput' id="energyAmount" name="energyInput"
-                                placeholder={{prediction}}
-                                required autocomplete="off">
-                            </div>
-    
-                            <div>
-                                <mat-list role="list">
-                                    <mat-list-item role="listitem"><h4 style="text-align: left;">Max amount that can be ordered: {{prediction}} kWh</h4></mat-list-item>
-                                    <mat-list-item role="listitem"><h4 style="text-align: left;">Average price per kWh: RM {{currentAvgPrice.toFixed(3)}}</h4></mat-list-item>
-                                    <mat-list-item role="listitem"><h4 style="text-align: left;" >To Pay: RM {{(energyInput * currentAvgPrice).toFixed(3)}} </h4></mat-list-item>
-                                </mat-list>
-                                
-                            </div>
-                            <div>
-                                <button type="submit" class="btn btn-success" [disabled]="!buyOrderForm.form.valid" >Buy</button>
-                            </div>
-                            
-    
-                        </form>
-                        </mat-grid-tile>
-                    </mat-grid-list>
+
     
     
-                </div>
-            </mat-card-content>
-        </mat-card>
-    </div>    
+
 
 </div>
