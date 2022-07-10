@@ -54,6 +54,7 @@ import { BlockchainPageComponent } from './blockchain-page/blockchain-page.compo
 import { ManageClerksComponent } from './manage-clerks/manage-clerks.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { NewMarketPageComponent } from './new-market-page/new-market-page.component';
+import { OpenRequestsPageComponent } from './open-requests-page/open-requests-page.component';
 
 @NgModule({
   declarations: [
@@ -76,6 +77,7 @@ import { NewMarketPageComponent } from './new-market-page/new-market-page.compon
     ManageClerksComponent,
     ProfilePageComponent,
     NewMarketPageComponent,
+    OpenRequestsPageComponent,
   ],
   imports: [
     BrowserModule,

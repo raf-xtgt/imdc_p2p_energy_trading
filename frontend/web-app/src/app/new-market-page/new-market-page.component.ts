@@ -40,11 +40,7 @@ export class NewMarketPageComponent implements OnInit {
     @ViewChild(MatPaginator) closedReqPaginator: MatPaginator | any
 
 
-     // for the pagination of open buy requests
-  openedRequestDisplayedCols: string[] = ['buyer', 'energyAmount', 'fiatAmount', 'reqId','remTime', 'bidBtn']
-  openRequestDataSource = new MatTableDataSource<openRequests>(allOpenRequests)
-    // add the paginator
-    @ViewChild(MatPaginator) openedReqPaginator: MatPaginator | any
+
 
   ngOnInit(): void {
     // check if the jwt is stored in local storage or not
@@ -94,50 +90,11 @@ export class NewMarketPageComponent implements OnInit {
             
           }
 
-          // when request is not closed
-          else{
-            let timer = new TimerComponent()
-            let remainingTime = timer.getTimeDiff(reqArr[i])
-            let timeArr = remainingTime.split(' Min')
-            let timeMin = parseInt(timeArr[0])
-            console.log("Minutes elapsed", timeMin)
-            if (timeMin>=30){
-              //close the request
-              this._config.closeBuyRequest(reqArr[i].ReqId).subscribe(data => {
-                console.log("buy request closed", data)
-                this._config.runDoubleAuction().subscribe(data=>{
-                  console.log("Finished running double auction")
-                })
-
-
-              })
-
-            }
-                        
-            let openRequest:openRequests={
-              buyer: "("+response.User.UserName+")\n"+reqArr[i].BuyerId,
-              energyAmount: reqArr[i].EnergyAmount,
-              fiatAmount: reqArr[i].FiatAmount,
-              reqId: reqArr[i].ReqId,
-              remTime: remainingTime,
-              bidBtn:''
-            }
-            allOpenRequests.push(openRequest)
-            if (allOpenRequests.length>0){
-              this.noOpenBuyRequests = false
-            }
-            
-          }
-
           if (i==reqArr.length-1){
 
             // instantiate pagination list for closed requests
             this.closesRequestDataSource = new MatTableDataSource<closedRequests>(allClosedRequests)
             this.closesRequestDataSource.paginator = this.closedReqPaginator
-            
-            // instantiate pogination list for open requests
-            this.openRequestDataSource = new MatTableDataSource<openRequests>(allOpenRequests)
-            this.openRequestDataSource.paginator = this.openedReqPaginator
           }
 
           
@@ -175,6 +132,5 @@ export class NewMarketPageComponent implements OnInit {
 
 }
 
-// for the open requests
-let allOpenRequests: openRequests[] = []
+// for the closed requests
 let allClosedRequests: closedRequests[] = []

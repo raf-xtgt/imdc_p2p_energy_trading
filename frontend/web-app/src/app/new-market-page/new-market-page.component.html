@@ -20,64 +20,7 @@
                 <mat-tab-group>
                     <div>
                         <mat-tab label="Open Requests" style="width: 100%;"> 
-                            <div *ngIf="noOpenBuyRequests" style="margin-left: 10px; width: 95%; height: 100%;">
-                                <h2>No buy requests available</h2>
-                            </div>
-                            <div *ngIf="!noOpenBuyRequests" style="margin-left: 10px; width: 95%; height: 100%;overflow: hidden;"> 
-                                <table mat-table [dataSource]="openRequestDataSource">
-                                    
-                                    <!-- buyer info -->
-                                    <ng-container matColumnDef="buyer">
-                                        <th mat-header-cell *matHeaderCellDef> Buyer </th>
-                                        <td mat-cell *matCellDef="let element"> {{element.buyer}} </td>
-                                    </ng-container>
-        
-                                    <!-- energyAmount info -->
-                                    <ng-container matColumnDef="energyAmount">
-                                        <th mat-header-cell *matHeaderCellDef> Energy Amount (kWh) </th>
-                                        <td mat-cell *matCellDef="let element"> {{element.energyAmount}} </td>
-                                    </ng-container>
-        
-        
-                                    <!-- fiatAmount info -->
-                                    <ng-container matColumnDef="fiatAmount">
-                                        <th mat-header-cell *matHeaderCellDef> Fiat Amount (RM) </th>
-                                        <td mat-cell *matCellDef="let element"> {{element.fiatAmount}} </td>
-                                    </ng-container>
-    
-                                    <!-- fiatAmount info -->
-                                    <ng-container matColumnDef="reqId">
-                                        <th mat-header-cell *matHeaderCellDef> Request </th>
-                                        <td mat-cell *matCellDef="let element"> {{element.reqId}} </td>
-                                    </ng-container>
-        
-        
-                                    <!-- remaining time info -->
-                                    <ng-container matColumnDef="remTime">
-                                        <th mat-header-cell *matHeaderCellDef> Request Status </th>
-                                        <td mat-cell *matCellDef="let element"> {{element.remTime}} </td>
-                                    </ng-container>
-
-                                     <!-- bid button -->
-                                     <ng-container matColumnDef="bidBtn">
-                                        <th mat-header-cell *matHeaderCellDef> Make a bid </th>
-                                        <td mat-cell *matCellDef="let element">
-                                            <button type="bid" class="btn btn-success" (click)="bid(element)">Bid</button>    
-                                        </td>
-                                        
-                                        
-                                    </ng-container>
-                                
-                                    <tr mat-header-row *matHeaderRowDef="openedRequestDisplayedCols"></tr>
-                                    <tr mat-row *matRowDef="let row; columns: openedRequestDisplayedCols;"></tr>
-
-                                </table>
-                                <mat-paginator 
-                                    [pageSizeOptions]="[5, 10]" 
-                                    showFirstLastButtons 
-                                    aria-label="Select page of periodic elements">
-                                 </mat-paginator>
-                            </div>
+                            <app-open-requests-page></app-open-requests-page>
                         </mat-tab>
                     </div>
 
