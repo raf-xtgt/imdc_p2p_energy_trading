@@ -24,7 +24,7 @@
                             </div>
                             <div>Production: {{currentProduction}}kWh at {{currentTime}} MYT</div>
                             <div>Forecast: {{(prediction).toFixed(2)}}kWh at {{predictionTime}} MYT </div>   
-                            <h4 style="text-align: left;">Time Remaining: 20:30</h4>
+                            <!-- <h4 style="text-align: left;">Time Remaining: 20:30</h4> -->
                 
                         </mat-card-content>
                     </mat-card>
@@ -50,7 +50,7 @@
 
                     
                     <div *ngIf="!isLoading">
-                        <h1 style="font-size: 20px; color: #5B667C; text-align: center;">Comparison of Energy Production(kWh)</h1>
+                        <h1 style="font-size: 20px; color: #28282B; text-align: center;">Comparison of Energy Production(kWh)</h1>
                         <canvas baseChart width="500" height="120"
                             [datasets]="chartData"
                             [labels]="xAxis"
@@ -101,7 +101,7 @@
                                         <mat-list role="list">
                                             <h3>Your account details</h3>
                                             <mat-divider></mat-divider>
-                                            <mat-list-item role="listitem"><h4 style="text-align: left;">username</h4></mat-list-item>
+                                            <mat-list-item role="listitem"><h3 style="text-align: left; display: inline-flex; padding: 10px 0px 0px 0px;">Seller:&nbsp; <h4 style="display: inline-flex;"> {{username}}</h4></h3></mat-list-item>
                                             <mat-list-item role="listitem"><h4 style="text-align: left;">Current Fiat: RM3456  </h4></mat-list-item>
                                             <mat-list-item role="listitem"><h4 style="text-align: left;">Current Energy Balance: 456kWh</h4></mat-list-item>
                                             <mat-list-item role="listitem"><h4 style="text-align: left;">Completed Transactions: 104</h4></mat-list-item>
@@ -173,16 +173,39 @@
 
 
     </div>
-    
-    
-            
-        
-    
-   
-
-      
-      
-    
-    
 
 </div>
+
+
+
+<!-- 
+
+
+
+     <div class="row no-gutter">
+            <div class="col-md-12">
+                <div style="margin: auto; width:50%; padding: 5px;">
+                    <mat-card>
+                        <mat-card-content>
+                            <div style="width: 100%;">
+                                <h3 style="font-size: 15px; font-weight: 450; color: #28282B; display:inline-flex;"> 
+                                    Date: &nbsp; <h3 style="font-size: 20px; font-weight: 400; color: #28282B;">{{currentDate}}</h3> 
+                                </h3>
+                            </div>
+                            <div> 
+                                <h3 style="font-size: 15px; font-weight: 450; color: #28282B; display:inline-flex;">
+                                    Consumption:  &nbsp;  <h3 style="font-size: 20px; font-weight: 400; color: #28282B;">{{currentConsumption}}kWh at {{currentTime}} MYT</h3>
+                                </h3>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 15px; font-weight: 450; color: #28282B; display:inline-flex;">
+                                    Forecast: &nbsp; <h3 style="font-size: 20px; font-weight: 400; color: #28282B;"> {{prediction}}kWh at {{predictionTime}} MYT </h3> 
+                                </h3>
+                            </div>           
+                        </mat-card-content>
+                    </mat-card>
+                
+                </div>
+            </div>
+        </div>   
+ -->

@@ -19,10 +19,20 @@
                     <mat-card>
                         <mat-card-content>
                             <div style="width: 100%;">
-                                Date: {{currentDate}}
+                                <h3 style="font-size: 15px; color: #28282B; display:inline-flex;"> 
+                                    Date: {{currentDate}}
+                                </h3>
                             </div>
-                            <div>Consumption: {{currentConsumption}}kWh at {{currentTime}} MYT</div>
-                            <div>Forecast: {{prediction}}kWh at {{predictionTime}} MYT </div>           
+                            <div> 
+                                <h3 style="font-size: 15px; color: #28282B">
+                                    Consumption: {{currentConsumption}}kWh at {{currentTime}} MYT
+                                </h3>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 15px; color: #28282B">
+                                    Forecast: {{prediction}}kWh at {{predictionTime}} MYT
+                                </h3>
+                            </div>           
                         </mat-card-content>
                     </mat-card>
                 
@@ -50,7 +60,7 @@
 
                     <!-- Show chart when loading is done -->
                     <div *ngIf="!isLoading" style="padding: 5px;"> 
-                        <h1 style="font-size: 20px; color: #5B667C;">Comparison of Energy Consumption(kWh)</h1>
+                        <h1 style="font-size: 20px; color: #28282B">Comparison of Energy Consumption(kWh)</h1>
                         <canvas baseChart width="500" height="120"
                             [datasets]="chartData"
                             [labels]="xAxis"
@@ -85,7 +95,7 @@
                                 ></mat-progress-spinner>
                             </div>
                 
-                            <div *ngIf="!isLoading" style="width: 100%;"> 
+                            <div *ngIf="!isLoading" style="width: 100%; padding: 10px;"> 
                                 <h1>Buy Energy Form</h1>
                                 <h4>Make an order for buying energy by simply providing the energy and fiat amount</h4>
                 
@@ -95,7 +105,7 @@
                                         
                                         <mat-list role="list">
                                            
-                                            <mat-list-item role="listitem"><h4 style="text-align: left;">{{username}}</h4></mat-list-item>
+                                            <mat-list-item role="listitem"><h4 style="text-align: left;">Buyer: {{username}}</h4></mat-list-item>
                                             <mat-list-item role="listitem"><h4 style="text-align: left;">Current Fiat: RM {{currentFiat}}</h4></mat-list-item>
                                             <mat-list-item role="listitem"><h4 style="text-align: left;">Current Energy Balance:{{currentEnergy}}kWh</h4></mat-list-item>
                                             <mat-list-item role="listitem"><h4 style="text-align: left;">Completed Transactions: {{completedTran}}</h4></mat-list-item>
