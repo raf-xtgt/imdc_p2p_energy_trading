@@ -63,6 +63,7 @@ export class OpenRequestsPageComponent implements OnInit {
         console.log("Buy requests data for market page", response)
         //this.allBuyRequests = response.Requests
         let reqArr = response.Requests
+        allOpenRequests = []
         for(let i = 0; i < reqArr.length; i++) {
           //console.log("All buy requests")
           this._jwtServ.gerUsername(reqArr[i].BuyerId).subscribe(data => {

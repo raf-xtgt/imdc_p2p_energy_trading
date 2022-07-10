@@ -68,6 +68,7 @@ export class NewMarketPageComponent implements OnInit {
       console.log("Buy requests data for market page", response)
       //this.allBuyRequests = response.Requests
       let reqArr = response.Requests
+      allClosedRequests = []
       for(let i = 0; i < reqArr.length; i++) {
         //console.log("All buy requests")
         this._jwtServ.gerUsername(reqArr[i].BuyerId).subscribe(data => {
@@ -105,30 +106,7 @@ export class NewMarketPageComponent implements OnInit {
     })
   }
 
-  // redirect user to the bidding page
-  navigateToBidPage(){
-    this.router.navigateByUrl('/bid');
-  }
 
-  bid(request: openRequests){
-    // check if bidder is a different user or not
-    let buyerIdArr = request.buyer.split('\n')
-    let buyerId = buyerIdArr[1]
-    if (buyerId == this._loggedInUserId){
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'You cannot bid on your own buy request!!',
-      })
-    }
-    else{
-      let requestToSend = new BuyEnergyRequest(buyerId, request.energyAmount, request.fiatAmount, false, request.reqId, request.remTime)
-
-      //send the request to the bidpage that is listening on the msg
-      this.reqData.changeMessage(requestToSend)
-      this.router.navigateByUrl('/bid');
-    }
-  }
 
 }
 
