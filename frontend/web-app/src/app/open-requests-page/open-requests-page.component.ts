@@ -92,7 +92,7 @@ export class OpenRequestsPageComponent implements OnInit {
               let openRequest:openRequests={
                 buyer: "("+response.User.UserName+")\n"+reqArr[i].BuyerId,
                 energyAmount: reqArr[i].EnergyAmount,
-                fiatAmount: reqArr[i].FiatAmount,
+                fiatAmount: (reqArr[i].FiatAmount).toFixed(2),
                 reqId: reqArr[i].ReqId,
                 remTime: remainingTime,
                 bidBtn:''

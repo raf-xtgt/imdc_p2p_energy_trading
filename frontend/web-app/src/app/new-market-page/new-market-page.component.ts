@@ -80,7 +80,7 @@ export class NewMarketPageComponent implements OnInit {
             let closedRequest:closedRequests={
               buyer: "("+response.User.UserName+")\n"+reqArr[i].BuyerId,
               energyAmount: reqArr[i].EnergyAmount,
-              fiatAmount: reqArr[i].FiatAmount,
+              fiatAmount: (reqArr[i].FiatAmount).toFixed(2),
               reqId: reqArr[i].ReqId,
               remTime: "Closed"
             }
