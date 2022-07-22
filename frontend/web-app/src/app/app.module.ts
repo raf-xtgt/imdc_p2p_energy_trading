@@ -55,6 +55,7 @@ import { ManageClerksComponent } from './manage-clerks/manage-clerks.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { NewMarketPageComponent } from './new-market-page/new-market-page.component';
 import { OpenRequestsPageComponent } from './open-requests-page/open-requests-page.component';
+import { EvPageComponent } from './ev-page/ev-page.component';
 
 @NgModule({
   declarations: [
@@ -78,6 +79,7 @@ import { OpenRequestsPageComponent } from './open-requests-page/open-requests-pa
     ProfilePageComponent,
     NewMarketPageComponent,
     OpenRequestsPageComponent,
+    EvPageComponent,
   ],
   imports: [
     BrowserModule,
