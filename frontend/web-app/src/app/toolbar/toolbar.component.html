@@ -15,10 +15,11 @@
 
         <!-- Toolbar when user is not logged in -->
         <div *ngIf="!isVerified">
-          <a class="topBarBtns" mat-button>EV</a>
+
           <a class="orderBtn" mat-button routerLink="order">New Order</a>
           <a class="topBarBtns" mat-button>Blockchain</a>
           <a class="topBarBtns" mat-button>Market</a>
+          <a class="topBarBtns" mat-button>EV</a>
           <!-- <a class="topBarBtns" mat-button>About</a> -->
 
           <button mat-button routerLink="login">Login</button>
