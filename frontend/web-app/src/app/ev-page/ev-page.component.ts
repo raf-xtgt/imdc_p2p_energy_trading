@@ -46,7 +46,7 @@ export class EvPageComponent implements OnInit {
   public pred_y :number[] = []
   public graphData :GraphData[] = []
   // y and x axis
-  public chartData: ChartDataSets[] = [{data:[], label:'Consumption Graph'}];
+  public chartData: ChartDataSets[] = [{data:[], label:'Charging Graph'}];
   public xAxis: Label[] = [];  
 
   // data for the card above the graph
@@ -76,7 +76,7 @@ export class EvPageComponent implements OnInit {
   ];
 
   // loading before graph and all data are available
-  public isLoading: boolean = true;
+  public isLoading: boolean = false;
   color: ThemePalette = 'primary';
   mode: ProgressSpinnerMode = 'indeterminate';
   value = 100;
@@ -108,11 +108,58 @@ export class EvPageComponent implements OnInit {
 
     // ask the backend to add forecast data for this user on the database
   initEnergyForecast(){
-    this._config.runBuyEnergyForecast(this._buyerId).subscribe(data => {
-      console.log("Request sent to initiate forecasting", data)
-      console.log("getting the data")
-      this.getForecastForBuying()
-    })
+    let date:Date = new Date()
+    let hrs:number = date.getHours()
+    let mins:number = date.getMinutes()
+    let upperEnd = 0
+    if (hrs != 0){
+      if (mins < 30){
+        upperEnd = hrs * 2
+      }
+      else if ((mins >=30) && (mins<=45)) {
+        upperEnd = (hrs*2) +1
+      }
+      else{
+        upperEnd = (hrs*2) +2
+      }
+    }
+    else{
+      upperEnd = 4
+    }
+
+     //[{data:[50, 60, 60, 60, 60, 60, -50, -50, -50, -50, -50, 60, 60, 60, 60, 60,], label:'Charging Graph'},
+    let actual = [50, 60, 60, 60, 60, 60, -50, -50, -50, -50, -50, 60, 60, 60, 60, 60, -30, -30, -30, -30, -30, 50, 50, 50,50, 60, 60, 60, 60, 60, -50, -50, -50, -50, -50, 60, 60, 60, 60, 60, -30, -30, -30, -30, -30, 50, 50, 50]
+
+    let forecast = [50, 64, 65, 62, 63, 63, -50, -52, -54, -53, -58, 60, 67, 66, 69, 66, -32, -33, -27, -33, -30, 50, 50, 50,50, 63, 60, 56, 66, 65, -54, -54, -58, -59, -50, 63, 60, 56, 66, 65, -30, -31, -34, -32, -33, 53, 52, 55]
+    let xAxis: Label[] = ["12:00AM", "12:30AM", "01:00AM","01:30AM","02:00AM","02:30AM", "03:00AM", "03:30AM",
+    "04:00AM", "04:30AM", "05:00AM", "05:30AM", "06:00AM", "06:30AM","07:00AM", "07:30AM",
+    "08:00AM", "08:30AM", "09:00AM", "09:30AM", "10:00AM", "10:30AM", "11:00AM", "11:30AM", 
+    "12:00PM","12:30PM", "01:00PM","01:30PM","02:00PM","02:30PM", "03:00PM", "03:30PM",
+    "04:00PM", "04:30PM", "05:00PM", "05:30PM", "06:00PM", "06:30PM","07:00PM", "07:30PM",
+    "08:00PM", "08:30PM", "09:00PM", "09:30PM", "10:00PM", "10:30PM", "11:00PM", "11:30PM",]
+    
+
+    let actualPlot = []
+    let forecastPlot = []
+    let xAxisPlot = []
+    for(let i=0; i<upperEnd; i++){
+      actualPlot.push(actual[i])
+
+    }
+    for(let j=0; j<upperEnd+1; j++){
+      forecastPlot.push(forecast[j])
+      xAxisPlot.push(xAxis[j])
+
+    }
+
+    this.chartData = [{data:actualPlot, label:'Actual Charging Graph'}, {data:forecastPlot, label:'Forecast Charging Graph'}, ]
+    this.xAxis = xAxisPlot
+    this.prediction = forecastPlot[forecastPlot.length-1]
+    this.currentConsumption = actualPlot[actualPlot.length-1]
+    this.currentTime = (this.xAxis[this.xAxis.length-2]).toString()
+    this.predictionTime = (this.xAxis[this.xAxis.length-1]).toString()
+
+
   }
 
 
@@ -137,45 +184,7 @@ export class EvPageComponent implements OnInit {
     })
   }
 
-  // function to the get the data for the buy energy forecast
-  getForecastForBuying(){
-    let dateToday = this.dateService.getCurrentDate()
-    //console.log("data as sent in request", dateToday)
-    this._config.getBuyEnergyForecast(dateToday).subscribe(data => {
-      //console.log("data to plot graph when making buy order", data)
-      if (data != null){
-        let response = JSON.parse(JSON.stringify(data))
-        console.log("What graph data looks like", response)
-        // prepare graph data for actual plot
-        this.actual_x = response[0].Actual_X
-        this.actual_y = response[0].Actual_Y
-        let actualGraphData: GraphData = new GraphData(this.actual_y, this.actual_x, "Actual Power Consumption")
-        this.graphData.push(actualGraphData)
-        
-        // prepare graph data for predicted plot
-        this.pred_x = response[0].Pred_X
-        this.pred_y = response[0].Pred_Y
-        let predictedGraphData: GraphData = new GraphData(this.pred_y, this.pred_x, "Predicted Power Consumption")
-        this.graphData.push(predictedGraphData)
-
-        // draw the graph
-        let makeGraph = new GraphService()
-        makeGraph.data = this.graphData
-        let plot = makeGraph.drawGraph()        
-        this.chartData = plot.y
-        this.xAxis = plot.x[1] // use the timestamps that includes the prediction
-        console.log(plot)
-        // get the card data
-        this.currentConsumption = (this.actual_y[this.actual_y.length-1]).toFixed(2) // last point is the current one
-        this.prediction =  (response[0].Current_Pred).toFixed(2) 
-        this.currentTime = (this.xAxis[this.xAxis.length-2]).toString()
-        this.predictionTime = (this.xAxis[this.xAxis.length-1]).toString()
-
-        // disable loading since all data has been received for now
-        this.isLoading = false
-      }
-    })
-  }
+  
 
 
   /** process the buy request,

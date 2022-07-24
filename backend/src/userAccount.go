@@ -75,6 +75,44 @@ func getUserBuyRequests(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// Send all the transactions to the frontend
+func getUserSellRequests(w http.ResponseWriter, r *http.Request) {
+
+	var userId string
+	var response TransactionsResponse
+	w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE,PUT")
+
+	// get the data from json body
+	decoder := json.NewDecoder(r.Body)
+	// place the user data inside newRequest
+	if err := decoder.Decode(&userId); err != nil {
+		fmt.Println("Failed retrieving the user id from frontend: Line --> 48", err)
+		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
+		return
+	}
+
+	defer r.Body.Close()
+
+	// to prevent backend to timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// get the transactions that have not been verified yet
+	cursor, err := db.Transactions.Find(ctx, bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var transactions []Transaction
+	if err = cursor.All(ctx, &transactions); err != nil {
+		log.Fatal(err)
+	}
+
+	response.Transactions = transactions
+	respondWithJSON(w, r, http.StatusCreated, response)
+
+}
+
 /**
 
 {

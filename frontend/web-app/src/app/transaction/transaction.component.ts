@@ -4,12 +4,6 @@ import { JWTService } from '../userAuth.service';
 import { TransactionInfo } from '../classes';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-// for the loading
-import {ThemePalette} from '@angular/material/core';
-import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
-import {MatDialog} from '@angular/material/dialog';
-import Swal from 'sweetalert2'
-
 
 @Component({
   selector: 'app-transaction',
@@ -45,7 +39,7 @@ export class TransactionComponent implements OnInit {
     this._config.getUserBuyRequests(this._buyerId).subscribe(data => {
 
      let response = JSON.parse(JSON.stringify(data))
-      console.log("list of transactions", response.Transactions)
+      //console.log("list of transactions", response.Transactions)
       let allUserTransactions = response.Transactions
       trnData = []
       for (let i=0; i<allUserTransactions.length; i++){

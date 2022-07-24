@@ -52,6 +52,9 @@ export class ConfigService {
   //get buy requests for the user
   private _getUserBuyRequests :string = this._configUrl + 'GetUserBuyRequests'
 
+  //get sell requests for the user
+  private _getUserSellRequests :string = this._configUrl + 'GetUserSellRequests'
+
   // get sell requests for the user
 
   TOKEN_KEY = 'token';
@@ -196,6 +199,13 @@ export class ConfigService {
   getUserBuyRequests(userId: string){
     const body = JSON.stringify(userId)
     return this.http.post(this._getUserBuyRequests, body)
+  }
+
+  
+  // get the sell/bids made by the user
+  getUserSellRequests(userId: string){
+    const body = JSON.stringify(userId)
+    return this.http.post(this._getUserSellRequests, body)
   }
 
 }
