@@ -15,6 +15,7 @@ import { BlockchainPageComponent } from './blockchain-page/blockchain-page.compo
 import { ManageClerksComponent } from './manage-clerks/manage-clerks.component';
 import { NewMarketPageComponent } from './new-market-page/new-market-page.component';
 import { EvPageComponent } from './ev-page/ev-page.component';
+import { TransactionComponent } from './transaction/transaction.component';
 
 const routes: Routes = [
   // when url is loaded, the user lands on the homepage
@@ -29,7 +30,8 @@ const routes: Routes = [
   {path: 'manageValidators', component:ManageValidatorsComponent},
   {path: 'blockchain', component:BlockchainPageComponent},
   {path: 'manageClerks', component:ManageClerksComponent},
-  {path: 'evPage', component:EvPageComponent}
+  {path: 'evPage', component:EvPageComponent},
+  {path: 'transactions', component:TransactionComponent}
 ];
 
 @NgModule({

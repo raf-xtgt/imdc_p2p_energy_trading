@@ -57,6 +57,7 @@ import { NewMarketPageComponent } from './new-market-page/new-market-page.compon
 import { OpenRequestsPageComponent } from './open-requests-page/open-requests-page.component';
 import { EvPageComponent } from './ev-page/ev-page.component';
 import { TransactionComponent } from './transaction/transaction.component';
+import { SellOrderComponent } from './sell-order/sell-order.component';
 
 @NgModule({
   declarations: [
@@ -82,6 +83,7 @@ import { TransactionComponent } from './transaction/transaction.component';
     OpenRequestsPageComponent,
     EvPageComponent,
     TransactionComponent,
+    SellOrderComponent,
   ],
   imports: [
     BrowserModule,
