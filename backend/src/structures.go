@@ -213,3 +213,7 @@ type Income struct {
 	BlockHashes []string  "json: blockHash"  // id of transaction on which the bid was made
 	Dates       []string  "json: dates"
 }
+
+type TransactionsResponse struct {
+	Transactions []Transaction "json: transactions"
+}

@@ -4,16 +4,53 @@
         <!-- Showing buy order -->
         <div class="row no-gutter">
             <div class="col-md-12"  style="margin:auto; text-align: center; padding:15px">
-                <h1 style="font-size: 46px; font-weight:500; color:#2D323B">Your Order History
-                    
-                </h1>
+                <h1 style="font-size: 46px; font-weight:500; color:#2D323B">Your Energy Order History</h1>
             </div>
         </div>
 
         
         <!-- Transaction Table -->
         <div class="row no-gutter">
-            <div class="col-md-12"  style="margin:auto; text-align: center; padding:15px">
+            <div class="col-md-12"  style="margin:auto; padding:10px">
+                
+                <table mat-table [dataSource]="dataSource">
+                    <!-- Symbol Column -->
+                    <ng-container matColumnDef="buyer">
+                        <th mat-header-cell *matHeaderCellDef> Buyer (You) </th>
+                        <td mat-cell *matCellDef="let element"> {{element.buyerId}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="seller">
+                        <th mat-header-cell *matHeaderCellDef> Seller Id </th>
+                        <td mat-cell *matCellDef="let element"> {{element.sellerId}} </td>
+                    </ng-container>
+
+
+                    <ng-container matColumnDef="energy">
+                        <th mat-header-cell *matHeaderCellDef> Traded Energy (kWh) </th>
+                        <td mat-cell *matCellDef="let element"> {{element.energyTraded}} </td>
+                    </ng-container>
+
+
+                    <ng-container matColumnDef="fiat">
+                        <th mat-header-cell *matHeaderCellDef> Fiat Exchanged (RM) </th>
+                        <td mat-cell *matCellDef="let element"> {{element.fiatTraded}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="transaction">
+                        <th mat-header-cell *matHeaderCellDef> Transaction Id </th>
+                        <td mat-cell *matCellDef="let element"> {{element.transactionId}} </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                </table>
+
+                <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+                         showFirstLastButtons 
+                         aria-label="Select page of periodic elements">
+                </mat-paginator>
             </div>
         </div>
 

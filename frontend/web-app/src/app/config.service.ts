@@ -49,6 +49,11 @@ export class ConfigService {
   // to get profits for tnb
   private _getTNBProfit :string = this._configUrl + 'GetTNBIncome'
 
+  //get buy requests for the user
+  private _getUserBuyRequests :string = this._configUrl + 'GetUserBuyRequests'
+
+  // get sell requests for the user
+
   TOKEN_KEY = 'token';
 
 
@@ -184,6 +189,13 @@ export class ConfigService {
   getTNBIncome(){
     const body = JSON.stringify("tnbIncome")
     return this.http.post(this._getTNBProfit, body)
+  }
+
+
+  // get the buy requests made by the user
+  getUserBuyRequests(userId: string){
+    const body = JSON.stringify(userId)
+    return this.http.post(this._getUserBuyRequests, body)
   }
 
 }

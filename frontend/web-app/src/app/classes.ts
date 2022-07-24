@@ -126,3 +126,12 @@ export interface openRequests{
     remTime:string,
     bidBtn:string
 }
+
+
+export interface TransactionInfo {
+    buyerId:string,
+    sellerId: string,
+    energyTraded: number,
+    fiatTraded:number,
+    transactionId: string
+}
