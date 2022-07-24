@@ -83,7 +83,7 @@
                                             <mat-divider></mat-divider>
                                             <mat-list-item role="listitem"><h4 style="text-align: left;">Buyer: {{buyer}} </h4></mat-list-item>
                                             <mat-list-item role="listitem" ><h4 style="text-align: left;">Energy Amount: {{energyAmnt}}kWh </h4></mat-list-item>
-                                            <mat-list-item role="listitem" ><h4 style="text-align: left;">Fiat Offer: RM{{(fiatOffer).toFixed(2)}} </h4></mat-list-item>
+                                            <mat-list-item role="listitem" ><h4 style="text-align: left;">Fiat Offer: RM{{fiatOffer}} </h4></mat-list-item>
                                             <mat-list-item role="listitem" ><h4 style="text-align: left;">Total bids so far: 50 </h4></mat-list-item> 
                                             <mat-list-item role="listitem"><h5 style="text-align: left; color:rgba(255, 0, 0, 0.719);"></h5></mat-list-item>
                
@@ -149,9 +149,9 @@
                 
                                         <div>
                                             <mat-list role="list">
-                                                <mat-list-item role="listitem"><h4 style="text-align: left;">Current Tradeable Amount: {{(prediction).toFixed(3)}}kWh </h4></mat-list-item>
-                                                <mat-list-item role="listitem"><h4 style="text-align: left;">Average price per kWh: RM{{(currentAvgPrice).toFixed(3)}} </h4></mat-list-item>
-                                                <mat-list-item role="listitem"><h4 style="text-align: left;" >Receivable Fiat : RM{{(bidEnergyInput * currentAvgPrice).toFixed(3)}}  </h4></mat-list-item>
+                                                <mat-list-item role="listitem"><h4 style="text-align: left;">Current Tradeable Amount: {{ (prediction).toFixed(2) }}kWh </h4></mat-list-item>
+                                                <mat-list-item role="listitem"><h4 style="text-align: left;">Average price per kWh: RM{{ (currentAvgPrice).toFixed(2) }} </h4></mat-list-item>
+                                                <mat-list-item role="listitem"><h4 style="text-align: left;" >Receivable Fiat : RM{{ (bidEnergyInput * currentAvgPrice).toFixed(2) }}  </h4></mat-list-item>
                                             </mat-list>
                                             
                                         </div>

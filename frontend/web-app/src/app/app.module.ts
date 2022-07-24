@@ -56,6 +56,7 @@ import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { NewMarketPageComponent } from './new-market-page/new-market-page.component';
 import { OpenRequestsPageComponent } from './open-requests-page/open-requests-page.component';
 import { EvPageComponent } from './ev-page/ev-page.component';
+import { TransactionComponent } from './transaction/transaction.component';
 
 @NgModule({
   declarations: [
@@ -80,6 +81,7 @@ import { EvPageComponent } from './ev-page/ev-page.component';
     NewMarketPageComponent,
     OpenRequestsPageComponent,
     EvPageComponent,
+    TransactionComponent,
   ],
   imports: [
     BrowserModule,

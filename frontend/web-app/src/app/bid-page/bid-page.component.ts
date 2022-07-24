@@ -171,7 +171,7 @@ export class BidPageComponent implements OnInit {
 
           // get the card data
           this.currentProduction = this.actual_y[this.actual_y.length-1] // last point is the current one
-          this.prediction =  this.pred_y[this.pred_y.length-1] +35
+          this.prediction =  this.pred_y[this.pred_y.length-1]
           this.currentTime = (this.xAxis[this.xAxis.length-2]).toString()
           this.predictionTime = (this.xAxis[this.xAxis.length-1]).toString()
 
