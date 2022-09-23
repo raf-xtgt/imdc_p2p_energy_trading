@@ -11,17 +11,14 @@ This project was presented at Innovate Malaysia Design Competition, IMDC 2022, w
 
 Refer here [https://innovate.dreamcatcher.asia/winners2022.html](https://innovate.dreamcatcher.asia/winners2022.html)
 
-![Second Prize](https://drive.google.com/file/d/1V3SZIRfZis5D_t4B_x1Sa3yl-hzBrNu7/view?usp=sharing)
-![IET Green Technology Award](https://drive.google.com/file/d/1xOtiD9-fGyNRXHxIrJBl-Ctr-58YB3JQ/view?usp=sharing)
+
+### Awards
+[Second Prize](https://drive.google.com/file/d/1V3SZIRfZis5D_t4B_x1Sa3yl-hzBrNu7/view?usp=sharing)
+[IET Green Technology Award](https://drive.google.com/file/d/1xOtiD9-fGyNRXHxIrJBl-Ctr-58YB3JQ/view?usp=sharing)
 
 
-### Demo video
-
-<!-- blank line -->
-<figure class="video_container">
-  <iframe src="https://www.youtube.com/embed/enMumwvLAug" frameborder="0" allowfullscreen="true"> </iframe>
-</figure>
-<!-- blank line -->
+### Project Demonstration Video
+[Demo](https://www.youtube.com/watch?v=HiCrlXkDPJ0)
 
 ## Pre-requisites
 #### Clone the repo
@@ -77,6 +74,3 @@ Open browser port
 ```
 localhost:4200
 ```
-
-### Project Demonstration Video
-Coming Soon!
