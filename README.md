@@ -11,8 +11,8 @@ This project was presented at Innovate Malaysia Design Competition, IMDC 2022, w
 
 Refer here [https://innovate.dreamcatcher.asia/winners2022.html](https://innovate.dreamcatcher.asia/winners2022.html)
 
-![Second Prize](https://drive.google.com/file/d/1V3SZIRfZis5D_t4B_x1Sa3yl-hzBrNu7/view?usp=sharing)
-![IET Green Technology Award](https://drive.google.com/file/d/1xOtiD9-fGyNRXHxIrJBl-Ctr-58YB3JQ/view?usp=sharing)
+! [Second Prize](https://drive.google.com/file/d/1V3SZIRfZis5D_t4B_x1Sa3yl-hzBrNu7/view?usp=sharing)
+! [IET Green Technology Award](https://drive.google.com/file/d/1xOtiD9-fGyNRXHxIrJBl-Ctr-58YB3JQ/view?usp=sharing)
 
 
 ## Pre-requisites
