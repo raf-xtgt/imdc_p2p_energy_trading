@@ -42,7 +42,7 @@ ng add @angular/material
 npm install bootstrap
 ```
 
-###  [Install Node.js following the instructions](https://phoenixnsp.com/kb/install-node-js-npm-on-windows)
+[Install Node.js following the instructions here](https://phoenixnsp.com/kb/install-node-js-npm-on-windows)
 
 ### Install Node.js Package Manager
 ```
